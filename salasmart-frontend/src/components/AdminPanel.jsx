@@ -1,146 +1,197 @@
 // src/components/AdminPanel.jsx
+
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
-import { collection, onSnapshot, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, getDocs } from 'firebase/firestore';
+import { Form, Button, ListGroup, Card, Row, Col, Alert, Container, Tabs, Tab, Spinner } from 'react-bootstrap';
 
 function AdminPanel() {
+  // --- Estados para Salas ---
   const [salas, setSalas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  // --- Estados para el formulario ---
-  // Guardamos el ID del documento que estamos editando. null si estamos creando.
-  const [editingId, setEditingId] = useState(null); // <-- CAMBIO CLAVE
-  
-  // Estados para los campos del formulario
+  const [loadingSalas, setLoadingSalas] = useState(true);
+  const [editingId, setEditingId] = useState(null);
   const [nombreSala, setNombreSala] = useState('');
   const [piso, setPiso] = useState('');
   const [capacidad, setCapacidad] = useState('');
+  const [messageSala, setMessageSala] = useState('');
   
-  const [message, setMessage] = useState('');
+  // --- Estados para Usuarios ---
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [messageUser, setMessageUser] = useState('');
 
-  // --- EFECTO PARA LEER SALAS EN TIEMPO REAL (Read) ---
+  // --- LÓGICA PARA LEER SALAS (Read en tiempo real) ---
   useEffect(() => {
-    const salasCollection = collection(db, 'salas');
-    const unsubscribe = onSnapshot(salasCollection, (snapshot) => {
+    const unsubscribeSalas = onSnapshot(collection(db, 'salas'), (snapshot) => {
       const salasData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setSalas(salasData);
-      setLoading(false);
+      setLoadingSalas(false);
     });
-    return () => unsubscribe();
+    return () => unsubscribeSalas();
   }, []);
 
-  // --- FUNCIÓN PARA CREAR O ACTUALIZAR (Create & Update) ---
-  const handleSaveSala = async (e) => {
-    e.preventDefault();
-    if (!nombreSala || !piso || !capacidad) {
-      setMessage('Por favor, completa todos los campos.');
-      return;
-    }
-
-    // Si estamos editando, usamos el ID guardado. Si no, usamos el nombre de la sala como nuevo ID.
-    const docId = editingId || nombreSala; // <-- CAMBIO CLAVE
-    const salaRef = doc(db, 'salas', docId);
-
-    // Los datos a guardar siempre vienen de los estados del formulario
-    const salaData = {
-      nombre: nombreSala, // <-- CAMBIO CLAVE: Siempre usamos el estado 'nombreSala'
-      piso: Number(piso),
-      capacidad: Number(capacidad),
-    };
-
+  // --- LÓGICA PARA LEER USUARIOS (Read una sola vez) ---
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
     try {
-      await setDoc(salaRef, salaData, { merge: true });
-      setMessage(`¡Sala ${nombreSala} ${editingId ? 'actualizada' : 'creada'} exitosamente!`);
-      resetForm();
+        const usersSnapshot = await getDocs(collection(db, 'users'));
+        const usersData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setUsers(usersData);
     } catch (error) {
-      setMessage("Hubo un error al guardar la sala.");
-      console.error("Error: ", error);
+        console.error("Error al obtener usuarios: ", error);
+        setMessageUser("No se pudieron cargar los usuarios. Verifica las reglas de Firestore.");
+    } finally {
+        setLoadingUsers(false);
     }
-  };
-
-  // --- FUNCIÓN PARA ELIMINAR (Delete) ---
-  const handleDeleteSala = async (id) => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar la sala ${id}?`)) {
-      try {
-        await deleteDoc(doc(db, 'salas', id));
-        setMessage(`Sala ${id} eliminada exitosamente.`);
-      } catch (error) {
-        setMessage("Hubo un error al eliminar la sala.");
-        console.error("Error: ", error);
-      }
-    }
-  };
-
-  // --- FUNCIÓN PARA PREPARAR LA EDICIÓN ---
-  const handleEditSala = (sala) => {
-    setEditingId(sala.id); // Guardamos el ID del documento que estamos editando
-    
-    // Rellenamos el formulario con los datos de la sala seleccionada
-    setNombreSala(sala.nombre); // <-- CAMBIO CLAVE: Usamos sala.nombre para el campo de nombre
-    setPiso(sala.piso);
-    setCapacidad(sala.capacidad);
   };
   
-  // --- FUNCIÓN PARA LIMPIAR Y RESETEAR EL FORMULARIO ---
-  const resetForm = () => {
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+  
+  // --- FUNCIONES CRUD PARA SALAS ---
+  const resetFormSala = () => {
     setEditingId(null);
     setNombreSala('');
     setPiso('');
     setCapacidad('');
-    setMessage('');
+    setMessageSala('');
+  };
+
+  const handleSaveSala = async (e) => {
+    e.preventDefault();
+    if (!nombreSala || !piso || !capacidad) {
+      setMessageSala('Por favor, completa todos los campos.');
+      return;
+    }
+    const docId = editingId || nombreSala;
+    const salaRef = doc(db, 'salas', docId);
+    const salaData = { nombre: nombreSala, piso: Number(piso), capacidad: Number(capacidad) };
+    try {
+      await setDoc(salaRef, salaData, { merge: true });
+      setMessageSala(`¡Sala ${nombreSala} ${editingId ? 'actualizada' : 'creada'}!`);
+      resetFormSala();
+    } catch (error) {
+      setMessageSala("Hubo un error al guardar la sala.");
+      console.error("Error: ", error);
+    }
+  };
+
+  const handleDeleteSala = async (id) => {
+    if (window.confirm(`¿Seguro que quieres eliminar la sala ${id}?`)) {
+      await deleteDoc(doc(db, 'salas', id));
+    }
+  };
+
+  const handleEditSala = (sala) => {
+    setEditingId(sala.id);
+    setNombreSala(sala.nombre);
+    setPiso(sala.piso);
+    setCapacidad(sala.capacidad);
+  };
+
+  // --- FUNCIÓN PARA CAMBIAR ROL DE USUARIO ---
+  const handleChangeRole = async (userId, currentRole) => {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    if (window.confirm(`¿Seguro que quieres cambiar el rol de este usuario a "${newRole}"?`)) {
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        await updateDoc(userDocRef, { role: newRole });
+        setMessageUser(`¡Rol cambiado a ${newRole} exitosamente!`);
+        fetchUsers(); // Volvemos a cargar la lista de usuarios para ver el cambio
+      } catch (error) {
+        setMessageUser("Error al cambiar el rol. Revisa las reglas de seguridad de Firestore.");
+        console.error("Error:", error);
+      }
+    }
   };
 
   return (
-    <div style={{ border: '1px solid #ccc', padding: '20px', margin: '20px' }}>
-      <h2>{editingId ? 'Editando Sala' : 'Crear Nueva Sala'}</h2>
-      <form onSubmit={handleSaveSala}>
-        <div>
-          <label>Nombre de la Sala: </label>
-          <input 
-            type="text" 
-            value={nombreSala} 
-            onChange={(e) => setNombreSala(e.target.value)} 
-            placeholder="ID único (ej. A310)"
-            disabled={editingId} // Bloqueamos el nombre/ID durante la edición para evitar inconsistencias
-          />
-        </div>
-        <div style={{ marginTop: '10px' }}>
-          <label>Piso: </label>
-          <input type="number" value={piso} onChange={(e) => setPiso(e.target.value)} />
-        </div>
-        <div style={{ marginTop: '10px' }}>
-          <label>Capacidad: </label>
-          <input type="number" value={capacidad} onChange={(e) => setCapacidad(e.target.value)} />
-        </div>
-        <button type="submit" style={{ marginTop: '15px' }}>
-          {editingId ? 'Actualizar Sala' : 'Crear Sala'}
-        </button>
-        {editingId && (
-          <button type="button" onClick={resetForm} style={{ marginLeft: '10px' }}>
-            Cancelar Edición
-          </button>
-        )}
-      </form>
-      {message && <p>{message}</p>}
-      
-      <hr />
-      <h3>Salas Existentes</h3>
-      {loading ? <p>Cargando...</p> : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {salas.map(sala => (
-            <li key={sala.id} style={{ marginBottom: '10px', border: '1px solid lightgray', padding: '5px' }}>
-              <strong>{sala.nombre}</strong> (ID: {sala.id}, Piso: {sala.piso}, Capacidad: {sala.capacidad})
-              <div style={{ marginTop: '5px' }}>
-                <button onClick={() => handleEditSala(sala)}>Editar</button> {/* <-- CAMBIO CLAVE: Pasamos el objeto 'sala' completo */}
-                <button onClick={() => handleDeleteSala(sala.id)} style={{ marginLeft: '10px', color: 'red' }}>
-                  Eliminar
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Container fluid>
+      <Tabs defaultActiveKey="salas" id="admin-tabs" className="mb-3" fill>
+        
+        {/* Pestaña de Gestionar Salas */}
+        <Tab eventKey="salas" title="Gestionar Salas">
+          <Row className="mt-4">
+            <Col md={4}>
+              <Card>
+                <Card.Header as="h3">{editingId ? 'Editando Sala' : 'Crear Nueva Sala'}</Card.Header>
+                <Card.Body>
+                  <Form onSubmit={handleSaveSala}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Nombre de la Sala</Form.Label>
+                      <Form.Control type="text" value={nombreSala} onChange={(e) => setNombreSala(e.target.value)} placeholder="Ej. A310" disabled={editingId !== null} required />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Piso</Form.Label>
+                      <Form.Control type="number" value={piso} onChange={(e) => setPiso(e.target.value)} required />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Capacidad</Form.Label>
+                      <Form.Control type="number" value={capacidad} onChange={(e) => setCapacidad(e.target.value)} required />
+                    </Form.Group>
+                    <Button variant="primary" type="submit">{editingId ? 'Actualizar Sala' : 'Crear Sala'}</Button>
+                    {editingId && <Button variant="secondary" onClick={resetFormSala} className="ms-2">Cancelar</Button>}
+                  </Form>
+                  {messageSala && <Alert variant="info" className="mt-3">{messageSala}</Alert>}
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={8}>
+              <h3>Salas Existentes</h3>
+              {loadingSalas ? <Spinner animation="border" /> : (
+                <ListGroup>
+                  {salas.map(sala => (
+                    <ListGroup.Item key={sala.id} className="d-flex justify-content-between align-items-center">
+                      <div><strong>{sala.nombre}</strong> (Piso: {sala.piso}, Capacidad: {sala.capacidad})</div>
+                      <div>
+                        <Button variant="outline-primary" size="sm" onClick={() => handleEditSala(sala)}>Editar</Button>
+                        <Button variant="outline-danger" size="sm" onClick={() => handleDeleteSala(sala.id)} className="ms-2">Eliminar</Button>
+                      </div>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              )}
+            </Col>
+          </Row>
+        </Tab>
+
+        {/* Pestaña de Gestionar Usuarios */}
+        <Tab eventKey="users" title="Gestionar Usuarios">
+          <Row className="mt-4 justify-content-center">
+            <Col md={8}>
+              <Card>
+                <Card.Header as="h3">Usuarios Registrados</Card.Header>
+                <Card.Body>
+                  {messageUser && <Alert variant="info">{messageUser}</Alert>}
+                  {loadingUsers ? <Spinner animation="border" /> : (
+                    <ListGroup>
+                      {users.map(user => (
+                        <ListGroup.Item key={user.id} className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <strong>{user.email}</strong>
+                            <span className={`ms-3 badge bg-${user.role === 'admin' ? 'success' : 'secondary'}`}>
+                              {user.role}
+                            </span>
+                          </div>
+                          <Button 
+                            variant={user.role === 'admin' ? 'warning' : 'info'}
+                            size="sm"
+                            onClick={() => handleChangeRole(user.id, user.role)}
+                          >
+                            {user.role === 'admin' ? 'Hacer Usuario' : 'Hacer Admin'}
+                          </Button>
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Tab>
+      </Tabs>
+    </Container>
   );
 }
 

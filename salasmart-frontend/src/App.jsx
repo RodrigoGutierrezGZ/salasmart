@@ -1,54 +1,82 @@
 // src/App.jsx
-import { useState, useEffect } from 'react';
-import { db } from './firebase/config';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore'; // Importamos onSnapshot
-import AdminPanel from './components/AdminPanel'; // Importamos el nuevo componente
+
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+
+import { auth } from './firebase/config';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Registro from './pages/Registro';
+import AdminPanel from './components/AdminPanel';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  const [salas, setSalas] = useState([]);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Usaremos onSnapshot para escuchar cambios en tiempo real
   useEffect(() => {
-    const salasCollection = collection(db, 'salas');
-
-    // onSnapshot es un listener. Cada vez que algo cambia en la colección,
-    // esta función se ejecuta de nuevo con los datos actualizados.
-    const unsubscribe = onSnapshot(salasCollection, (snapshot) => {
-      const salasData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setSalas(salasData);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error al obtener las salas en tiempo real: ", error);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
       setLoading(false);
     });
-
-    // La función de limpieza se ejecuta cuando el componente se desmonta.
-    // Es importante para detener el listener y evitar fugas de memoria.
     return () => unsubscribe();
   }, []);
 
-  return (
-    <div>
-      <h1>Sistema de Salas - SalaSmart</h1>
-      
-      {/* Aquí integramos el panel de administración */}
-      <AdminPanel />
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
 
-      <hr />
-      <h2>Salas Existentes en Firestore (en Tiempo Real):</h2>
-      {loading ? (
-        <p>Cargando salas...</p>
-      ) : (
-        <ul>
-          {salas.map(sala => (
-            <li key={sala.id}>
-              <strong>Sala:</strong> {sala.nombre} - <strong>Piso:</strong> {sala.piso} - <strong>Capacidad:</strong> {sala.capacidad}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+  if (loading) {
+    return <div>Cargando aplicación...</div>;
+  }
+
+  return (
+    <Router>
+      <div className="d-flex flex-column vh-100">
+        <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
+          <Container>
+            <Navbar.Brand as={Link} to="/">SalaSmart</Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <div className="d-flex justify-content-between w-100">
+                <Nav>
+                  <Nav.Link as={Link} to="/">Home</Nav.Link>
+                  {user && <Nav.Link as={Link} to="/admin">Admin</Nav.Link>}
+                </Nav>
+                <Nav>
+                  {user ? (
+                    <>
+                      <Navbar.Text className="me-3">Conectado como: {user.email}</Navbar.Text>
+                      <Button variant="outline-light" onClick={handleLogout}>Cerrar Sesión</Button>
+                    </>
+                  ) : (
+                    <>
+                      <Nav.Link as={Link} to="/login">Login</Nav.Link>
+                      <Nav.Link as={Link} to="/registro">Registro</Nav.Link>
+                    </>
+                  )}
+                </Nav>
+              </div>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
+
+        <main className="flex-grow-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route 
+              path="/admin" 
+              element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} 
+            />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 
