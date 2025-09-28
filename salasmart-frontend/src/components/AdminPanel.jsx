@@ -1,9 +1,11 @@
 // src/components/AdminPanel.jsx
 
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase/config';
+// ¡Asegúrate de importar 'auth'!
+import { auth, db } from '../firebase/config'; 
 import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, getDocs } from 'firebase/firestore';
-import { Form, Button, ListGroup, Card, Row, Col, Alert, Container, Tabs, Tab, Spinner } from 'react-bootstrap';
+// ¡Asegúrate de importar 'FormSelect'!
+import { Form, Button, ListGroup, Card, Row, Col, Alert, Container, Tabs, Tab, Spinner, FormSelect } from 'react-bootstrap';
 
 function AdminPanel() {
   // --- Estados para Salas ---
@@ -20,7 +22,7 @@ function AdminPanel() {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [messageUser, setMessageUser] = useState('');
 
-  // --- LÓGICA PARA LEER SALAS (Read en tiempo real) ---
+  // --- LÓGICA PARA LEER SALAS (Se mantiene igual) ---
   useEffect(() => {
     const unsubscribeSalas = onSnapshot(collection(db, 'salas'), (snapshot) => {
       const salasData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -30,7 +32,7 @@ function AdminPanel() {
     return () => unsubscribeSalas();
   }, []);
 
-  // --- LÓGICA PARA LEER USUARIOS (Read una sola vez) ---
+  // --- LÓGICA PARA LEER USUARIOS (Se mantiene igual) ---
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
@@ -49,7 +51,7 @@ function AdminPanel() {
     fetchUsers();
   }, []);
   
-  // --- FUNCIONES CRUD PARA SALAS ---
+  // --- FUNCIONES CRUD PARA SALAS (Se mantienen igual) ---
   const resetFormSala = () => {
     setEditingId(null);
     setNombreSala('');
@@ -90,19 +92,17 @@ function AdminPanel() {
     setCapacidad(sala.capacidad);
   };
 
-  // --- FUNCIÓN PARA CAMBIAR ROL DE USUARIO ---
-  const handleChangeRole = async (userId, currentRole) => {
-    const newRole = currentRole === 'admin' ? 'user' : 'admin';
-    if (window.confirm(`¿Seguro que quieres cambiar el rol de este usuario a "${newRole}"?`)) {
-      try {
-        const userDocRef = doc(db, 'users', userId);
-        await updateDoc(userDocRef, { role: newRole });
-        setMessageUser(`¡Rol cambiado a ${newRole} exitosamente!`);
-        fetchUsers(); // Volvemos a cargar la lista de usuarios para ver el cambio
-      } catch (error) {
-        setMessageUser("Error al cambiar el rol. Revisa las reglas de seguridad de Firestore.");
-        console.error("Error:", error);
-      }
+  // --- ¡NUEVA FUNCIÓN MEJORADA PARA CAMBIAR ROL DE USUARIO! ---
+  const handleRoleChange = async (userId, newRole) => {
+    setMessageUser('');
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      await updateDoc(userDocRef, { role: newRole });
+      setMessageUser(`Rol actualizado a "${newRole}" exitosamente.`);
+      fetchUsers(); // Actualizamos la lista para reflejar el cambio
+    } catch (error) {
+      setMessageUser("Error al actualizar el rol. Revisa las reglas de seguridad.");
+      console.error("Error updating role:", error);
     }
   };
 
@@ -110,7 +110,7 @@ function AdminPanel() {
     <Container fluid>
       <Tabs defaultActiveKey="salas" id="admin-tabs" className="mb-3" fill>
         
-        {/* Pestaña de Gestionar Salas */}
+        {/* Pestaña de Gestionar Salas (se queda igual) */}
         <Tab eventKey="salas" title="Gestionar Salas">
           <Row className="mt-4">
             <Col md={4}>
@@ -156,7 +156,7 @@ function AdminPanel() {
           </Row>
         </Tab>
 
-        {/* Pestaña de Gestionar Usuarios */}
+        {/* Pestaña de Gestionar Usuarios (VERSIÓN MEJORADA) */}
         <Tab eventKey="users" title="Gestionar Usuarios">
           <Row className="mt-4 justify-content-center">
             <Col md={8}>
@@ -166,23 +166,38 @@ function AdminPanel() {
                   {messageUser && <Alert variant="info">{messageUser}</Alert>}
                   {loadingUsers ? <Spinner animation="border" /> : (
                     <ListGroup>
-                      {users.map(user => (
-                        <ListGroup.Item key={user.id} className="d-flex justify-content-between align-items-center">
-                          <div>
-                            <strong>{user.email}</strong>
-                            <span className={`ms-3 badge bg-${user.role === 'admin' ? 'success' : 'secondary'}`}>
-                              {user.role}
-                            </span>
-                          </div>
-                          <Button 
-                            variant={user.role === 'admin' ? 'warning' : 'info'}
-                            size="sm"
-                            onClick={() => handleChangeRole(user.id, user.role)}
-                          >
-                            {user.role === 'admin' ? 'Hacer Usuario' : 'Hacer Admin'}
-                          </Button>
-                        </ListGroup.Item>
-                      ))}
+                      {users.map(user => {
+                        // Ocultamos nuestra propia cuenta de admin de la lista para evitar accidentes
+                        if (user.id === auth.currentUser?.uid) {
+                          return null;
+                        }
+                        
+                        return (
+                          <ListGroup.Item key={user.id} className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <strong>{user.email}</strong>
+                              <span className={`ms-3 badge bg-${user.role === 'admin' ? 'success' : (user.role === 'docente' ? 'primary' : 'secondary')}`}>
+                                {user.role}
+                              </span>
+                            </div>
+                            
+                            {/* Solo mostramos el selector si el usuario no es admin */}
+                            {user.role !== 'admin' && (
+                              <div>
+                                <FormSelect 
+                                  size="sm" 
+                                  value={user.role} 
+                                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                                  style={{ width: '150px' }}
+                                >
+                                  <option value="estudiante">Estudiante</option>
+                                  <option value="docente">Docente</option>
+                                </FormSelect>
+                              </div>
+                            )}
+                          </ListGroup.Item>
+                        );
+                      })}
                     </ListGroup>
                   )}
                 </Card.Body>

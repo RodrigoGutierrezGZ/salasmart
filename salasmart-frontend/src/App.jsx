@@ -1,7 +1,6 @@
 // src/App.jsx
-
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 
 import { auth } from './firebase/config';
@@ -10,7 +9,6 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
-import AdminPanel from './components/AdminPanel';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -30,7 +28,7 @@ function App() {
   };
 
   if (loading) {
-    return <div>Cargando aplicación...</div>;
+    return <div>Cargando...</div>;
   }
 
   return (
@@ -38,13 +36,14 @@ function App() {
       <div className="d-flex flex-column vh-100">
         <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
           <Container>
-            <Navbar.Brand as={Link} to="/">SalaSmart</Navbar.Brand>
+            <Navbar.Brand as={Link} to={user ? "/dashboard" : "/"}>SalaSmart</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <div className="d-flex justify-content-between w-100">
                 <Nav>
-                  <Nav.Link as={Link} to="/">Home</Nav.Link>
-                  {user && <Nav.Link as={Link} to="/admin">Admin</Nav.Link>}
+                  <Nav.Link as={Link} to={user ? "/dashboard" : "/"}>
+                    {user ? "Mi Panel" : "Home"}
+                  </Nav.Link>
                 </Nav>
                 <Nav>
                   {user ? (
@@ -69,10 +68,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
-            <Route 
-              path="/admin" 
-              element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} 
-            />
+            <Route path="/dashboard" element={<ProtectedRoute />} />
+            <Route path="/admin" element={<Navigate to="/dashboard" />} />
           </Routes>
         </main>
       </div>
