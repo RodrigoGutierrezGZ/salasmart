@@ -1,48 +1,57 @@
 // src/pages/StudentDashboard.jsx
-import React, { useState, useEffect } from 'react';
-import { db } from '../firebase/config';
-import { collection, onSnapshot } from 'firebase/firestore';
-import { Container, ListGroup, Card, Spinner, Alert } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Container, Spinner, Alert, Modal, Button } from 'react-bootstrap';
+import PlanoSalas from '../components/PlanoSalas';
+import { useSalas } from '../hooks/useSalas'; // <-- Importamos nuestro nuevo hook
 
 function StudentDashboard() {
-  const [salas, setSalas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { salas, loading, error } = useSalas(); // <-- ¡Toda la lógica compleja está aquí!
+  const [salaSeleccionada, setSalaSeleccionada] = useState(null);
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'salas'), 
-      (snapshot) => {
-        const salasData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setSalas(salasData);
-        setLoading(false);
-      },
-      (err) => {
-        setError("No se pudieron cargar las salas.");
-        setLoading(false);
-      }
-    );
-    return () => unsubscribe();
-  }, []);
+  const handleSalaClick = (salaCoordenada) => {
+    const infoCompleta = salas.find(s => s.id === salaCoordenada.id);
+    setSalaSeleccionada(infoCompleta);
+  };
+
+  const handleCloseModal = () => setSalaSeleccionada(null);
+
+  if (loading) return <div className="text-center mt-5"><Spinner animation="border" /></div>;
 
   return (
-    <Container className="mt-4">
-      <Card>
-        <Card.Header as="h2">Estado Actual de las Salas</Card.Header>
-        <Card.Body>
-          {error && <Alert variant="danger">{error}</Alert>}
-          {loading ? (
-            <div className="text-center"><Spinner animation="border" /></div>
-          ) : (
-            <ListGroup variant="flush">
-              {salas.map(sala => (
-                <ListGroup.Item key={sala.id}>
-                  <strong>{sala.nombre}</strong> - Piso: {sala.piso}, Capacidad: {sala.capacidad}
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
+    <Container fluid className="mt-4">
+      <h2 className="text-center mb-4">Panel del Estudiante - Plano de Salas</h2>
+      {error && <Alert variant="danger">{error}</Alert>}
+      
+      <PlanoSalas salasData={salas} onSalaClick={handleSalaClick} />
+
+      <Modal show={!!salaSeleccionada} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Detalles de la Sala: {salaSeleccionada?.nombre}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {salaSeleccionada && (
+            <>
+              <p><strong>Estado:</strong> 
+                <span className={`fw-bold text-${salaSeleccionada.estado === 'Disponible' ? 'success' : 'danger'}`}>
+                  {salaSeleccionada.estado}
+                </span>
+              </p>
+              <p><strong>Piso:</strong> {salaSeleccionada.piso}</p>
+              <p><strong>Capacidad:</strong> {salaSeleccionada.capacidad} personas</p>
+              {salaSeleccionada.estado === 'Ocupado' && salaSeleccionada.reservaActual && (
+                <Alert variant="warning">
+                  Ocupada por: {salaSeleccionada.reservaActual.nombreDocente || 'Docente'} <br/>
+                  Asignatura: {salaSeleccionada.reservaActual.asignatura || 'Clase'} <br/>
+                  Hasta: {new Date(salaSeleccionada.reservaActual.horaFin.seconds * 1000).toLocaleTimeString()}
+                </Alert>
+              )}
+            </>
           )}
-        </Card.Body>
-      </Card>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>Cerrar</Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }
