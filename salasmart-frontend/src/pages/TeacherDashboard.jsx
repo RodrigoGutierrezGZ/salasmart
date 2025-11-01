@@ -1,76 +1,469 @@
 // src/pages/TeacherDashboard.jsx
 import React, { useState } from 'react';
-import { Container, Spinner, Alert, Modal, Button } from 'react-bootstrap';
+import Sidebar from '../components/Sidebar';
+import FormularioReserva from '../components/FormularioReserva';
 import PlanoSalas from '../components/PlanoSalas';
-import { useSalas } from '../hooks/useSalas'; // Usamos el mismo hook
-import { useAuth } from '../hooks/useAuth'; // Necesitamos saber quién es el usuario
+import { useSalas } from '../hooks/useSalas';
+import { useAuth } from '../hooks/useAuth';
+import { ESTADOS_SALA } from '../utils/constants';
 
 function TeacherDashboard() {
   const { salas, loading, error } = useSalas();
-  const { user } = useAuth(); // Obtenemos la información del usuario logueado
+  const { user, role } = useAuth();
   const [salaSeleccionada, setSalaSeleccionada] = useState(null);
+  const [showFormulario, setShowFormulario] = useState(false);
+  const [showListaSalas, setShowListaSalas] = useState(false);
+  const [vistaActual, setVistaActual] = useState('disponibles'); // 'disponibles' o 'todas'
+  const [tipoVista, setTipoVista] = useState('cards'); // 'cards' o 'plano'
+  const [filtroPiso, setFiltroPiso] = useState('todos');
+  const [filtroCapacidad, setFiltroCapacidad] = useState('todos');
 
-  const handleSalaClick = (salaCoordenada) => {
-    const infoCompleta = salas.find(s => s.id === salaCoordenada.id);
-    setSalaSeleccionada(infoCompleta);
-  };
-
-  const handleCloseModal = () => setSalaSeleccionada(null);
-
-  // --- LÓGICA DE RESERVA (Aún es un placeholder) ---
   const handleReservar = (sala) => {
-    // Aquí irá la lógica completa de reserva en el futuro.
-    // Por ahora, solo muestra una alerta.
-    alert(`Funcionalidad para reservar la sala ${sala.nombre} por ${user.email} próximamente.`);
-    handleCloseModal();
+    setSalaSeleccionada(sala);
+    setShowFormulario(true);
   };
 
+  const handleCloseFormulario = () => {
+    setSalaSeleccionada(null);
+    setShowFormulario(false);
+  };
 
-  if (loading) return <div className="text-center mt-5"><Spinner animation="border" /></div>;
+  const handleReservaCreada = () => {
+    handleCloseFormulario();
+    // TODO: Mostrar notificación de éxito
+  };
+
+  // Filtrar salas según todos los criterios
+  const salasDisponibles = salas.filter(s => s.estado === ESTADOS_SALA.DISPONIBLE);
+  const salasBase = vistaActual === 'disponibles' ? salasDisponibles : salas;
+  
+  const salasMostrar = salasBase.filter(sala => {
+    // Filtro por piso
+    if (filtroPiso !== 'todos' && sala.piso !== parseInt(filtroPiso)) {
+      return false;
+    }
+    
+    // Filtro por capacidad
+    if (filtroCapacidad !== 'todos') {
+      const capacidad = sala.capacidad || 0;
+      switch(filtroCapacidad) {
+        case 'pequena':
+          return capacidad <= 15;
+        case 'mediana':
+          return capacidad > 15 && capacidad <= 30;
+        case 'grande':
+          return capacidad > 30;
+        default:
+          return true;
+      }
+    }
+    
+    return true;
+  });
+
+  if (loading) {
+    return (
+      <div className="flex h-screen">
+        <Sidebar user={user} role={role} />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-gray-600">Cargando...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
-    <Container fluid className="mt-4">
-      <h2 className="text-center mb-4">Panel del Docente - Plano de Salas</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
+    <div className="flex h-screen bg-background-light">
+      <Sidebar user={user} role={role} />
       
-      <PlanoSalas salasData={salas} onSalaClick={handleSalaClick} />
-
-      {/* El Modal del docente es casi igual, pero con el botón de Reservar */}
-      <Modal show={!!salaSeleccionada} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles de la Sala: {salaSeleccionada?.nombre}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {salaSeleccionada && (
-            <>
-              <p><strong>Estado:</strong> 
-                <span className={`fw-bold text-${salaSeleccionada.estado === 'Disponible' ? 'success' : 'danger'}`}>
-                  {salaSeleccionada.estado}
-                </span>
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto p-8">
+        <div className="mx-auto max-w-7xl space-y-8">
+          
+          {/* Page Heading */}
+          <header className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col gap-2">
+              <h1 className="flex items-center gap-3 text-3xl font-bold tracking-tight text-neutral-dark">
+                <span className="material-symbols-outlined text-4xl text-primary">school</span>
+                <span>Panel del Docente</span>
+              </h1>
+              <p className="text-base font-normal leading-normal text-gray-500">
+                Gestiona tus reservas de salas y consulta disponibilidad en tiempo real.
               </p>
-              <p><strong>Piso:</strong> {salaSeleccionada.piso}</p>
-              <p><strong>Capacidad:</strong> {salaSeleccionada.capacidad} personas</p>
-              {salaSeleccionada.estado === 'Ocupado' && salaSeleccionada.reservaActual && (
-                <Alert variant="warning">
-                  Ocupada por: {salaSeleccionada.reservaActual.nombreDocente || 'Docente'} <br/>
-                  Asignatura: {salaSeleccionada.reservaActual.asignatura || 'Clase'} <br/>
-                  Hasta: {new Date(salaSeleccionada.reservaActual.horaFin.seconds * 1000).toLocaleTimeString()}
-                </Alert>
+            </div>
+            <button 
+              onClick={() => setShowListaSalas(true)}
+              className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-semibold shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl"
+            >
+              <span className="material-symbols-outlined">add_circle</span>
+              Nueva Reserva
+            </button>
+          </header>
+
+          {/* Error Alert */}
+          {error && (
+            <div className="flex items-center gap-3 rounded-lg border border-danger/30 bg-danger/10 p-4">
+              <span className="material-symbols-outlined text-danger">error</span>
+              <p className="text-sm text-danger">{error}</p>
+            </div>
+          )}
+
+          {/* View Toggle and Filters */}
+          <section className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              
+              {/* Tipo de Vista: Cards vs Plano */}
+              <div className="flex rounded-lg bg-neutral-light p-1">
+                <button 
+                  onClick={() => setTipoVista('cards')}
+                  className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm font-semibold transition-all ${
+                    tipoVista === 'cards' ? 'bg-white text-primary shadow-sm' : 'text-gray-600'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-xl">grid_view</span>
+                  Cards
+                </button>
+                <button 
+                  onClick={() => setTipoVista('plano')}
+                  className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm transition-all ${
+                    tipoVista === 'plano' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-xl">map</span>
+                  Plano
+                </button>
+              </div>
+
+              {/* View Toggle: Disponibles vs Todas */}
+              <div className="flex rounded-lg bg-neutral-light p-1">
+                <button 
+                  onClick={() => setVistaActual('disponibles')}
+                  className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm font-semibold transition-all ${
+                    vistaActual === 'disponibles' ? 'bg-white text-primary shadow-sm' : 'text-gray-600'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-xl">check_circle</span>
+                  Solo Disponibles
+                </button>
+                <button 
+                  onClick={() => setVistaActual('todas')}
+                  className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm transition-all ${
+                    vistaActual === 'todas' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-xl">list</span>
+                  Todas las Salas
+                </button>
+              </div>
+
+              {/* Chips de filtro */}
+              <div className="flex flex-wrap gap-3">
+                {/* Filtro de Piso */}
+                <div className="relative">
+                  <select
+                    value={filtroPiso}
+                    onChange={(e) => setFiltroPiso(e.target.value)}
+                    className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  >
+                    <option value="todos">Todos los Pisos</option>
+                    <option value="1">Piso 1</option>
+                    <option value="2">Piso 2</option>
+                    <option value="3">Piso 3</option>
+                    <option value="4">Piso 4</option>
+                  </select>
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                    expand_more
+                  </span>
+                </div>
+                
+                {/* Filtro de Capacidad */}
+                <div className="relative">
+                  <select
+                    value={filtroCapacidad}
+                    onChange={(e) => setFiltroCapacidad(e.target.value)}
+                    className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  >
+                    <option value="todos">Todas las Capacidades</option>
+                    <option value="pequena">Pequeña (≤15)</option>
+                    <option value="mediana">Mediana (16-30)</option>
+                    <option value="grande">Grande (&gt;30)</option>
+                  </select>
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                    expand_more
+                  </span>
+                </div>
+                
+                {/* Botón para limpiar filtros */}
+                {(filtroPiso !== 'todos' || filtroCapacidad !== 'todos') && (
+                  <button
+                    onClick={() => {
+                      setFiltroPiso('todos');
+                      setFiltroCapacidad('todos');
+                    }}
+                    className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-4 text-sm font-semibold text-danger transition-all hover:bg-danger/20"
+                  >
+                    <span className="material-symbols-outlined text-base">close</span>
+                    Limpiar
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Renderizado condicional: Plano o Cards */}
+            {tipoVista === 'plano' ? (
+              /* Vista de Plano */
+              <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
+                <PlanoSalas 
+                  salasData={salasMostrar}
+                  onSalaClick={handleReservar}
+                />
+              </div>
+            ) : (
+              /* Vista de Cards (Grid) */
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {salasMostrar.map((sala) => {
+                const isDisponible = sala.estado === ESTADOS_SALA.DISPONIBLE;
+                
+                return (
+                  <div
+                    key={sala.id}
+                    className="group relative flex flex-col gap-4 rounded-lg border border-neutral-light bg-white p-6 shadow-soft transition-all hover:shadow-md"
+                  >
+                    {/* Badge de estado */}
+                    <div className="absolute right-4 top-4">
+                      <span className={`rounded-full px-3 py-1 text-xs font-bold ${
+                        isDisponible 
+                          ? 'bg-success/10 text-success' 
+                          : sala.estado === ESTADOS_SALA.OCUPADO 
+                            ? 'bg-danger/10 text-danger'
+                            : 'bg-warning/10 text-warning'
+                      }`}>
+                        {sala.texto}
+                      </span>
+                    </div>
+
+                    {/* Icono y nombre */}
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${
+                        isDisponible ? 'bg-success/10' : 'bg-gray-100'
+                      }`}>
+                        <span className={`material-symbols-outlined text-2xl ${
+                          isDisponible ? 'text-success' : 'text-gray-400'
+                        }`}>meeting_room</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-neutral-dark">{sala.nombre}</h3>
+                        <p className="text-sm text-gray-500">Piso {sala.piso}</p>
+                      </div>
+                    </div>
+
+                    {/* Detalles */}
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <span className="material-symbols-outlined text-base">chair</span>
+                        <span>{sala.capacidad} personas</span>
+                      </div>
+                      {sala.equipamiento && sala.equipamiento.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span className="material-symbols-outlined text-base">devices</span>
+                          <span>{sala.equipamiento.length} equipos</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info adicional si está ocupada */}
+                    {!isDisponible && sala.textoSecundario && (
+                      <p className="text-xs text-gray-500">{sala.textoSecundario}</p>
+                    )}
+
+                    {/* Botón de reservar */}
+                    <button
+                      onClick={() => handleReservar(sala)}
+                      disabled={!isDisponible}
+                      className={`mt-2 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
+                        isDisponible
+                          ? 'bg-primary text-white hover:bg-primary/90 shadow-sm hover:shadow-md'
+                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-lg">
+                        {isDisponible ? 'event_available' : 'event_busy'}
+                      </span>
+                      {isDisponible ? 'Reservar Ahora' : 'No Disponible'}
+                    </button>
+                  </div>
+                );
+              })}
+              </div>
+            )}
+
+            {/* Empty state */}
+            {salasMostrar.length === 0 && (
+              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-light bg-white p-12">
+                <span className="material-symbols-outlined text-6xl text-gray-300">search_off</span>
+                <p className="mt-4 text-lg font-semibold text-gray-600">No hay salas disponibles</p>
+                <p className="text-sm text-gray-500">Intenta cambiar los filtros o vuelve más tarde</p>
+              </div>
+            )}
+          </section>
+
+        </div>
+      </main>
+
+      {/* Modal Lista de Salas */}
+      {showListaSalas && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-2xl animate-slideUp">
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 px-8 py-6">
+              <div className="flex items-center justify-between">
+                <h2 className="flex items-center gap-3 text-2xl font-bold text-white">
+                  <span className="material-symbols-outlined text-4xl">meeting_room</span>
+                  Selecciona una Sala
+                </h2>
+                <button
+                  onClick={() => setShowListaSalas(false)}
+                  className="rounded-full p-2 text-white/80 transition-all hover:bg-white/20 hover:text-white"
+                >
+                  <span className="material-symbols-outlined text-3xl">close</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Grid de salas */}
+            <div className="overflow-y-auto p-8" style={{ maxHeight: 'calc(90vh - 140px)' }}>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {salasMostrar.map((sala) => {
+                  const isDisponible = sala.estado === ESTADOS_SALA.DISPONIBLE;
+                  
+                  return (
+                    <div
+                      key={sala.id}
+                      onClick={() => {
+                        setSalaSeleccionada(sala);
+                        setShowListaSalas(false);
+                        setShowFormulario(true);
+                      }}
+                      className={`group relative cursor-pointer overflow-hidden rounded-xl border-2 bg-white p-6 shadow-md transition-all hover:shadow-xl ${
+                        isDisponible
+                          ? 'border-success/30 hover:border-success'
+                          : 'border-neutral-light hover:border-warning'
+                      }`}
+                    >
+                      {/* Badge de estado */}
+                      <div className="absolute right-4 top-4">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
+                            sala.estado === ESTADOS_SALA.DISPONIBLE
+                              ? 'bg-success/10 text-success'
+                              : sala.estado === ESTADOS_SALA.PROXIMAMENTE
+                              ? 'bg-warning/10 text-warning'
+                              : 'bg-danger/10 text-danger'
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-sm">
+                            {sala.estado === ESTADOS_SALA.DISPONIBLE ? 'check_circle' : 'schedule'}
+                          </span>
+                          {sala.textoSecundario}
+                        </span>
+                      </div>
+
+                      {/* Contenido */}
+                      <div className="mt-8">
+                        <h3 className="mb-4 text-xl font-bold text-neutral-dark group-hover:text-primary transition-colors">
+                          {sala.nombre}
+                        </h3>
+                        
+                        <div className="space-y-3 text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-lg text-primary">chair</span>
+                            <span className="font-medium">{sala.capacidad} personas</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-lg text-primary">layers</span>
+                            <span>Piso {sala.piso}</span>
+                          </div>
+                          {sala.equipamiento && sala.equipamiento.length > 0 && (
+                            <div className="flex items-start gap-2">
+                              <span className="material-symbols-outlined text-lg text-primary">devices</span>
+                              <span className="flex-1">{sala.equipamiento.join(', ')}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Botón de acción */}
+                        <div className="mt-6 pt-4 border-t border-neutral-light">
+                          <span className="flex items-center gap-2 text-sm font-semibold text-primary group-hover:gap-3 transition-all">
+                            Seleccionar sala
+                            <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {salasMostrar.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">search_off</span>
+                  <p className="text-lg text-gray-500">No hay salas disponibles con los filtros seleccionados</p>
+                </div>
               )}
-            </>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>Cerrar</Button>
-          {/* Mostramos el botón de reservar SOLO si la sala está disponible */}
-          {salaSeleccionada?.estado === 'Disponible' && (
-            <Button variant="success" onClick={() => handleReservar(salaSeleccionada)}>
-              Reservar
-            </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-    </Container>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Formulario Reserva - MEJORADO */}
+      {showFormulario && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-2xl animate-slideUp">
+            {/* Header con gradiente */}
+            <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 px-8 py-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="flex items-center gap-3 text-2xl font-bold text-white">
+                    <span className="material-symbols-outlined text-4xl">event_available</span>
+                    Nueva Reserva
+                  </h2>
+                  {salaSeleccionada && (
+                    <p className="mt-2 flex items-center gap-2 text-white/90">
+                      <span className="material-symbols-outlined text-lg">meeting_room</span>
+                      {salaSeleccionada.nombre}
+                      <span className="mx-2">•</span>
+                      <span className="material-symbols-outlined text-lg">chair</span>
+                      {salaSeleccionada.capacidad} personas
+                      <span className="mx-2">•</span>
+                      <span className="material-symbols-outlined text-lg">layers</span>
+                      Piso {salaSeleccionada.piso}
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={handleCloseFormulario}
+                  className="rounded-full p-2 text-white/80 transition-all hover:bg-white/20 hover:text-white"
+                >
+                  <span className="material-symbols-outlined text-3xl">close</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Contenido del formulario */}
+            <div className="overflow-y-auto p-8" style={{ maxHeight: 'calc(90vh - 140px)' }}>
+              <FormularioReserva
+                sala={salaSeleccionada}
+                onReservaCreada={handleReservaCreada}
+                onCancelar={handleCloseFormulario}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 export default TeacherDashboard;

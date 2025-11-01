@@ -1,9 +1,17 @@
-/* src/App.css */
+/* src/App.css - Estilos globales con Tailwind */
 
-/* Dejaremos esto vacío por ahora para que no haya conflictos con Bootstrap. */
-/* Puedes añadir tus propios estilos personalizados aquí más adelante. */
+/* Animaciones personalizadas adicionales */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-body {
-  /* Opcional: un color de fondo un poco más suave que el blanco puro */
-  background-color: #f8f9fa;
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
 }

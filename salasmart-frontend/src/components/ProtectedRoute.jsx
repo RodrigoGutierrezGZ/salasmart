@@ -9,7 +9,7 @@ import StudentDashboard from '../pages/StudentDashboard';
 import TeacherDashboard from '../pages/TeacherDashboard';
 import AdminPanel from './AdminPanel';
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ children }) => {
   const { user, role, loading } = useAuth();
 
   if (loading) {
@@ -25,6 +25,12 @@ const ProtectedRoute = () => {
     return <Navigate to="/login" replace />;
   }
   
+  // Si hay children, renderizarlos (para rutas específicas como /mis-reservas)
+  if (children) {
+    return children;
+  }
+  
+  // Si no hay children, redirigir según el rol (comportamiento por defecto de /dashboard)
   switch (role) {
     case 'admin':
       return <AdminPanel />;
