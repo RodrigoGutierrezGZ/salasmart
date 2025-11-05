@@ -31,8 +31,14 @@ import {
  */
 export async function crearReserva(datosReserva) {
   try {
+    console.log('📝 [reservasService] Iniciando creación de reserva...');
+    console.log('📝 [reservasService] Datos recibidos:', datosReserva);
+
     const user = auth.currentUser;
+    console.log('📝 [reservasService] Usuario actual:', user ? user.uid : 'NO AUTENTICADO');
+
     if (!user) {
+      console.error('❌ [reservasService] Usuario no autenticado');
       return {
         success: false,
         error: 'Debes estar autenticado para crear una reserva',
@@ -40,33 +46,47 @@ export async function crearReserva(datosReserva) {
     }
 
     // Convertir fechas a Timestamp si son strings
-    const horaInicio = datosReserva.horaInicio instanceof Date 
+    console.log('📝 [reservasService] Convirtiendo fechas a Timestamp...');
+    console.log('   - horaInicio recibida:', datosReserva.horaInicio, 'Tipo:', typeof datosReserva.horaInicio);
+    console.log('   - horaFin recibida:', datosReserva.horaFin, 'Tipo:', typeof datosReserva.horaFin);
+
+    const horaInicio = datosReserva.horaInicio instanceof Date
       ? Timestamp.fromDate(datosReserva.horaInicio)
       : Timestamp.fromDate(new Date(datosReserva.horaInicio));
-    
+
     const horaFin = datosReserva.horaFin instanceof Date
       ? Timestamp.fromDate(datosReserva.horaFin)
       : Timestamp.fromDate(new Date(datosReserva.horaFin));
 
+    console.log('✅ [reservasService] Timestamps creados correctamente');
+    console.log('   - horaInicio Timestamp:', horaInicio.toDate());
+    console.log('   - horaFin Timestamp:', horaFin.toDate());
+
     // Validar que todos los campos requeridos estén presentes
     if (!datosReserva.salaId) {
+      console.error('❌ [reservasService] Falta salaId');
       return {
         success: false,
         error: 'Falta el ID de la sala (salaId)',
       };
     }
-    
+
     // Si no tiene salaNombre, usar el salaId como nombre
     const salaNombre = datosReserva.salaNombre || datosReserva.salaId;
+    console.log('📝 [reservasService] Sala:', salaNombre, '(ID:', datosReserva.salaId, ')');
 
     // Validar disponibilidad antes de crear
+    console.log('📝 [reservasService] Validando disponibilidad...');
     const disponibilidad = await validarDisponibilidad(
       datosReserva.salaId,
       horaInicio.toDate(),
       horaFin.toDate()
     );
 
+    console.log('📝 [reservasService] Resultado de validación:', disponibilidad);
+
     if (!disponibilidad.disponible) {
+      console.error('❌ [reservasService] Sala NO disponible - Conflictos:', disponibilidad.conflictos);
       return {
         success: false,
         error: 'La sala no está disponible en este horario',
@@ -74,21 +94,29 @@ export async function crearReserva(datosReserva) {
       };
     }
 
+    console.log('✅ [reservasService] Sala disponible, procediendo a crear...');
+
     // Crear la reserva
     const nuevaReserva = {
       salaId: datosReserva.salaId,
-      salaNombre: salaNombre, // Usar la variable que calculamos arriba
+      salaNombre: salaNombre,
       usuarioId: user.uid,
       nombreDocente: datosReserva.nombreDocente || user.displayName || user.email,
       asignatura: datosReserva.asignatura,
       horaInicio,
       horaFin,
+      jornada: datosReserva.jornada || 'diurno',
       estado: 'activa',
       fechaCreacion: Timestamp.now(),
       fechaActualizacion: Timestamp.now(),
     };
 
+    console.log('📝 [reservasService] Objeto de reserva a guardar:', nuevaReserva);
+    console.log('📝 [reservasService] Llamando a addDoc...');
+
     const docRef = await addDoc(collection(db, 'reservas'), nuevaReserva);
+
+    console.log('✅✅✅ [reservasService] RESERVA CREADA EN FIRESTORE - ID:', docRef.id);
 
     return {
       success: true,
@@ -96,7 +124,9 @@ export async function crearReserva(datosReserva) {
       message: 'Reserva creada exitosamente',
     };
   } catch (error) {
-    console.error('Error al crear reserva:', error);
+    console.error('❌❌❌ [reservasService] ERROR CRÍTICO al crear reserva:', error);
+    console.error('❌ [reservasService] Error completo:', JSON.stringify(error, null, 2));
+    console.error('❌ [reservasService] Stack trace:', error.stack);
     return {
       success: false,
       error: error.message || 'Error al crear la reserva',

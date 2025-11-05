@@ -408,17 +408,46 @@ async function crearReservaDesdeGemini(args, user, userData) {
     const hora = horaInicio.getHours();
     const jornada = hora < 18 ? 'diurno' : 'vespertino';
 
-    // Crear la reserva (crearReserva espera Dates o Timestamps)
+    // Convertir fechas a formato ISO string con timezone local (igual que el formulario UI)
+    // Obtener offset de timezone (ej: "-03:00" para Chile)
+    const offsetMinutos = new Date().getTimezoneOffset();
+    const offsetHoras = -offsetMinutos / 60;
+    const offsetString = offsetHoras >= 0
+      ? `+${String(Math.floor(offsetHoras)).padStart(2, '0')}:00`
+      : `-${String(Math.floor(Math.abs(offsetHoras))).padStart(2, '0')}:00`;
+
+    // Formatear fechas en hora LOCAL (no UTC) con timezone
+    // Formato: "2025-11-05T10:00:00-03:00" (igual que FormularioReserva.jsx)
+    const formatearFechaLocal = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetString}`;
+    };
+
+    const horaInicioISO = formatearFechaLocal(horaInicio);
+    const horaFinISO = formatearFechaLocal(horaFin);
+
+    console.log('   📅 Formato de fechas:', {
+      horaInicioISO,
+      horaFinISO,
+      offsetString
+    });
+
+    // Crear la reserva con el MISMO formato que el formulario UI
+    // NO incluir usuarioId ni estado (crearReserva los agrega automáticamente)
     const datosReserva = {
       salaId: sala.id,
       salaNombre: salaData.nombre,
-      usuarioId: user.uid,
       nombreDocente: userData.nombre,
       asignatura: args.asignatura,
-      horaInicio: horaInicio, // Date object (crearReserva lo convierte a Timestamp)
-      horaFin: horaFin,       // Date object
-      jornada: jornada,
-      estado: 'activa'
+      horaInicio: horaInicioISO,  // String ISO con timezone local
+      horaFin: horaFinISO,        // String ISO con timezone local
+      jornada: jornada
     };
 
     console.log('   💾 Datos de reserva a crear:', datosReserva);
@@ -470,7 +499,10 @@ async function obtenerReservasDesdeGemini(args, user) {
     console.log('📋 Obteniendo reservas desde Gemini:', args);
 
     const soloActivas = args.soloActivas !== false; // Por defecto true
-    const reservas = await obtenerMisReservas(soloActivas);
+    const resultado = await obtenerMisReservas(soloActivas);
+
+    // Extraer el array de reservas del objeto de respuesta
+    const reservas = resultado.success ? resultado.data : [];
 
     if (reservas.length === 0) {
       return {
