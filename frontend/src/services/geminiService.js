@@ -182,7 +182,7 @@ const FUNCIONES_DISPONIBLES = [
         },
         asignatura: {
           type: "string",
-          description: "Nombre de la asignatura o motivo de la reserva"
+          description: "Nombre LIMPIO de la asignatura en MAYÚSCULAS, sin frases como 'clase de', 'quiero dar', 'voy a enseñar', etc. Ejemplo: si el usuario dice 'quiero dar clase de diseño web', extraer solo 'DISEÑO WEB'"
         }
       },
       required: ["salaId", "fecha", "horaInicio", "duracionHoras", "asignatura"]
@@ -280,6 +280,36 @@ function parsearFecha(fechaStr) {
 }
 
 /**
+ * Limpia la asignatura removiendo frases innecesarias y convierte a mayúsculas
+ */
+function limpiarAsignatura(asignatura) {
+  if (!asignatura) return '';
+
+  let limpia = asignatura.trim();
+
+  // Remover frases comunes al inicio
+  const frasesRemover = [
+    /^clase de\s+/i,
+    /^dar clase de\s+/i,
+    /^quiero dar\s+/i,
+    /^voy a dar\s+/i,
+    /^voy a enseñar\s+/i,
+    /^enseñar\s+/i,
+    /^impartir\s+/i,
+    /^taller de\s+/i,
+    /^curso de\s+/i,
+    /^una clase de\s+/i
+  ];
+
+  for (const regex of frasesRemover) {
+    limpia = limpia.replace(regex, '');
+  }
+
+  // Convertir a mayúsculas
+  return limpia.toUpperCase();
+}
+
+/**
  * Crea una reserva desde Gemini
  */
 async function crearReservaDesdeGemini(args, user, userData) {
@@ -293,6 +323,10 @@ async function crearReservaDesdeGemini(args, user, userData) {
         mensaje: "Solo los docentes y administradores pueden crear reservas."
       };
     }
+
+    // Limpiar asignatura
+    args.asignatura = limpiarAsignatura(args.asignatura);
+    console.log('   📚 Asignatura limpia:', args.asignatura);
 
     // Parsear fecha
     const fecha = parsearFecha(args.fecha);

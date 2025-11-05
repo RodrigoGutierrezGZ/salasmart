@@ -1,7 +1,7 @@
 // src/pages/StudentDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import PlanoSalas from '../components/PlanoSalas';
+import PlanoSalasDinamico from '../components/PlanoSalasDinamico';
 import ChatBot from '../components/ChatBot';
 import { useAuth } from '../hooks/useAuth';
 import { useSalas } from '../hooks/useSalas';
@@ -15,14 +15,11 @@ function StudentDashboard() {
   const [filtroPiso, setFiltroPiso] = useState('todos');
   const [filtroCapacidad, setFiltroCapacidad] = useState('todos');
 
-  // Filtrar salas según disponibilidad + filtros
+  // Filtrar salas según filtros (TODAS las salas, sin filtrar por disponibilidad)
   const salasMostrar = salas.filter(sala => {
-    // Filtro base: solo disponibles si está en modo "mapa"
-    const disponibilidad = vistaActual === 'mapa' ? sala.estado === ESTADOS_SALA.DISPONIBLE : true;
-    
     // Filtro de piso
     const piso = filtroPiso === 'todos' || sala.piso === parseInt(filtroPiso);
-    
+
     // Filtro de capacidad
     let capacidad = true;
     if (filtroCapacidad !== 'todos') {
@@ -35,8 +32,8 @@ function StudentDashboard() {
         capacidad = cap > 30;
       }
     }
-    
-    return disponibilidad && piso && capacidad;
+
+    return piso && capacidad;
   });
 
   if (loading) {
@@ -184,11 +181,9 @@ function StudentDashboard() {
             <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
               {vistaActual === 'mapa' ? (
                 tipoVista === 'plano' ? (
-                  /* Vista de Plano */
-                  <PlanoSalas 
-                    salasData={salasMostrar}
-                    onSalaClick={() => {}} // Sin funcionalidad de reserva
-                    showReservarText={false} // Ocultar texto "Haz clic para reservar"
+                  /* Vista de Plano Dinámico */
+                  <PlanoSalasDinamico
+                    pisoInicial={filtroPiso === 'todos' ? 1 : parseInt(filtroPiso)}
                   />
                 ) : (
                   /* Vista de Cards (Grid) - Solo lectura */

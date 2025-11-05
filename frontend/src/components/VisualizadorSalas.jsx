@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { Card, Row, Col, Form, Alert, Table, Badge, Button } from 'react-bootstrap';
-import PlanoSalas from './PlanoSalas';
+import PlanoSalasDinamico from './PlanoSalasDinamico';
 import { ESTADOS_SALA } from '../utils/constants';
 
 function VisualizadorSalas({ 
@@ -138,7 +138,10 @@ function VisualizadorSalas({
         <Card className="mb-4">
           <Card.Header as="h5">🗺️ Plano de Salas - Disponibilidad en Tiempo Real</Card.Header>
           <Card.Body>
-            <PlanoSalas salasData={salasFiltradas} onSalaClick={onSalaClick} />
+            <PlanoSalasDinamico
+              pisoInicial={filtroPiso === 'todos' ? 1 : parseInt(filtroPiso)}
+              onSalaClick={onSalaClick}
+            />
           </Card.Body>
         </Card>
       ) : (

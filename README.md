@@ -97,9 +97,9 @@ firebase deploy --only firestore:rules
 - **Firestore Security Rules** - Control de acceso a nivel de BD
 
 ### **Inteligencia Artificial**
-- **OpenAI GPT-4o-mini** - Chatbot conversacional (actualmente)
-- **Próximo:** Gemini 2.0 Flash (gratuito)
+- **Google Gemini 2.0 Flash** - Chatbot conversacional (GRATUITO)
 - **Function Calling** - IA puede ejecutar acciones directamente
+- **Entrada/Salida Multimodal** - Texto y potencial para imágenes
 
 ---
 
@@ -113,14 +113,33 @@ firebase deploy --only firestore:rules
 - Sesión persistente
 - Protección de rutas por rol
 
-#### **Gestión de Salas**
+#### **Gestión de Salas Avanzada**
 - CRUD completo (Crear, Leer, Actualizar, Eliminar)
+- **Validaciones de Negocio:**
+  - Nombres únicos por sala/piso
+  - Conversión automática a mayúsculas
+  - Prevención de duplicados
+- **Sistema de Catalogación con Equipamiento:**
+  - 6 tipos de salas (Aula Teórica, Laboratorio, Sala de Reuniones, Auditorio, Taller, Sala de Cómputo)
+  - Equipamiento detallado: proyector, computadores, enchufes, pizarra (tradicional/digital), A/C, parlantes, micrófono, cámara
+  - Visualización con badges en lista de salas
+- **Editor Visual de Planos (Mejorado):**
+  - Sistema Pick & Place para mover salas (click → mover → click)
+  - Seguimiento en tiempo real sin delay
+  - Mensajes flotantes sin mover el contenido
+  - Click-to-place para posicionar salas nuevas
+  - 4 pisos con imágenes de planos reales
+  - Coordenadas dinámicas en Firestore (no hardcodeadas)
+  - Sub-tabs: Lista de Salas / Editor de Planos
 - Filtros avanzados: por piso, capacidad, disponibilidad
 - Vista de Cards y Vista de Plano interactivo
-- Estados en tiempo real (Verde/Amarillo/Rojo)
+- **Estados visuales consistentes:**
+  - 🟢 Disponible / 🟡 Próximamente / 🔴 Ocupado
+  - Todas las salas visibles en cards (no se ocultan las ocupadas)
 
 #### **Sistema de Reservas**
 - Crear reservas con validación de disponibilidad
+- **Asignaturas en mayúsculas automáticamente**
 - Detección automática de jornada (Diurno/Vespertino)
 - Cancelar reservas activas
 - Ver mis reservas (docentes)
@@ -131,17 +150,24 @@ firebase deploy --only firestore:rules
 - 🟡 **Próximamente** - Reserva en 15 minutos
 - 🔴 **Ocupado** - Sala en uso ahora
 
-#### **Chatbot Inteligente con IA**
+#### **Chatbot Inteligente con IA (Gemini)**
 - Sistema híbrido (60% local + 40% IA)
-- Crear reservas en lenguaje natural
+- Migrado a Gemini 2.0 Flash (gratuito)
 - Function calling (IA ejecuta acciones)
+- **Extracción inteligente de asignaturas:**
+  - "quiero dar clase de diseño web" → extrae "DISEÑO WEB"
+  - Limpieza automática de frases innecesarias
+  - Conversión a mayúsculas
+- Auto-envío al hacer clic en sugerencias
+- Input persistente después de respuestas
+- Crear reservas en lenguaje natural
 - Consultas de disponibilidad
 - Explicaciones del sistema
 
 #### **Dashboards por Rol**
 - **Estudiante:** Solo lectura (ver salas y horarios)
 - **Docente:** Crear y gestionar reservas propias
-- **Admin:** Control total (CRUD completo)
+- **Admin:** Control total (CRUD completo + Editor de Planos)
 
 ---
 
@@ -157,10 +183,10 @@ firebase deploy --only firestore:rules
 
 ## 📊 Estado del Proyecto
 
-- **Versión:** 2.0
+- **Versión:** 2.6
 - **Estado:** ✅ Producción
 - **Plan Firebase:** Spark (gratuito)
-- **Costo Mensual:** $0-3 USD (solo chatbot IA)
+- **Costo Mensual:** $0 USD (100% gratuito con Gemini)
 - **Última actualización:** 4 de Noviembre, 2025
 
 ---
@@ -192,11 +218,11 @@ El sistema trabaja **directamente con Firestore** desde el frontend:
 
 ## 🤖 Chatbot Conversacional
 
-### **Sistema Híbrido Inteligente**
+### **Sistema Híbrido Inteligente con Gemini 2.0 Flash**
 
 ```
 60% → Comandos Locales (gratis, instantáneo)
-40% → IA/GPT (conversacional, inteligente)
+40% → Gemini AI (conversacional, inteligente, GRATUITO)
 ```
 
 ### **Capacidades**
@@ -204,6 +230,11 @@ El sistema trabaja **directamente con Firestore** desde el frontend:
 - Consultar: *"¿qué salas están disponibles ahora?"*
 - Mis reservas: *"muestra mis reservas de esta semana"*
 - Ayuda: *"explícame cómo funcionan las jornadas"*
+
+### **Mejoras Recientes**
+- ✅ Auto-envío al hacer clic en sugerencias
+- ✅ Input persistente después de respuestas del bot
+- ✅ Migración completa a Gemini (costo $0)
 
 ---
 
@@ -252,13 +283,32 @@ git push origin main
 
 ## 🎯 Roadmap
 
+### **Completado Recientemente ✅**
+
+#### **Sesión 4 Nov 2025 - UX/UI y Validaciones**
+- [x] **Vista de Cards mejorada** - Muestra TODAS las salas con sus estados (verde/amarillo/rojo)
+- [x] **Validación de nombres únicos** - No permite crear salas duplicadas en el mismo piso
+- [x] **Asignaturas en mayúsculas** - Conversión automática en formularios
+- [x] **Chatbot con IA mejorada** - Extracción inteligente de asignaturas ("clase de diseño web" → "DISEÑO WEB")
+- [x] **Drag & Drop Pick & Place** - Sistema fluido para mover salas (click → mover → click)
+- [x] **Mensajes flotantes** - Notificaciones sin mover el contenido del editor
+- [x] **Bug fixes** - Limpieza de estados al desactivar modo edición
+
+#### **Anteriores**
+- [x] **Migrar a Gemini 2.0 Flash** (GRATIS vs GPT pagado)
+- [x] **Sistema de Catalogación de Salas** (equipamiento completo)
+- [x] **Editor Visual de Planos** (click-to-place, coordenadas dinámicas)
+- [x] **PlanoSalasDinamico** - Implementado en todos los dashboards (estudiante/docente/admin)
+- [x] **Mejoras UX Chatbot** (auto-envío, input persistente)
+- [x] **Sub-tabs en AdminPanel** (Lista / Editor de Planos)
+
 ### **Próximas Mejoras**
 
-- [ ] **Migrar a Gemini 2.0 Flash** (GRATIS vs GPT pagado)
-- [ ] **Sistema de Etiquetas para Salas** (metadatos ricos, planos dinámicos)
-- [ ] **Más Funciones Chatbot** (buscar_salas, cancelar_reserva, etc)
+- [ ] **Crear 24 salas nuevas** (6 por piso con equipamiento completo)
+- [ ] **Chatbot Admin** - Funciones administrativas (bloquear usuarios, cambiar roles, eliminar salas)
+- [ ] **Filtros por equipamiento** (buscar salas por tipo de pizarra, proyector, etc.)
+- [ ] **Más Funciones Chatbot** (buscar_salas, cancelar_reserva, filtros avanzados)
 - [ ] **Notificaciones** (toast messages, react-hot-toast)
-- [ ] **Centralizar Constantes** (limpiar hardcoded)
 - [ ] **Tests** (Jest + React Testing Library)
 
 ---
@@ -294,7 +344,8 @@ Si encuentras algún problema, por favor:
 - **Hosting:** GRATIS (10GB/mes)
 - **Firestore:** GRATIS (50k reads, 20k writes diarios)
 - **Auth:** GRATIS (sin límite)
-- **Chatbot IA:** $1-3/mes (OpenAI GPT)
+- **Chatbot IA:** GRATIS (Google Gemini 2.0 Flash)
+- **💰 TOTAL:** $0 USD/mes
 
 ### **Escalabilidad**
 - Plan actual: hasta ~1,000 usuarios/día

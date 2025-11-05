@@ -226,7 +226,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
             type="text"
             placeholder="Ej: Programación Web"
             value={asignatura}
-            onChange={(e) => setAsignatura(e.target.value)}
+            onChange={(e) => setAsignatura(e.target.value.toUpperCase())}
             required
             className="w-full rounded-lg border border-neutral-light px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
           />

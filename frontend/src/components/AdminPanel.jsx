@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase/config';
-import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, getDocs, writeBatch } from 'firebase/firestore';
 import Sidebar from './Sidebar';
 import ChatBot from './ChatBot';
+import EditorPlanos from './EditorPlanos';
 import { useAuth } from '../hooks/useAuth';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
@@ -15,7 +16,8 @@ ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Title, Tool
 function AdminPanel() {
   const { user, role } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'salas', 'usuarios', 'reservas'
-  
+  const [salasSubTab, setSalasSubTab] = useState('lista'); // 'lista', 'planos'
+
   // --- Estados para Salas ---
   const [salas, setSalas] = useState([]);
   const [loadingSalas, setLoadingSalas] = useState(true);
@@ -23,6 +25,15 @@ function AdminPanel() {
   const [nombreSala, setNombreSala] = useState('');
   const [piso, setPiso] = useState('');
   const [capacidad, setCapacidad] = useState('');
+  const [tipoSala, setTipoSala] = useState('aula_teorica');
+  const [proyector, setProyector] = useState(false);
+  const [computadores, setComputadores] = useState(0);
+  const [enchufes, setEnchufes] = useState(0);
+  const [pizarra, setPizarra] = useState('tradicional');
+  const [aireAcondicionado, setAireAcondicionado] = useState(false);
+  const [parlantes, setParlantes] = useState(false);
+  const [microfono, setMicrofono] = useState(false);
+  const [camara, setCamara] = useState(false);
   const [messageSala, setMessageSala] = useState('');
   
   // --- Estados para Usuarios ---
@@ -165,6 +176,15 @@ function AdminPanel() {
     setNombreSala('');
     setPiso('');
     setCapacidad('');
+    setTipoSala('aula_teorica');
+    setProyector(false);
+    setComputadores(0);
+    setEnchufes(0);
+    setPizarra('tradicional');
+    setAireAcondicionado(false);
+    setParlantes(false);
+    setMicrofono(false);
+    setCamara(false);
     setMessageSala('');
   };
 
@@ -178,7 +198,7 @@ function AdminPanel() {
     }
 
     // Validar nombre de sala
-    const nombreTrimmed = nombreSala.trim();
+    const nombreTrimmed = nombreSala.trim().toUpperCase();
     if (nombreTrimmed.length < 2) {
       setMessageSala('El nombre de la sala debe tener al menos 2 caracteres.');
       return;
@@ -198,12 +218,36 @@ function AdminPanel() {
       return;
     }
 
+    // Validar nombre único (solo al crear, no al editar)
+    if (!editingId) {
+      const nombreDuplicado = salas.some(
+        sala => sala.nombre.toUpperCase() === nombreTrimmed && sala.piso === pisoNum
+      );
+
+      if (nombreDuplicado) {
+        setMessageSala(`❌ Ya existe una sala con el nombre "${nombreTrimmed}" en el Piso ${pisoNum}.`);
+        return;
+      }
+    }
+
     const docId = editingId || nombreTrimmed;
     const salaRef = doc(db, 'salas', docId);
     const salaData = {
       nombre: nombreTrimmed,
       piso: pisoNum,
       capacidad: capacidadNum,
+      tipo: tipoSala,
+      equipamiento: {
+        proyector: proyector,
+        computadores: Number(computadores) || 0,
+        enchufes: Number(enchufes) || 0,
+        pizarra: pizarra,
+        aire_acondicionado: aireAcondicionado,
+        parlantes: parlantes,
+        microfono: microfono,
+        camara: camara,
+        otros: []
+      },
       activa: true,
       fechaActualizacion: new Date()
     };
@@ -241,11 +285,85 @@ function AdminPanel() {
     }
   };
 
+  const handleDeleteAllSalas = async () => {
+    const totalSalas = salas.length;
+
+    if (totalSalas === 0) {
+      setMessageSala('No hay salas para eliminar.');
+      return;
+    }
+
+    const confirmacion = window.confirm(
+      `⚠️⚠️ ELIMINAR TODAS LAS SALAS ⚠️⚠️\n\n` +
+      `Esta acción eliminará TODAS las ${totalSalas} salas de la base de datos.\n\n` +
+      `Esta acción NO se puede deshacer.\n\n` +
+      `¿Está ABSOLUTAMENTE SEGURO de que desea continuar?`
+    );
+
+    if (!confirmacion) {
+      return;
+    }
+
+    // Segunda confirmación
+    const confirmacion2 = window.confirm(
+      `⚠️ ÚLTIMA CONFIRMACIÓN\n\n` +
+      `Escriba OK en la siguiente ventana para confirmar.\n\n` +
+      `Se eliminarán ${totalSalas} salas.`
+    );
+
+    if (!confirmacion2) {
+      return;
+    }
+
+    try {
+      setMessageSala(`🗑️ Eliminando ${totalSalas} salas...`);
+
+      // Usar batch para mejor rendimiento
+      const batch = writeBatch(db);
+      salas.forEach((sala) => {
+        const salaRef = doc(db, 'salas', sala.id);
+        batch.delete(salaRef);
+      });
+
+      await batch.commit();
+
+      setMessageSala(`✅ ${totalSalas} salas eliminadas exitosamente. Puedes crear las nuevas salas usando el Editor de Planos.`);
+
+      // No auto-ocultar este mensaje importante
+    } catch (error) {
+      setMessageSala(`❌ Error al eliminar las salas. Por favor, intenta nuevamente.`);
+      console.error("Error deleting all salas:", error);
+    }
+  };
+
   const handleEditSala = (sala) => {
     setEditingId(sala.id);
     setNombreSala(sala.nombre);
     setPiso(sala.piso);
     setCapacidad(sala.capacidad);
+    setTipoSala(sala.tipo || 'aula_teorica');
+
+    // Cargar equipamiento si existe
+    if (sala.equipamiento) {
+      setProyector(sala.equipamiento.proyector || false);
+      setComputadores(sala.equipamiento.computadores || 0);
+      setEnchufes(sala.equipamiento.enchufes || 0);
+      setPizarra(sala.equipamiento.pizarra || 'tradicional');
+      setAireAcondicionado(sala.equipamiento.aire_acondicionado || false);
+      setParlantes(sala.equipamiento.parlantes || false);
+      setMicrofono(sala.equipamiento.microfono || false);
+      setCamara(sala.equipamiento.camara || false);
+    } else {
+      // Reset a valores por defecto si no hay equipamiento
+      setProyector(false);
+      setComputadores(0);
+      setEnchufes(0);
+      setPizarra('tradicional');
+      setAireAcondicionado(false);
+      setParlantes(false);
+      setMicrofono(false);
+      setCamara(false);
+    }
   };
 
   // --- ¡NUEVA FUNCIÓN MEJORADA PARA CAMBIAR ROL DE USUARIO! ---
@@ -483,9 +601,38 @@ function AdminPanel() {
           {/* SALAS TAB */}
           {activeTab === 'salas' && (
             <div className="mx-auto max-w-7xl space-y-6">
-              
-              {/* Form Card */}
-              <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
+
+              {/* Sub-tabs para Salas */}
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => setSalasSubTab('lista')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    salasSubTab === 'lista'
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-gray-700 border border-neutral-light hover:bg-neutral-light'
+                  }`}
+                >
+                  <span className="material-symbols-outlined">list</span>
+                  Lista de Salas
+                </button>
+                <button
+                  onClick={() => setSalasSubTab('planos')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    salasSubTab === 'planos'
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-gray-700 border border-neutral-light hover:bg-neutral-light'
+                  }`}
+                >
+                  <span className="material-symbols-outlined">map</span>
+                  Editor de Planos
+                </button>
+              </div>
+
+              {/* Sub-tab: Lista de Salas */}
+              {salasSubTab === 'lista' && (
+                <>
+                  {/* Form Card */}
+                  <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
                 <h3 className="mb-4 text-lg font-bold text-neutral-dark">
                   {editingId ? 'Editar Sala' : 'Crear Nueva Sala'}
                 </h3>
@@ -516,7 +663,7 @@ function AdminPanel() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="mb-1 block text-sm font-medium text-gray-700">Piso</label>
                       <input
@@ -544,6 +691,124 @@ function AdminPanel() {
                         required
                       />
                     </div>
+
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">Tipo de Sala</label>
+                      <select
+                        value={tipoSala}
+                        onChange={(e) => setTipoSala(e.target.value)}
+                        className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      >
+                        <option value="aula_teorica">Aula Teórica</option>
+                        <option value="laboratorio">Laboratorio</option>
+                        <option value="sala_reuniones">Sala de Reuniones</option>
+                        <option value="auditorio">Auditorio</option>
+                        <option value="taller">Taller</option>
+                        <option value="sala_computo">Sala de Cómputo</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Equipamiento Section */}
+                  <div className="border-t border-neutral-light pt-4 mt-4">
+                    <h4 className="mb-3 text-sm font-semibold text-neutral-dark flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary">settings</span>
+                      Equipamiento
+                    </h4>
+
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">Computadores</label>
+                        <input
+                          type="number"
+                          value={computadores}
+                          onChange={(e) => setComputadores(e.target.value)}
+                          placeholder="0"
+                          min="0"
+                          max="100"
+                          className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">Enchufes</label>
+                        <input
+                          type="number"
+                          value={enchufes}
+                          onChange={(e) => setEnchufes(e.target.value)}
+                          placeholder="0"
+                          min="0"
+                          max="100"
+                          className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">Tipo de Pizarra</label>
+                        <select
+                          value={pizarra}
+                          onChange={(e) => setPizarra(e.target.value)}
+                          className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        >
+                          <option value="ninguna">Ninguna</option>
+                          <option value="tradicional">Tradicional</option>
+                          <option value="digital">Digital</option>
+                          <option value="ambas">Ambas</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-5 gap-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={proyector}
+                          onChange={(e) => setProyector(e.target.checked)}
+                          className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                        />
+                        <span className="text-sm text-gray-700">Proyector</span>
+                      </label>
+
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={aireAcondicionado}
+                          onChange={(e) => setAireAcondicionado(e.target.checked)}
+                          className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                        />
+                        <span className="text-sm text-gray-700">A/C</span>
+                      </label>
+
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={parlantes}
+                          onChange={(e) => setParlantes(e.target.checked)}
+                          className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                        />
+                        <span className="text-sm text-gray-700">Parlantes</span>
+                      </label>
+
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={microfono}
+                          onChange={(e) => setMicrofono(e.target.checked)}
+                          className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                        />
+                        <span className="text-sm text-gray-700">Micrófono</span>
+                      </label>
+
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={camara}
+                          onChange={(e) => setCamara(e.target.checked)}
+                          className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                        />
+                        <span className="text-sm text-gray-700">Cámara</span>
+                      </label>
+                    </div>
                   </div>
 
                   <div className="flex gap-3">
@@ -570,8 +835,17 @@ function AdminPanel() {
 
               {/* Salas List */}
               <div className="rounded-lg border border-neutral-light bg-white shadow-soft">
-                <div className="border-b border-neutral-light px-6 py-4">
+                <div className="border-b border-neutral-light px-6 py-4 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-neutral-dark">Lista de Salas ({salas.length})</h3>
+                  {salas.length > 0 && (
+                    <button
+                      onClick={handleDeleteAllSalas}
+                      className="flex items-center gap-2 rounded-lg bg-danger/10 px-4 py-2 text-sm font-semibold text-danger transition-colors hover:bg-danger/20"
+                    >
+                      <span className="material-symbols-outlined text-base">delete_sweep</span>
+                      Eliminar Todas las Salas
+                    </button>
+                  )}
                 </div>
                 <div className="divide-y divide-neutral-light">
                   {salas.map((sala) => (
@@ -584,16 +858,49 @@ function AdminPanel() {
                           <p className="font-bold text-neutral-dark">{sala.nombre}</p>
                           <p className="text-sm text-gray-500">
                             Piso {sala.piso} • Capacidad: {sala.capacidad} personas
+                            {sala.tipo && ` • ${sala.tipo.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`}
                           </p>
+                          {/* Equipment badges */}
+                          {sala.equipamiento && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {sala.equipamiento.proyector && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
+                                  <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>video_settings</span>
+                                  Proyector
+                                </span>
+                              )}
+                              {sala.equipamiento.computadores > 0 && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
+                                  <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>computer</span>
+                                  {sala.equipamiento.computadores} PCs
+                                </span>
+                              )}
+                              {sala.equipamiento.enchufes > 0 && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
+                                  <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>power</span>
+                                  {sala.equipamiento.enchufes}
+                                </span>
+                              )}
+                              {sala.equipamiento.pizarra && sala.equipamiento.pizarra !== 'ninguna' && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
+                                  <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>edit_square</span>
+                                  {sala.equipamiento.pizarra}
+                                </span>
+                              )}
+                              {sala.equipamiento.aire_acondicionado && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
+                                  <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>ac_unit</span>
+                                  A/C
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() => {
-                            setEditingId(sala.id);
-                            setNombreSala(sala.nombre);
-                            setPiso(sala.piso.toString());
-                            setCapacidad(sala.capacidad.toString());
+                            handleEditSala(sala);
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
                           className="flex items-center gap-1 rounded-lg bg-warning/10 px-3 py-1.5 text-sm font-semibold text-warning transition-colors hover:bg-warning/20"
@@ -613,6 +920,14 @@ function AdminPanel() {
                   ))}
                 </div>
               </div>
+              </>
+              )}
+
+              {/* Sub-tab: Editor de Planos */}
+              {salasSubTab === 'planos' && (
+                <EditorPlanos />
+              )}
+
             </div>
           )}
 

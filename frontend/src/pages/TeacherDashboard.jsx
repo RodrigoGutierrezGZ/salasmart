@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import FormularioReserva from '../components/FormularioReserva';
-import PlanoSalas from '../components/PlanoSalas';
+import PlanoSalasDinamico from '../components/PlanoSalasDinamico';
 import ChatBot from '../components/ChatBot';
 import { useSalas } from '../hooks/useSalas';
 import { useAuth } from '../hooks/useAuth';
@@ -34,16 +34,13 @@ function TeacherDashboard() {
     // TODO: Mostrar notificación de éxito
   };
 
-  // Filtrar salas según todos los criterios
-  const salasDisponibles = salas.filter(s => s.estado === ESTADOS_SALA.DISPONIBLE);
-  const salasBase = vistaActual === 'disponibles' ? salasDisponibles : salas;
-  
-  const salasMostrar = salasBase.filter(sala => {
+  // Filtrar salas según filtros (mostrar TODAS con sus colores)
+  const salasMostrar = salas.filter(sala => {
     // Filtro por piso
     if (filtroPiso !== 'todos' && sala.piso !== parseInt(filtroPiso)) {
       return false;
     }
-    
+
     // Filtro por capacidad
     if (filtroCapacidad !== 'todos') {
       const capacidad = sala.capacidad || 0;
@@ -58,7 +55,7 @@ function TeacherDashboard() {
           return true;
       }
     }
-    
+
     return true;
   });
 
@@ -215,10 +212,10 @@ function TeacherDashboard() {
 
             {/* Renderizado condicional: Plano o Cards */}
             {tipoVista === 'plano' ? (
-              /* Vista de Plano */
+              /* Vista de Plano Dinámico */
               <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
-                <PlanoSalas
-                  salasData={salas}
+                <PlanoSalasDinamico
+                  pisoInicial={filtroPiso === 'todos' ? 1 : parseInt(filtroPiso)}
                   onSalaClick={handleReservar}
                 />
               </div>
