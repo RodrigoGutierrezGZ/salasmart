@@ -1,8 +1,8 @@
 // src/pages/StudentDashboard.jsx
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
-import PlanoSalasDinamico from '../components/PlanoSalasDinamico';
-import ChatBot from '../components/ChatBot';
+import Sidebar from '../components/layout/Sidebar';
+import PlanoSalasDinamico from '../components/planos/PlanoSalasDinamico';
+import ChatBot from '../components/chatbot/ChatBot';
 import { useAuth } from '../hooks/useAuth';
 import { useSalas } from '../hooks/useSalas';
 import { ESTADOS_SALA } from '../utils/constants';

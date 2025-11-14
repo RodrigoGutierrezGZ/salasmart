@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import LoadingScreen from '../components/LoadingScreen';
+import LoadingScreen from '../components/layout/LoadingScreen';
 
 const Login = () => {
   const [email, setEmail] = useState('');

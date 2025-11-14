@@ -1,7 +1,7 @@
 // src/pages/MisReservasPage.jsx
 import React from 'react';
-import Sidebar from '../components/Sidebar';
-import MisReservas from '../components/MisReservas';
+import Sidebar from '../components/layout/Sidebar';
+import MisReservas from '../components/docente/MisReservas';
 import { useAuth } from '../hooks/useAuth';
 
 function MisReservasPage() {

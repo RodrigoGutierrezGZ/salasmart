@@ -3,14 +3,14 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { ToastProvider } from './contexts/ToastContext';
-import ToastContainer from './components/ToastContainer';
+import ToastContainer from './components/shared/ToastContainer';
 
-import Navbar from './components/Navbar';
+import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
-import ProtectedRoute from './components/ProtectedRoute';
-import LoadingScreen from './components/LoadingScreen';
+import ProtectedRoute from './components/layout/ProtectedRoute';
+import LoadingScreen from './components/layout/LoadingScreen';
 import MisReservasPage from './pages/MisReservasPage';
 import StudentDashboard from './pages/StudentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';

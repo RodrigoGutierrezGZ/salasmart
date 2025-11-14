@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
-import LoadingScreen from '../components/LoadingScreen';
+import LoadingScreen from '../components/layout/LoadingScreen';
 import { registrarLog } from '../services/logsService';
 import { generarEmailInstitucional } from '../utils/emailGenerator';
 
