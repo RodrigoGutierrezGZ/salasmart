@@ -9,7 +9,7 @@ import StudentDashboard from '../pages/StudentDashboard';
 import TeacherDashboard from '../pages/TeacherDashboard';
 import AdminPanel from './AdminPanel';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, requireRole }) => {
   const { user, role, loading } = useAuth();
 
   if (loading) {
@@ -24,7 +24,13 @@ const ProtectedRoute = ({ children }) => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-  
+
+  // Verificar si se requiere un rol específico
+  if (requireRole && role !== requireRole && !requireRole.includes(role)) {
+    // Si no tiene el rol requerido, redirigir a su dashboard
+    return <Navigate to="/dashboard" replace />;
+  }
+
   // Si hay children, renderizarlos (para rutas específicas como /mis-reservas)
   if (children) {
     return children;

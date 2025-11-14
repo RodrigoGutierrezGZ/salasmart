@@ -5,21 +5,152 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSalas } from '../hooks/useSalas';
+import { useAuth } from '../hooks/useAuth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
-function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1 }) {
+function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos', filtroEdificio = 'todos' }) {
   const { salas, loading, error } = useSalas();
+  const { userData } = useAuth();
   const [pisoSeleccionado, setPisoSeleccionado] = useState(pisoInicial);
   const [salasDelPiso, setSalasDelPiso] = useState([]);
   const [salaHover, setSalaHover] = useState(null);
+  const [imagenPlanoURL, setImagenPlanoURL] = useState(null);
+
+  // Calcular cuántas sedes únicas están disponibles para el usuario
+  const sedesDisponibles = React.useMemo(() => {
+    let salasDisponibles = salas;
+
+    // Filtrar por sedes afiliadas (solo para no-admin)
+    if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+      salasDisponibles = salas.filter(sala => userData.sedesAfiliadas.includes(sala.sedeId));
+    }
+
+    return [...new Set(salasDisponibles.map(s => s.sedeId))];
+  }, [salas, userData]);
+
+  // Obtener pisos únicos disponibles (DINÁMICO) respetando filtros de sede y edificio
+  const pisosDisponibles = React.useMemo(() => {
+    if (!salas || salas.length === 0) return [];
+
+    // Filtrar por sedes afiliadas (solo para no-admin)
+    let salasFiltradasPorSede = salas;
+    if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+      salasFiltradasPorSede = salas.filter(sala =>
+        userData.sedesAfiliadas.includes(sala.sedeId)
+      );
+    }
+
+    // Aplicar filtros de sede y edificio
+    let salasFiltradas = salasFiltradasPorSede;
+
+    if (filtroSede !== 'todos') {
+      salasFiltradas = salasFiltradas.filter(sala => sala.sedeId === filtroSede);
+    }
+
+    if (filtroEdificio !== 'todos') {
+      salasFiltradas = salasFiltradas.filter(sala => sala.edificioId === filtroEdificio);
+    }
+
+    // Extraer pisos únicos de salas con coordenadas
+    const pisos = [...new Set(
+      salasFiltradas
+        .filter(sala => sala.coordenadas) // Solo salas con coordenadas
+        .map(sala => sala.pisoNumero || sala.piso)
+        .filter(piso => piso !== undefined)
+    )].sort((a, b) => a - b);
+
+    return pisos;
+  }, [salas, userData, filtroSede, filtroEdificio]);
+
+  // Sincronizar pisoSeleccionado con pisoInicial cuando cambia
+  useEffect(() => {
+    if (pisoInicial && pisoInicial !== pisoSeleccionado) {
+      setPisoSeleccionado(pisoInicial);
+    }
+  }, [pisoInicial]);
+
+  // Auto-seleccionar primer piso disponible si el seleccionado no existe
+  useEffect(() => {
+    if (pisosDisponibles.length > 0 && !pisosDisponibles.includes(pisoSeleccionado)) {
+      setPisoSeleccionado(pisosDisponibles[0]);
+    }
+  }, [pisosDisponibles]);
+
+  // Obtener datos del piso desde Firestore para usar su imagen
+  useEffect(() => {
+    async function obtenerDatosPiso() {
+      if (!salas || salas.length === 0) return;
+
+      // Buscar una sala del piso seleccionado para obtener el pisoId
+      const salaDelPiso = salas.find(sala => {
+        const pisoSala = sala.pisoNumero || sala.piso;
+        const coincidePiso = pisoSala === pisoSeleccionado;
+        const coincideSede = filtroSede === 'todos' || sala.sedeId === filtroSede;
+        const coincideEdificio = filtroEdificio === 'todos' || sala.edificioId === filtroEdificio;
+        return coincidePiso && coincideSede && coincideEdificio;
+      });
+
+      if (salaDelPiso && salaDelPiso.pisoId) {
+        try {
+          const pisoDoc = await getDoc(doc(db, 'pisos', salaDelPiso.pisoId));
+          if (pisoDoc.exists()) {
+            const pisoData = pisoDoc.data();
+            // Usar imagenURL del piso si existe, sino usar fallback local
+            const urlImagen = pisoData.imagenURL || `/planos/piso${pisoSeleccionado}.jpg`;
+            console.log(`[PlanoSalasDinamico] Imagen cargada: ${urlImagen}`);
+            console.log(`[PlanoSalasDinamico] Piso ID: ${salaDelPiso.pisoId}`);
+            console.log(`[PlanoSalasDinamico] Datos del piso:`, pisoData);
+            setImagenPlanoURL(urlImagen);
+          } else {
+            // Fallback local
+            console.warn(`[PlanoSalasDinamico] Piso ${salaDelPiso.pisoId} no encontrado en Firestore`);
+            setImagenPlanoURL(`/planos/piso${pisoSeleccionado}.jpg`);
+          }
+        } catch (error) {
+          console.error('[PlanoSalasDinamico] Error al obtener datos del piso:', error);
+          // Fallback local en caso de error
+          setImagenPlanoURL(`/planos/piso${pisoSeleccionado}.jpg`);
+        }
+      } else {
+        // Fallback local si no se encuentra sala
+        console.warn(`[PlanoSalasDinamico] No se encontró sala con pisoId para piso ${pisoSeleccionado}`);
+        setImagenPlanoURL(`/planos/piso${pisoSeleccionado}.jpg`);
+      }
+    }
+
+    obtenerDatosPiso();
+  }, [salas, pisoSeleccionado, filtroSede, filtroEdificio]);
 
   useEffect(() => {
     if (salas && salas.length > 0) {
-      const salasFiltradas = salas.filter(sala =>
-        sala.piso === pisoSeleccionado && sala.coordenadas
-      );
-      setSalasDelPiso(salasFiltradas);
+      // Filtrar por sedes afiliadas (solo para no-admin)
+      let salasFiltradasPorSede = salas;
+      if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+        salasFiltradasPorSede = salas.filter(sala =>
+          userData.sedesAfiliadas.includes(sala.sedeId)
+        );
+      }
+
+      // Aplicar filtros de sede y edificio
+      let salasFiltradas = salasFiltradasPorSede;
+
+      if (filtroSede !== 'todos') {
+        salasFiltradas = salasFiltradas.filter(sala => sala.sedeId === filtroSede);
+      }
+
+      if (filtroEdificio !== 'todos') {
+        salasFiltradas = salasFiltradas.filter(sala => sala.edificioId === filtroEdificio);
+      }
+
+      // Filtrar por piso y coordenadas
+      const salasPorPiso = salasFiltradas.filter(sala => {
+        const pisoSala = sala.pisoNumero || sala.piso; // Compatibilidad
+        return pisoSala === pisoSeleccionado && sala.coordenadas;
+      });
+      setSalasDelPiso(salasPorPiso);
     }
-  }, [salas, pisoSeleccionado]);
+  }, [salas, pisoSeleccionado, userData, filtroSede, filtroEdificio]);
 
   const getColorEstado = (estado) => {
     switch (estado) {
@@ -81,26 +212,66 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1 }) {
     );
   }
 
+  // Validación: Requiere edificio específico para mostrar plano
+  // Solo pide sede si el usuario tiene múltiples sedes disponibles
+  if ((sedesDisponibles.length > 1 && filtroSede === 'todos') || filtroEdificio === 'todos') {
+    const mensaje = (sedesDisponibles.length > 1 && filtroSede === 'todos')
+      ? {
+          titulo: 'Selecciona una Sede Específica',
+          descripcion: 'Tienes acceso a múltiples sedes. Para visualizar el plano, selecciona primero una sede específica.',
+          filtros: 'Sede → Edificio → Piso'
+        }
+      : {
+          titulo: 'Selecciona un Edificio Específico',
+          descripcion: 'Para visualizar el plano, selecciona un edificio específico. Cada edificio tiene su propio plano arquitectónico.',
+          filtros: 'Edificio → Piso'
+        };
+
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center">
+        <div className="mb-4 rounded-full bg-primary/10 p-6">
+          <span className="material-symbols-outlined text-6xl text-primary">apartment</span>
+        </div>
+        <h3 className="text-xl font-semibold text-neutral-dark mb-2">
+          {mensaje.titulo}
+        </h3>
+        <p className="text-gray-600 max-w-md">
+          {mensaje.descripcion}
+        </p>
+        <div className="mt-6 flex items-center gap-2 text-sm text-gray-500">
+          <span className="material-symbols-outlined text-lg">info</span>
+          <span>Usa los filtros: <strong>{mensaje.filtros}</strong></span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Header con Selector de Piso y Estadísticas */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        {/* Selector de Piso */}
-        <div className="flex gap-2">
-          {[1, 2, 3, 4].map(piso => (
-            <button
-              key={piso}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1 ${
-                pisoSeleccionado === piso
-                  ? 'bg-primary text-white shadow-md'
-                  : 'bg-white text-gray-700 border border-neutral-light hover:bg-neutral-light'
-              }`}
-              onClick={() => setPisoSeleccionado(piso)}
-            >
-              <span className="material-symbols-outlined text-sm">layers</span>
-              Piso {piso}
-            </button>
-          ))}
+        {/* Selector de Piso - DINÁMICO */}
+        <div className="flex gap-2 flex-wrap">
+          {pisosDisponibles.length > 0 ? (
+            pisosDisponibles.map(piso => (
+              <button
+                key={piso}
+                className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1 ${
+                  pisoSeleccionado === piso
+                    ? 'bg-primary text-white shadow-md'
+                    : 'bg-white text-gray-700 border border-neutral-light hover:bg-neutral-light'
+                }`}
+                onClick={() => setPisoSeleccionado(piso)}
+              >
+                <span className="material-symbols-outlined text-sm">layers</span>
+                Piso {piso}
+              </button>
+            ))
+          ) : (
+            <div className="text-sm text-gray-500 px-3 py-1.5">
+              No hay pisos con salas configuradas
+            </div>
+          )}
         </div>
 
         {/* Estadísticas Compactas */}
@@ -141,14 +312,20 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1 }) {
         </div>
 
         <div className="p-2">
-          <div className="relative bg-gray-50 rounded-lg overflow-hidden">
+          {/* Contenedor con aspect ratio fijo 16:9 para consistencia con Editor */}
+          <div className="relative bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center" style={{ aspectRatio: '16 / 9' }}>
             <img
-              src={`/planos/piso${pisoSeleccionado}.jpg`}
+              src={imagenPlanoURL || `/planos/piso${pisoSeleccionado}.jpg`}
               alt={`Plano Piso ${pisoSeleccionado}`}
-              className="w-full max-h-[500px] object-contain"
+              className="max-w-full max-h-full object-contain"
+              style={{ width: '100%', height: '100%' }}
+              onError={(e) => {
+                // Fallback en caso de error al cargar la imagen
+                e.target.src = `/planos/piso${pisoSeleccionado}.jpg`;
+              }}
             />
 
-            {/* Renderizar Salas */}
+            {/* Renderizar Salas usando coordenadas en porcentaje */}
             {salasDelPiso.map(sala => (
               <div
                 key={sala.id}

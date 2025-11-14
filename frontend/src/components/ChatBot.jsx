@@ -31,24 +31,47 @@ function ChatBot() {
     }
   }, [isOpen]);
 
-  // Mensaje de bienvenida al abrir
+  // Generar saludo de bienvenida al abrir el chat
   useEffect(() => {
-    if (isOpen && conversacion.length === 0) {
-      const nombreUsuario = userData?.nombre || user?.displayName || 'Usuario';
-      const rolTexto = userData?.role === 'admin' ? 'Administrador' :
-                      userData?.role === 'docente' ? 'Docente' : 'Estudiante';
+    if (isOpen && conversacion.length === 0 && userData && user) {
+      // Enviar mensaje automático "hola" para que Claude genere el saludo
+      handleSaludoInicial();
+    }
+  }, [isOpen, userData, user]);
 
+  const handleSaludoInicial = async () => {
+    if (enviando) return;
+
+    setEnviando(true);
+    try {
+      // Enviar "hola" invisible al chat para que Claude responda con el saludo personalizado
+      const respuesta = await procesarMensaje('hola', user, userData, []);
+
+      const nuevoMensajeBot = {
+        id: Date.now(),
+        tipo: 'bot',
+        texto: respuesta.texto,
+        tipoMensaje: respuesta.tipo || 'info',
+        timestamp: new Date()
+      };
+
+      setConversacion([nuevoMensajeBot]);
+    } catch (error) {
+      console.error('Error al generar saludo inicial:', error);
+      // Fallback: mostrar saludo genérico
       setConversacion([
         {
           id: Date.now(),
           tipo: 'bot',
-          texto: `¡Hola **${nombreUsuario}**! 👋\n\nSoy el asistente virtual de SalaSmart.\n\nPuedo ayudarte a:\n• Consultar salas disponibles\n• Ver información de salas\n• Gestionar tus reservas\n\nEscribe **"ayuda"** para ver todos los comandos disponibles.`,
+          texto: `¡Hola! 👋\n\nSoy el asistente virtual de SalaSmart. ¿En qué puedo ayudarte?`,
           tipoMensaje: 'info',
           timestamp: new Date()
         }
       ]);
+    } finally {
+      setEnviando(false);
     }
-  }, [isOpen, conversacion.length, userData, user]);
+  };
 
   const handleEnviar = async (e) => {
     e.preventDefault();
@@ -72,16 +95,14 @@ function ChatBot() {
     await new Promise(resolve => setTimeout(resolve, 300));
 
     try {
-      // Construir historial para Gemini (formato requerido por la API)
-      const historialGemini = conversacion
-        .filter(msg => msg.tipo !== 'bot' || !msg.texto.includes('¡Hola **')) // Excluir mensaje de bienvenida
-        .map(msg => ({
-          role: msg.tipo === 'usuario' ? 'user' : 'model',
-          parts: [{ text: msg.texto }]
-        }));
+      // Construir historial para Claude (formato requerido por la API)
+      const historialClaude = conversacion.map(msg => ({
+        role: msg.tipo === 'usuario' ? 'user' : 'assistant',
+        content: msg.texto
+      }));
 
-      // Procesar mensaje con Gemini AI
-      const respuesta = await procesarMensaje(mensajeUsuario, user, userData, historialGemini);
+      // Procesar mensaje con Claude AI
+      const respuesta = await procesarMensaje(mensajeUsuario, user, userData, historialClaude);
 
       const nuevoMensajeBot = {
         id: Date.now() + 1,
@@ -150,16 +171,14 @@ function ChatBot() {
     await new Promise(resolve => setTimeout(resolve, 300));
 
     try {
-      // Construir historial para Gemini
-      const historialGemini = conversacion
-        .filter(msg => msg.tipo !== 'bot' || !msg.texto.includes('¡Hola **'))
-        .map(msg => ({
-          role: msg.tipo === 'usuario' ? 'user' : 'model',
-          parts: [{ text: msg.texto }]
-        }));
+      // Construir historial para Claude
+      const historialClaude = conversacion.map(msg => ({
+        role: msg.tipo === 'usuario' ? 'user' : 'assistant',
+        content: msg.texto
+      }));
 
-      // Procesar mensaje con Gemini AI
-      const respuesta = await procesarMensaje(mensajeUsuario, user, userData, historialGemini);
+      // Procesar mensaje con Claude AI
+      const respuesta = await procesarMensaje(mensajeUsuario, user, userData, historialClaude);
 
       const nuevoMensajeBot = {
         id: Date.now() + 1,

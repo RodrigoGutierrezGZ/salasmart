@@ -8,32 +8,110 @@ import { useSalas } from '../hooks/useSalas';
 import { ESTADOS_SALA } from '../utils/constants';
 
 function StudentDashboard() {
-  const { user, role } = useAuth();
+  const { user, role, userData } = useAuth();
   const { salas, loading, error } = useSalas();
   const [vistaActual, setVistaActual] = useState('mapa'); // 'mapa' o 'lista'
   const [tipoVista, setTipoVista] = useState('cards'); // 'cards' o 'plano'
+
+  // Obtener sedes únicas disponibles para el usuario (filtradas por sedes afiliadas)
+  const sedesUnicas = React.useMemo(() => {
+    let salasDisponibles = salas;
+
+    // Filtrar por sedes afiliadas (solo para no-admin)
+    if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+      salasDisponibles = salas.filter(sala => userData.sedesAfiliadas.includes(sala.sedeId));
+    }
+
+    return [...new Set(salasDisponibles.map(s => ({ id: s.sedeId, nombre: s.sedeCodigo || s.sedeId })).map(JSON.stringify))].map(JSON.parse);
+  }, [salas, userData]);
+
+  // Auto-seleccionar sede si solo hay una disponible (inicialización inteligente)
+  const sedeInicial = React.useMemo(() => {
+    return sedesUnicas.length === 1 ? sedesUnicas[0].id : 'todos';
+  }, [sedesUnicas]);
+
+  const [filtroSede, setFiltroSede] = useState(sedeInicial);
+  const [filtroEdificio, setFiltroEdificio] = useState('todos');
   const [filtroPiso, setFiltroPiso] = useState('todos');
   const [filtroCapacidad, setFiltroCapacidad] = useState('todos');
 
+  // Actualizar filtroSede cuando cambian las sedes disponibles
+  useEffect(() => {
+    if (sedesUnicas.length === 1 && filtroSede === 'todos') {
+      setFiltroSede(sedesUnicas[0].id);
+    }
+  }, [sedesUnicas]);
+
+  const edificiosUnicos = filtroSede === 'todos'
+    ? [...new Set(salas.map(s => ({ id: s.edificioId, nombre: s.edificioCodigo || s.edificioId, sedeId: s.sedeId })).map(JSON.stringify))].map(JSON.parse)
+    : [...new Set(salas.filter(s => s.sedeId === filtroSede).map(s => ({ id: s.edificioId, nombre: s.edificioCodigo || s.edificioId })).map(JSON.stringify))].map(JSON.parse);
+
+  // Pisos únicos (dinámicos según filtros de sede y edificio)
+  let salasParaPisos = salas;
+  if (filtroSede !== 'todos') {
+    salasParaPisos = salasParaPisos.filter(s => s.sedeId === filtroSede);
+  }
+  if (filtroEdificio !== 'todos') {
+    salasParaPisos = salasParaPisos.filter(s => s.edificioId === filtroEdificio);
+  }
+  const pisosUnicos = [...new Set(salasParaPisos.map(s => s.pisoNumero || s.piso).filter(p => p !== undefined))].sort((a, b) => a - b);
+
+  // Resetear filtros en cascada
+  useEffect(() => {
+    if (filtroSede === 'todos') {
+      setFiltroEdificio('todos');
+      setFiltroPiso('todos');
+    }
+  }, [filtroSede]);
+
+  useEffect(() => {
+    if (filtroEdificio === 'todos') {
+      setFiltroPiso('todos');
+    }
+  }, [filtroEdificio]);
+
   // Filtrar salas según filtros (TODAS las salas, sin filtrar por disponibilidad)
   const salasMostrar = salas.filter(sala => {
-    // Filtro de piso
-    const piso = filtroPiso === 'todos' || sala.piso === parseInt(filtroPiso);
-
-    // Filtro de capacidad
-    let capacidad = true;
-    if (filtroCapacidad !== 'todos') {
-      const cap = sala.capacidad;
-      if (filtroCapacidad === 'pequena') {
-        capacidad = cap <= 15;
-      } else if (filtroCapacidad === 'mediana') {
-        capacidad = cap > 15 && cap <= 30;
-      } else if (filtroCapacidad === 'grande') {
-        capacidad = cap > 30;
+    // Filtro por sedes afiliadas (solo para no-admin)
+    if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+      if (!userData.sedesAfiliadas.includes(sala.sedeId)) {
+        return false;
       }
     }
 
-    return piso && capacidad;
+    // Filtro por sede
+    if (filtroSede !== 'todos' && sala.sedeId !== filtroSede) {
+      return false;
+    }
+
+    // Filtro por edificio
+    if (filtroEdificio !== 'todos' && sala.edificioId !== filtroEdificio) {
+      return false;
+    }
+
+    // Filtro por piso (compatibilidad con ambos campos)
+    if (filtroPiso !== 'todos') {
+      const pisoSala = sala.pisoNumero || sala.piso;
+      if (pisoSala !== parseInt(filtroPiso)) {
+        return false;
+      }
+    }
+
+    // Filtro de capacidad
+    if (filtroCapacidad !== 'todos') {
+      const cap = sala.capacidad;
+      if (filtroCapacidad === 'pequena' && cap > 15) {
+        return false;
+      }
+      if (filtroCapacidad === 'mediana' && (cap <= 15 || cap > 30)) {
+        return false;
+      }
+      if (filtroCapacidad === 'grande' && cap <= 30) {
+        return false;
+      }
+    }
+
+    return true;
   });
 
   if (loading) {
@@ -77,18 +155,64 @@ function StudentDashboard() {
               
               {/* Chips de filtro */}
               <div className="flex flex-wrap gap-3">
+                {/* Filtro de Sede */}
+                {sedesUnicas.length > 1 && (
+                  <div className="relative">
+                    <select
+                      value={filtroSede}
+                      onChange={(e) => setFiltroSede(e.target.value)}
+                      className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
+                    >
+                      <option value="todos">Todas las Sedes</option>
+                      {sedesUnicas.map(sede => (
+                        <option key={sede.id} value={sede.id}>
+                          {sede.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                      expand_more
+                    </span>
+                  </div>
+                )}
+
+                {/* Filtro de Edificio */}
+                {edificiosUnicos.length > 1 && (
+                  <div className="relative">
+                    <select
+                      value={filtroEdificio}
+                      onChange={(e) => setFiltroEdificio(e.target.value)}
+                      className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
+                    >
+                      <option value="todos">Todos los Edificios</option>
+                      {edificiosUnicos.map(edificio => (
+                        <option key={edificio.id} value={edificio.id}>
+                          {edificio.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                      expand_more
+                    </span>
+                  </div>
+                )}
+
                 {/* Filtro de Piso */}
                 <div className="relative">
                   <select
                     value={filtroPiso}
                     onChange={(e) => setFiltroPiso(e.target.value)}
                     className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     <option value="todos">Todos los Pisos</option>
-                    <option value="1">Piso 1</option>
-                    <option value="2">Piso 2</option>
-                    <option value="3">Piso 3</option>
-                    <option value="4">Piso 4</option>
+                    {pisosUnicos.map(piso => (
+                      <option key={piso} value={piso}>
+                        Piso {piso}
+                      </option>
+                    ))}
                   </select>
                   <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
                     expand_more
@@ -101,6 +225,7 @@ function StudentDashboard() {
                     value={filtroCapacidad}
                     onChange={(e) => setFiltroCapacidad(e.target.value)}
                     className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     <option value="todos">Todas las Capacidades</option>
                     <option value="pequena">Pequeña (≤15)</option>
@@ -112,19 +237,30 @@ function StudentDashboard() {
                   </span>
                 </div>
 
-                {/* Botón para limpiar filtros */}
-                {(filtroPiso !== 'todos' || filtroCapacidad !== 'todos') && (
-                  <button
-                    onClick={() => {
-                      setFiltroPiso('todos');
-                      setFiltroCapacidad('todos');
-                    }}
-                    className="flex h-10 items-center gap-2 rounded-lg border border-neutral-light bg-white px-4 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-gray-100"
-                  >
-                    <span className="material-symbols-outlined text-lg">close</span>
-                    Limpiar filtros
-                  </button>
-                )}
+                {/* Botón para limpiar filtros - Solo si hay filtros aplicados manualmente */}
+                {(() => {
+                  // Si solo hay 1 sede, no contar filtroSede (se auto-selecciona)
+                  const sedeModificada = sedesUnicas.length > 1 && filtroSede !== 'todos';
+                  const hayFiltrosAplicados = sedeModificada || filtroEdificio !== 'todos' || filtroPiso !== 'todos' || filtroCapacidad !== 'todos';
+
+                  return hayFiltrosAplicados && (
+                    <button
+                      onClick={() => {
+                        // Solo resetear sede si hay múltiples sedes
+                        if (sedesUnicas.length > 1) {
+                          setFiltroSede('todos');
+                        }
+                        setFiltroEdificio('todos');
+                        setFiltroPiso('todos');
+                        setFiltroCapacidad('todos');
+                      }}
+                      className="flex h-10 items-center gap-2 rounded-lg border border-neutral-light bg-white px-4 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-gray-100"
+                    >
+                      <span className="material-symbols-outlined text-lg">close</span>
+                      Limpiar filtros
+                    </button>
+                  );
+                })()}
               </div>
 
               {/* View Toggle: Mapa vs Lista */}
@@ -184,6 +320,8 @@ function StudentDashboard() {
                   /* Vista de Plano Dinámico */
                   <PlanoSalasDinamico
                     pisoInicial={filtroPiso === 'todos' ? 1 : parseInt(filtroPiso)}
+                    filtroSede={filtroSede}
+                    filtroEdificio={filtroEdificio}
                   />
                 ) : (
                   /* Vista de Cards (Grid) - Solo lectura */
@@ -227,7 +365,7 @@ function StudentDashboard() {
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="material-symbols-outlined text-lg text-primary">layers</span>
-                                <span>Piso {sala.piso}</span>
+                                <span>Piso {sala.pisoNumero || sala.piso}</span>
                               </div>
                               {sala.equipamiento && sala.equipamiento.length > 0 && (
                                 <div className="flex items-start gap-2">
@@ -262,7 +400,7 @@ function StudentDashboard() {
                         </div>
                         <div>
                           <p className="font-semibold text-neutral-dark">{sala.nombre}</p>
-                          <p className="text-sm text-gray-500">Piso {sala.piso} • Capacidad: {sala.capacidad}</p>
+                          <p className="text-sm text-gray-500">Piso {sala.pisoNumero || sala.piso} • Capacidad: {sala.capacidad}</p>
                         </div>
                       </div>
                       <span className={`rounded-full px-3 py-1 text-xs font-medium ${

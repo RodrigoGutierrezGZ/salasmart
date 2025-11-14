@@ -184,10 +184,11 @@ firebase deploy --only firestore:rules
 ## 📊 Estado del Proyecto
 
 - **Versión:** 2.6
-- **Estado:** ✅ Producción
+- **Estado:** ⚠️ En Desarrollo (Bug crítico en chatbot)
 - **Plan Firebase:** Spark (gratuito)
 - **Costo Mensual:** $0 USD (100% gratuito con Gemini)
 - **Última actualización:** 4 de Noviembre, 2025
+- **Bug conocido:** Reservas con chatbot IA no se reflejan (ver BUGS_PENDIENTES.md)
 
 ---
 
@@ -315,11 +316,16 @@ git push origin main
 
 ## 🐛 Reporte de Bugs
 
+⚠️ **VER BUGS PENDIENTES:** [`BUGS_PENDIENTES.md`](./BUGS_PENDIENTES.md) - Lista actualizada de bugs en progreso
+
 Si encuentras algún problema, por favor:
 1. Revisa la [documentación](./docs)
 2. Verifica la consola del navegador (F12)
 3. Revisa Firebase Console
 4. Documenta el error con screenshots
+
+### **Bug Crítico Conocido:**
+- 🔴 **Reservas con chatbot IA no se reflejan en paneles** - En investigación (ver BUGS_PENDIENTES.md)
 
 ---
 
@@ -353,9 +359,9 @@ Si encuentras algún problema, por favor:
 
 ---
 
-## 🎉 Estado Final
+## 🎉 Estado Actual
 
-**✅ Sistema 100% funcional y listo para producción**
+**⚠️ Sistema funcional con bug crítico pendiente**
 
 El proyecto está organizado profesionalmente con:
 - ✅ Código limpio y bien estructurado
@@ -363,6 +369,18 @@ El proyecto está organizado profesionalmente con:
 - ✅ Configuraciones centralizadas
 - ✅ Documentación completa
 - ✅ Sin código innecesario
+- ⚠️ **BUG PENDIENTE:** Reservas con chatbot IA no se reflejan en paneles
+
+**Funcionalidades que SÍ funcionan al 100%:**
+- ✅ Creación de reservas desde formulario UI
+- ✅ Visualización en Admin Panel y Mis Reservas
+- ✅ Gestión de salas completa
+- ✅ Editor de planos
+- ✅ Autenticación y roles
+- ✅ Estados en tiempo real
+
+**Funcionalidad con problemas:**
+- ❌ Creación de reservas mediante chatbot IA (ver BUGS_PENDIENTES.md)
 
 ---
 

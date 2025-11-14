@@ -13,7 +13,9 @@ const Login = () => {
   const navigate = useNavigate();
   
   const location = useLocation();
-  const registrationSuccess = new URLSearchParams(location.search).get('status') === 'registered';
+  const status = new URLSearchParams(location.search).get('status');
+  const registrationSuccess = status === 'registered';
+  const registrationPending = status === 'pending';
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -58,6 +60,22 @@ const Login = () => {
         {registrationSuccess && (
           <div className="w-full mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
             <p className="text-sm text-green-800 dark:text-green-200">¡Registro exitoso! Ya puedes iniciar sesión.</p>
+          </div>
+        )}
+        {registrationPending && (
+          <div className="w-full mb-4 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined text-yellow-600 dark:text-yellow-400">pending</span>
+              <div>
+                <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
+                  Cuenta creada - Pendiente de aprobación
+                </p>
+                <p className="mt-1 text-xs text-yellow-800 dark:text-yellow-200">
+                  Tu cuenta ha sido creada exitosamente como <strong>estudiante</strong>, pero está <strong>inactiva</strong> hasta que un administrador la apruebe.
+                  Recibirás un correo cuando tu cuenta sea activada.
+                </p>
+              </div>
+            </div>
           </div>
         )}
 

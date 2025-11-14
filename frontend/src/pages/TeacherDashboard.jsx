@@ -1,5 +1,5 @@
 // src/pages/TeacherDashboard.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import FormularioReserva from '../components/FormularioReserva';
 import PlanoSalasDinamico from '../components/PlanoSalasDinamico';
@@ -10,14 +10,69 @@ import { ESTADOS_SALA } from '../utils/constants';
 
 function TeacherDashboard() {
   const { salas, loading, error } = useSalas();
-  const { user, role } = useAuth();
+  const { user, role, userData } = useAuth();
   const [salaSeleccionada, setSalaSeleccionada] = useState(null);
   const [showFormulario, setShowFormulario] = useState(false);
   const [showListaSalas, setShowListaSalas] = useState(false);
   const [vistaActual, setVistaActual] = useState('disponibles'); // 'disponibles' o 'todas'
   const [tipoVista, setTipoVista] = useState('cards'); // 'cards' o 'plano'
+
+  // Obtener sedes únicas disponibles para el usuario (filtradas por sedes afiliadas)
+  const sedesUnicas = React.useMemo(() => {
+    let salasDisponibles = salas;
+
+    // Filtrar por sedes afiliadas (solo para no-admin)
+    if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+      salasDisponibles = salas.filter(sala => userData.sedesAfiliadas.includes(sala.sedeId));
+    }
+
+    return [...new Set(salasDisponibles.map(s => ({ id: s.sedeId, nombre: s.sedeCodigo || s.sedeId })).map(JSON.stringify))].map(JSON.parse);
+  }, [salas, userData]);
+
+  // Auto-seleccionar sede si solo hay una disponible (inicialización inteligente)
+  const sedeInicial = React.useMemo(() => {
+    return sedesUnicas.length === 1 ? sedesUnicas[0].id : 'todos';
+  }, [sedesUnicas]);
+
+  const [filtroSede, setFiltroSede] = useState(sedeInicial);
+  const [filtroEdificio, setFiltroEdificio] = useState('todos');
   const [filtroPiso, setFiltroPiso] = useState('todos');
   const [filtroCapacidad, setFiltroCapacidad] = useState('todos');
+
+  // Actualizar filtroSede cuando cambian las sedes disponibles
+  useEffect(() => {
+    if (sedesUnicas.length === 1 && filtroSede === 'todos') {
+      setFiltroSede(sedesUnicas[0].id);
+    }
+  }, [sedesUnicas]);
+
+  const edificiosUnicos = filtroSede === 'todos'
+    ? [...new Set(salas.map(s => ({ id: s.edificioId, nombre: s.edificioCodigo || s.edificioId, sedeId: s.sedeId })).map(JSON.stringify))].map(JSON.parse)
+    : [...new Set(salas.filter(s => s.sedeId === filtroSede).map(s => ({ id: s.edificioId, nombre: s.edificioCodigo || s.edificioId })).map(JSON.stringify))].map(JSON.parse);
+
+  // Pisos únicos (dinámicos según filtros de sede y edificio)
+  let salasParaPisos = salas;
+  if (filtroSede !== 'todos') {
+    salasParaPisos = salasParaPisos.filter(s => s.sedeId === filtroSede);
+  }
+  if (filtroEdificio !== 'todos') {
+    salasParaPisos = salasParaPisos.filter(s => s.edificioId === filtroEdificio);
+  }
+  const pisosUnicos = [...new Set(salasParaPisos.map(s => s.pisoNumero || s.piso).filter(p => p !== undefined))].sort((a, b) => a - b);
+
+  // Reset filtros en cascada
+  useEffect(() => {
+    if (filtroSede === 'todos') {
+      setFiltroEdificio('todos');
+      setFiltroPiso('todos');
+    }
+  }, [filtroSede]);
+
+  useEffect(() => {
+    if (filtroEdificio === 'todos') {
+      setFiltroPiso('todos');
+    }
+  }, [filtroEdificio]);
 
   const handleReservar = (sala) => {
     setSalaSeleccionada(sala);
@@ -36,9 +91,29 @@ function TeacherDashboard() {
 
   // Filtrar salas según filtros (mostrar TODAS con sus colores)
   const salasMostrar = salas.filter(sala => {
-    // Filtro por piso
-    if (filtroPiso !== 'todos' && sala.piso !== parseInt(filtroPiso)) {
+    // Filtro por sedes afiliadas (solo para no-admin)
+    if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+      if (!userData.sedesAfiliadas.includes(sala.sedeId)) {
+        return false;
+      }
+    }
+
+    // Filtro por sede
+    if (filtroSede !== 'todos' && sala.sedeId !== filtroSede) {
       return false;
+    }
+
+    // Filtro por edificio
+    if (filtroEdificio !== 'todos' && sala.edificioId !== filtroEdificio) {
+      return false;
+    }
+
+    // Filtro por piso (compatibilidad con ambos campos)
+    if (filtroPiso !== 'todos') {
+      const pisoSala = sala.pisoNumero || sala.piso;
+      if (pisoSala !== parseInt(filtroPiso)) {
+        return false;
+      }
     }
 
     // Filtro por capacidad
@@ -159,18 +234,64 @@ function TeacherDashboard() {
 
               {/* Chips de filtro */}
               <div className="flex flex-wrap gap-3">
+                {/* Filtro de Sede */}
+                {sedesUnicas.length > 1 && (
+                  <div className="relative">
+                    <select
+                      value={filtroSede}
+                      onChange={(e) => setFiltroSede(e.target.value)}
+                      className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
+                    >
+                      <option value="todos">Todas las Sedes</option>
+                      {sedesUnicas.map(sede => (
+                        <option key={sede.id} value={sede.id}>
+                          {sede.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                      expand_more
+                    </span>
+                  </div>
+                )}
+
+                {/* Filtro de Edificio */}
+                {edificiosUnicos.length > 1 && (
+                  <div className="relative">
+                    <select
+                      value={filtroEdificio}
+                      onChange={(e) => setFiltroEdificio(e.target.value)}
+                      className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
+                    >
+                      <option value="todos">Todos los Edificios</option>
+                      {edificiosUnicos.map(edificio => (
+                        <option key={edificio.id} value={edificio.id}>
+                          {edificio.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                      expand_more
+                    </span>
+                  </div>
+                )}
+
                 {/* Filtro de Piso */}
                 <div className="relative">
                   <select
                     value={filtroPiso}
                     onChange={(e) => setFiltroPiso(e.target.value)}
                     className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     <option value="todos">Todos los Pisos</option>
-                    <option value="1">Piso 1</option>
-                    <option value="2">Piso 2</option>
-                    <option value="3">Piso 3</option>
-                    <option value="4">Piso 4</option>
+                    {pisosUnicos.map(piso => (
+                      <option key={piso} value={piso}>
+                        Piso {piso}
+                      </option>
+                    ))}
                   </select>
                   <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
                     expand_more
@@ -183,6 +304,7 @@ function TeacherDashboard() {
                     value={filtroCapacidad}
                     onChange={(e) => setFiltroCapacidad(e.target.value)}
                     className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     <option value="todos">Todas las Capacidades</option>
                     <option value="pequena">Pequeña (≤15)</option>
@@ -194,19 +316,30 @@ function TeacherDashboard() {
                   </span>
                 </div>
                 
-                {/* Botón para limpiar filtros */}
-                {(filtroPiso !== 'todos' || filtroCapacidad !== 'todos') && (
-                  <button
-                    onClick={() => {
-                      setFiltroPiso('todos');
-                      setFiltroCapacidad('todos');
-                    }}
-                    className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-4 text-sm font-semibold text-danger transition-all hover:bg-danger/20"
-                  >
-                    <span className="material-symbols-outlined text-base">close</span>
-                    Limpiar
-                  </button>
-                )}
+                {/* Botón para limpiar filtros - Solo si hay filtros aplicados manualmente */}
+                {(() => {
+                  // Si solo hay 1 sede, no contar filtroSede (se auto-selecciona)
+                  const sedeModificada = sedesUnicas.length > 1 && filtroSede !== 'todos';
+                  const hayFiltrosAplicados = sedeModificada || filtroEdificio !== 'todos' || filtroPiso !== 'todos' || filtroCapacidad !== 'todos';
+
+                  return hayFiltrosAplicados && (
+                    <button
+                      onClick={() => {
+                        // Solo resetear sede si hay múltiples sedes
+                        if (sedesUnicas.length > 1) {
+                          setFiltroSede('todos');
+                        }
+                        setFiltroEdificio('todos');
+                        setFiltroPiso('todos');
+                        setFiltroCapacidad('todos');
+                      }}
+                      className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-4 text-sm font-semibold text-danger transition-all hover:bg-danger/20"
+                    >
+                      <span className="material-symbols-outlined text-base">close</span>
+                      Limpiar
+                    </button>
+                  );
+                })()}
               </div>
             </div>
 
@@ -216,6 +349,8 @@ function TeacherDashboard() {
               <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
                 <PlanoSalasDinamico
                   pisoInicial={filtroPiso === 'todos' ? 1 : parseInt(filtroPiso)}
+                  filtroSede={filtroSede}
+                  filtroEdificio={filtroEdificio}
                   onSalaClick={handleReservar}
                 />
               </div>

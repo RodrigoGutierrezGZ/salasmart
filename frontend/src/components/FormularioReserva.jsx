@@ -35,10 +35,10 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
       return { valido: false, error: 'La hora de inicio debe ser anterior a la hora de fin' };
     }
 
-    // Validar duración mínima (30 minutos)
+    // Validar duración mínima (45 minutos)
     const duracionMinutos = minutosFin - minutosInicio;
-    if (duracionMinutos < 30) {
-      return { valido: false, error: 'La reserva debe tener una duración mínima de 30 minutos' };
+    if (duracionMinutos < 45) {
+      return { valido: false, error: 'La reserva debe tener una duración mínima de 45 minutos' };
     }
 
     // Validar duración máxima (4 horas = 240 minutos)
@@ -289,7 +289,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
               required
               className="w-full rounded-lg border border-neutral-light px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
             />
-            <p className="mt-1 text-xs text-gray-500">Duración: 30 min - 4 horas</p>
+            <p className="mt-1 text-xs text-gray-500">Duración: 45 min - 4 horas</p>
           </div>
         </div>
 

@@ -1,0 +1,49 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ============================================
+    // FUNCIONES HELPER
+    // ============================================
+
+    // Verifica si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Verifica si el usuario es admin
+    function isAdmin() {
+      return isAuthenticated() &&
+             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Valida que el archivo sea una imagen válida
+    function isValidImage() {
+      return request.resource.size < 5 * 1024 * 1024 && // Máximo 5MB
+             request.resource.contentType.matches('image/(png|jpeg|jpg|webp)');
+    }
+
+
+    // ============================================
+    // REGLAS PARA: planos/{sedeId}/{edificioId}/{imagenFile}
+    // ============================================
+    // Imágenes de planos de pisos
+    match /planos/{sedeId}/{edificioId}/{imagenFile} {
+      // Lectura: Cualquier usuario autenticado puede ver las imágenes
+      allow read: if isAuthenticated();
+
+      // Escritura: Solo administradores pueden subir/modificar/eliminar imágenes
+      allow create, update: if isAdmin() && isValidImage();
+      allow delete: if isAdmin();
+    }
+
+
+    // ============================================
+    // BLOQUEAR TODO LO DEMÁS
+    // ============================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

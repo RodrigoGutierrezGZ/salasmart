@@ -4,17 +4,19 @@
  */
 
 import { db, auth } from '../firebase/config';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  query, 
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
   where,
-  Timestamp 
+  Timestamp
 } from 'firebase/firestore';
+import { registrarLog } from './logsService';
 
 
 /**
@@ -27,6 +29,7 @@ import {
  * @param {string} datosReserva.asignatura - Nombre de la asignatura
  * @param {Date|string} datosReserva.horaInicio - Hora inicio
  * @param {Date|string} datosReserva.horaFin - Hora fin
+ * @param {string} datosReserva.origen - Origen de la reserva: 'manual' o 'chatbot' (default: 'manual')
  * @return {Promise<Object>} Resultado de la operación
  */
 export async function crearReserva(datosReserva) {
@@ -106,6 +109,7 @@ export async function crearReserva(datosReserva) {
       horaInicio,
       horaFin,
       jornada: datosReserva.jornada || 'diurno',
+      origen: datosReserva.origen || 'manual', // 'manual' o 'chatbot'
       estado: 'activa',
       fechaCreacion: Timestamp.now(),
       fechaActualizacion: Timestamp.now(),
@@ -117,6 +121,22 @@ export async function crearReserva(datosReserva) {
     const docRef = await addDoc(collection(db, 'reservas'), nuevaReserva);
 
     console.log('✅✅✅ [reservasService] RESERVA CREADA EN FIRESTORE - ID:', docRef.id);
+
+    // Registrar log
+    await registrarLog(
+      'RESERVAS',
+      'crear',
+      `${salaNombre} - ${nuevaReserva.asignatura}`,
+      docRef.id,
+      {
+        sala: salaNombre,
+        asignatura: nuevaReserva.asignatura,
+        docente: nuevaReserva.nombreDocente,
+        horaInicio: horaInicio.toDate().toLocaleString('es-CL'),
+        horaFin: horaFin.toDate().toLocaleString('es-CL'),
+        origen: nuevaReserva.origen // 'manual' o 'chatbot'
+      }
+    );
 
     return {
       success: true,
@@ -244,11 +264,28 @@ export async function cancelarReserva(reservaId) {
       };
     }
 
+    // Obtener datos de la reserva antes de cancelar
     const reservaRef = doc(db, 'reservas', reservaId);
+    const reservaSnap = await getDoc(reservaRef);
+    const reservaData = reservaSnap.exists() ? reservaSnap.data() : {};
+
     await updateDoc(reservaRef, {
       estado: 'cancelada',
       fechaActualizacion: Timestamp.now(),
     });
+
+    // Registrar log
+    await registrarLog(
+      'RESERVAS',
+      'cancelar',
+      `${reservaData.salaNombre || 'Sala'} - ${reservaData.asignatura || 'Sin asignatura'}`,
+      reservaId,
+      {
+        sala: reservaData.salaNombre,
+        asignatura: reservaData.asignatura,
+        docente: reservaData.nombreDocente
+      }
+    );
 
     return {
       success: true,

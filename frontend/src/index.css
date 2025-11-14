@@ -15,6 +15,25 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Eliminar flechas nativas de TODOS los selects en TODOS los navegadores */
+  select {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-image: none !important;
+  }
+
+  /* Para IE10+ */
+  select::-ms-expand {
+    display: none !important;
+  }
+
+  /* Para navegadores basados en WebKit (Chrome, Safari, Edge) */
+  select::-webkit-calendar-picker-indicator {
+    display: none !important;
+    opacity: 0 !important;
+  }
 }
 
 @layer utilities {
@@ -22,15 +41,15 @@
     background-size: 200% 200%;
   }
   
-  /* Animaciones para modales */
+  /* Animaciones para modales - MÁS RÁPIDAS Y FLUIDAS */
   .animate-fadeIn {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn 0.15s ease-out;
   }
-  
+
   .animate-slideUp {
-    animation: slideUp 0.3s ease-out;
+    animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -39,11 +58,11 @@
       opacity: 1;
     }
   }
-  
+
   @keyframes slideUp {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(15px);
     }
     to {
       opacity: 1;

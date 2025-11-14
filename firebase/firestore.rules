@@ -93,6 +93,58 @@ service cloud.firestore {
 
 
     // ============================================
+    // REGLAS PARA COLECCIÓN: sedes
+    // ============================================
+    match /sedes/{sedeId} {
+      // Lectura: Cualquier usuario autenticado puede ver las sedes
+      allow read: if isAuthenticated();
+
+      // Escritura: Solo administradores pueden crear/modificar/eliminar sedes
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================
+    // REGLAS PARA COLECCIÓN: edificios
+    // ============================================
+    match /edificios/{edificioId} {
+      // Lectura: Cualquier usuario autenticado puede ver los edificios
+      allow read: if isAuthenticated();
+
+      // Escritura: Solo administradores pueden crear/modificar/eliminar edificios
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================
+    // REGLAS PARA COLECCIÓN: pisos
+    // ============================================
+    match /pisos/{pisoId} {
+      // Lectura: Cualquier usuario autenticado puede ver los pisos
+      allow read: if isAuthenticated();
+
+      // Escritura: Solo administradores pueden crear/modificar/eliminar pisos
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================
+    // REGLAS PARA COLECCIÓN: logs (Auditoría)
+    // ============================================
+    match /logs/{logId} {
+      // Lectura: Solo administradores pueden ver los logs
+      allow read: if isAdmin();
+
+      // Creación: Cualquier usuario autenticado puede crear logs
+      // (para que los servicios puedan registrar acciones)
+      allow create: if isAuthenticated();
+
+      // Actualización y eliminación: No permitidas (logs son inmutables)
+      allow update, delete: if false;
+    }
+
+
+    // ============================================
     // REGLAS PARA COLECCIÓN: notificaciones (Futuro)
     // ============================================
     match /notificaciones/{notifId} {

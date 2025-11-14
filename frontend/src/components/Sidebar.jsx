@@ -9,6 +9,8 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
   
   const handleLogout = async () => {
     try {
+      // Limpiar caché de sesión antes de cerrar sesión
+      sessionStorage.removeItem('salasmart_user_cache');
       await signOut(auth);
     } catch (error) {
       console.error("Error al cerrar sesión", error);
@@ -33,9 +35,11 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
     if (role === 'admin') {
       return [
         { tab: 'dashboard', icon: 'analytics', label: 'Dashboard' },
+        { tab: 'infraestructura', icon: 'apartment', label: 'Infraestructura' },
         { tab: 'salas', icon: 'meeting_room', label: 'Salas' },
         { tab: 'usuarios', icon: 'group', label: 'Usuarios' },
         { tab: 'reservas', icon: 'event_available', label: 'Reservas' },
+        { tab: 'historial', icon: 'history', label: 'Historial' },
       ];
     }
 

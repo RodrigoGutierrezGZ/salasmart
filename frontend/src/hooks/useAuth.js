@@ -4,50 +4,88 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
 
+// Caché de sesión para evitar re-fetching innecesario
+const SESSION_CACHE_KEY = 'salasmart_user_cache';
+
+// Función para obtener caché de sesión
+const getSessionCache = () => {
+  try {
+    const cached = sessionStorage.getItem(SESSION_CACHE_KEY);
+    return cached ? JSON.parse(cached) : null;
+  } catch {
+    return null;
+  }
+};
+
+// Función para guardar en caché de sesión
+const setSessionCache = (data) => {
+  try {
+    sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(data));
+  } catch {
+    // Ignorar errores de sessionStorage
+  }
+};
+
+// Función para limpiar caché
+const clearSessionCache = () => {
+  try {
+    sessionStorage.removeItem(SESSION_CACHE_KEY);
+  } catch {
+    // Ignorar errores
+  }
+};
+
 export function useAuth() {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null); // NUEVO: al final para no romper orden
+  // Intentar cargar desde caché inicialmente para evitar flash
+  const cache = getSessionCache();
+
+  const [user, setUser] = useState(cache?.user || null);
+  const [role, setRole] = useState(cache?.role || null);
+  const [loading, setLoading] = useState(!cache); // Si hay caché, no loading
+  const [userData, setUserData] = useState(cache?.userData || null);
 
   useEffect(() => {
-    let timeoutId;
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      const startTime = Date.now();
-      
       if (currentUser) {
         const userDocRef = doc(db, 'users', currentUser.uid);
         const userDocSnap = await getDoc(userDocRef);
-        
+
         if (userDocSnap.exists()) {
           const data = userDocSnap.data();
           setRole(data.role);
-          setUserData(data); // Guardar todos los datos
+          setUserData(data);
+
+          // Guardar en caché para navegación instantánea
+          setSessionCache({
+            user: {
+              uid: currentUser.uid,
+              email: currentUser.email,
+              displayName: currentUser.displayName,
+            },
+            role: data.role,
+            userData: data,
+          });
         } else {
           setRole(null);
           setUserData(null);
+          clearSessionCache();
         }
         setUser(currentUser);
       } else {
         setUser(null);
         setRole(null);
         setUserData(null);
+        clearSessionCache();
       }
-      
-      // Delay mínimo de 500ms para evitar "flashes"
-      const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, 500 - elapsedTime);
-      
-      timeoutId = setTimeout(() => {
-        setLoading(false);
-      }, remainingTime);
+
+      // Sin delay artificial - actualización instantánea
+      setLoading(false);
     });
 
     return () => {
       unsubscribe();
-      if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
 
-  return { user, role, loading, userData }; // userData al final
+  return { user, role, loading, userData };
 }

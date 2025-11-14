@@ -7,11 +7,13 @@ import { Row, Col, Card, Spinner, Alert, Form } from 'react-bootstrap';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Pie } from 'react-chartjs-2';
 import { ESTADOS_RESERVA } from '../utils/constants';
+import { useToast } from '../contexts/ToastContext';
 
 // Registrar componentes de Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 function DashboardEstadisticas() {
+  const { showError } = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalSalas: 0,
@@ -149,7 +151,7 @@ function DashboardEstadisticas() {
 
     } catch (error) {
       console.error('Error al cargar estadísticas:', error);
-      alert('Error al cargar las estadísticas. Revisa la consola para más detalles.');
+      showError('Error al cargar las estadísticas. Revisa la consola para más detalles.');
     } finally {
       setLoading(false);
     }
