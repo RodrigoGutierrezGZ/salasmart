@@ -44,8 +44,17 @@ const NotificacionesPanel = ({ usuarioId }) => {
   // ============================================================================
   // HANDLERS
   // ============================================================================
-  const togglePanel = () => {
-    setIsOpen(!isOpen);
+  const togglePanel = async () => {
+    const nuevoEstado = !isOpen;
+    setIsOpen(nuevoEstado);
+
+    // Si se está abriendo el panel y hay notificaciones no leídas, marcarlas
+    if (nuevoEstado && noLeidas > 0) {
+      // Pequeño delay para que el usuario vea las notificaciones antes de marcarlas
+      setTimeout(async () => {
+        await marcarTodasLeidas();
+      }, 300);
+    }
   };
 
   const handleMarcarTodasLeidas = async () => {
@@ -62,16 +71,22 @@ const NotificacionesPanel = ({ usuarioId }) => {
         onClick={togglePanel}
         className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
         title="Notificaciones"
+        disabled={loading}
       >
         <span className="material-symbols-outlined text-[24px]">
           notifications
         </span>
 
         {/* Badge de notificaciones no leídas */}
-        {noLeidas > 0 && (
+        {!loading && noLeidas > 0 && (
           <span className="absolute top-1 right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
             {noLeidas > 9 ? '9+' : noLeidas}
           </span>
+        )}
+
+        {/* Indicador de carga inicial */}
+        {loading && (
+          <span className="absolute top-1 right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
         )}
       </button>
 
@@ -105,10 +120,19 @@ const NotificacionesPanel = ({ usuarioId }) => {
           {/* Lista de notificaciones */}
           <div className="max-h-[500px] overflow-y-auto">
             {loading ? (
-              // Loading skeleton
-              <div className="p-8 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
-                <p className="mt-2 text-sm text-gray-500">Cargando notificaciones...</p>
+              // Loading skeleton - más sutil
+              <div className="p-6">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="mb-3 animate-pulse">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : notificaciones.length === 0 ? (
               // Estado vacío

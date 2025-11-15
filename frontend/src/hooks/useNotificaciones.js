@@ -33,12 +33,18 @@ export const useNotificaciones = (usuarioId) => {
       return;
     }
 
+    // Solo mostrar loading en la primera carga
+    let isFirstLoad = true;
     setLoading(true);
 
     // Suscribirse a cambios en tiempo real
     const unsubscribe = escucharNotificaciones(usuarioId, (nuevasNotificaciones) => {
       setNotificaciones(nuevasNotificaciones);
-      setLoading(false);
+      // Después de la primera carga, no mostrar loading
+      if (isFirstLoad) {
+        setLoading(false);
+        isFirstLoad = false;
+      }
     });
 
     // Cleanup: cancelar suscripción al desmontar
