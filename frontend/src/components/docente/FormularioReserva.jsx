@@ -6,7 +6,9 @@ import React, { useState } from 'react';
 import { crearReserva, validarDisponibilidad } from '../../services/reservasService';
 import { useAuth } from '../../hooks/useAuth';
 import { detectarJornada, JORNADAS } from '../../utils/constants';
-import { notificarReservaCreada } from '../../services/notificacionesService';
+import { notificarReservaCreada, notificarNuevaReserva } from '../../services/notificacionesService';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 
 function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
   const { user, userData } = useAuth(); // AGREGADO: userData
@@ -166,7 +168,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
     if (resultado.success) {
       setMensaje({ tipo: 'success', texto: '¡Reserva creada exitosamente!' });
 
-      // Enviar notificación al usuario
+      // Enviar notificación al usuario (docente)
       try {
         await notificarReservaCreada(
           user.uid,
@@ -177,8 +179,27 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
           resultado.data.id
         );
       } catch (error) {
-        console.error('Error al enviar notificación:', error);
-        // No interrumpir el flujo si falla la notificación
+        console.error('Error al enviar notificación al docente:', error);
+      }
+
+      // Enviar notificación a todos los admins
+      try {
+        const adminsQuery = query(collection(db, 'users'), where('role', '==', 'admin'));
+        const adminsSnapshot = await getDocs(adminsQuery);
+        const adminIds = adminsSnapshot.docs.map(doc => doc.id);
+
+        if (adminIds.length > 0) {
+          await notificarNuevaReserva(
+            adminIds,
+            nombreDocente,
+            sala.nombre || sala.id,
+            fecha,
+            horaInicio,
+            horaFin
+          );
+        }
+      } catch (error) {
+        console.error('Error al enviar notificación a admins:', error);
       }
 
       // Limpiar formulario

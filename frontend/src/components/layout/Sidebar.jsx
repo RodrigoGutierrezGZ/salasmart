@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/config';
+import NotificacionesPanel from '../shared/NotificacionesPanel';
 
 function Sidebar({ user, role, activeTab, onTabChange }) {
   const location = useLocation();
@@ -98,7 +99,7 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
             <span className="material-symbols-outlined text-primary">person</span>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-1">
             <h2 className="text-sm font-semibold leading-normal text-neutral-dark">
               {user?.email?.split('@')[0] || 'Usuario'}
             </h2>
@@ -106,6 +107,11 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
               {roleInfo.label}
             </p>
           </div>
+
+          {/* Campanita de Notificaciones (solo para admin y docente) */}
+          {(role === 'admin' || role === 'docente') && (
+            <NotificacionesPanel usuarioId={user?.uid} />
+          )}
         </div>
 
         {/* Navigation */}

@@ -347,3 +347,20 @@ export const notificarReservaCanceladaPorUsuario = async (adminIds, nombreUsuari
 
   return await Promise.all(promesas);
 };
+
+/**
+ * Notifica a admins cuando un docente crea una nueva reserva
+ */
+export const notificarNuevaReserva = async (adminIds, nombreDocente, nombreSala, fecha, horaInicio, horaFin) => {
+  const promesas = adminIds.map(adminId =>
+    crearNotificacion(
+      adminId,
+      TIPOS_NOTIFICACION.RESERVA_CREADA,
+      'Nueva reserva creada',
+      `${nombreDocente} reservó ${nombreSala} el ${fecha} de ${horaInicio} a ${horaFin}`,
+      { nombreDocente, nombreSala, fecha, horaInicio, horaFin }
+    )
+  );
+
+  return await Promise.all(promesas);
+};
