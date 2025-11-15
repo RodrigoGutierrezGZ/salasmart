@@ -191,12 +191,12 @@ firebase deploy --only firestore:rules
 
 ## 📊 Estado del Proyecto
 
-- **Versión:** 2.7
+- **Versión:** 2.8
 - **Estado:** ✅ Funcional (mejoras continuas)
 - **Plan Firebase:** Spark (gratuito)
 - **Costo Mensual:** $0 USD (100% gratuito con Gemini)
 - **Última actualización:** 15 de Noviembre, 2025
-- **Última sesión:** Implementación de notificaciones + limpieza de código
+- **Última sesión:** Notificaciones para estudiantes + Filtros por sede
 
 ---
 
@@ -294,7 +294,15 @@ git push origin main
 
 ### **Completado Recientemente ✅**
 
-#### **Sesión 15 Nov 2025 - Notificaciones y Limpieza**
+#### **Sesión 15 Nov 2025 (Parte 2) - Notificaciones para Estudiantes + Filtros**
+- [x] **Notificaciones habilitadas para estudiantes** - Antes solo admin y docentes, ahora todos reciben notificaciones
+- [x] **Mensajes de bienvenida mejorados** - Incluyen las sedes asignadas al activar cuenta
+- [x] **Filtros por sede en dashboards** - Edificios y pisos filtrados según sedes afiliadas del usuario
+- [x] **Pantalla de Cuenta Pendiente** - Vista amigable para usuarios sin sede asignada
+- [x] **Componente reutilizable** - CuentaPendiente.jsx en /shared para mejor organización
+- [x] **Scripts de utilidad** - Debug y corrección de datos de sedes/edificios
+
+#### **Sesión 15 Nov 2025 (Parte 1) - Notificaciones y Limpieza**
 - [x] **Sistema de Notificaciones Completo** - 7 tipos de notificaciones en tiempo real
 - [x] **Mejora de Notificación de Cambio de Rol** - Ahora incluye nombre del usuario
 - [x] **Páginas de Usuario** - Perfil y Configuración implementadas
