@@ -65,15 +65,19 @@ const NotificacionesPanel = ({ usuarioId }) => {
   // RENDER
   // ============================================================================
   return (
-    <div className="relative" ref={panelRef}>
+    <div className="relative z-50" ref={panelRef}>
       {/* Botón de notificaciones */}
       <button
         onClick={togglePanel}
-        className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+        className={`relative p-2 rounded-lg transition-colors ${
+          noLeidas > 0
+            ? 'text-red-600 hover:bg-red-50'
+            : 'text-gray-600 hover:bg-gray-100'
+        }`}
         title="Notificaciones"
         disabled={loading}
       >
-        <span className="material-symbols-outlined text-[24px]">
+        <span className={`material-symbols-outlined text-[24px] ${noLeidas > 0 ? 'font-bold' : ''}`}>
           notifications
         </span>
 
@@ -92,7 +96,7 @@ const NotificacionesPanel = ({ usuarioId }) => {
 
       {/* Panel dropdown */}
       {isOpen && (
-        <div className="absolute left-0 top-full mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
+        <div className="absolute left-0 top-full mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-[100] overflow-hidden">
           {/* Header */}
           <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
             <div className="flex items-center justify-between">
