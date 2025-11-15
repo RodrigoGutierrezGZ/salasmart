@@ -38,6 +38,7 @@ import { actualizarNombresDesdeEmails } from '../utils/actualizarNombresUsuarios
 import { obtenerSedes } from '../services/sedesService';
 import { obtenerEdificiosPorSede } from '../services/edificiosService';
 import { obtenerPisosPorEdificio } from '../services/pisosService';
+import { notificarCuentaAprobada, notificarSedeAsignada } from '../services/notificacionesService';
 
 // Chart.js
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -597,10 +598,22 @@ function AdminPanel() {
       type: nuevoEstado ? 'success' : 'warning',
       onConfirm: async () => {
         try {
+          // Actualizar estado del usuario
           await updateDoc(doc(db, 'users', userId), { activo: nuevoEstado });
           showSuccess(`Usuario ${nuevoEstado ? 'activado' : 'desactivado'} exitosamente`);
-          fetchUsers();
 
+          // Si se está activando, enviar notificación
+          if (nuevoEstado) {
+            try {
+              const usuario = users.find(u => u.id === userId);
+              const nombreUsuario = usuario?.nombre || usuario?.email?.split('@')[0] || 'Usuario';
+              await notificarCuentaAprobada(userId, nombreUsuario);
+            } catch (notifError) {
+              console.error('Error al enviar notificación de activación:', notifError);
+            }
+          }
+
+          fetchUsers();
           await registrarLog('USUARIOS', accion, `Usuario ${userId}`, userId, {});
         } catch (error) {
           showError(`Error al ${accion} el usuario`);

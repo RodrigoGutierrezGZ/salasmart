@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { obtenerMisReservas, cancelarReserva, eliminarReserva } from '../../services/reservasService';
 import { useAuth } from '../../hooks/useAuth';
 import { JORNADAS, detectarJornada } from '../../utils/constants';
+import { notificarReservaCancelada } from '../../services/notificacionesService';
 
 function MisReservas() {
   const { user } = useAuth();
@@ -95,6 +96,28 @@ function MisReservas() {
 
     if (resultado.success) {
       setMensaje({ tipo: 'success', texto: 'Reserva cancelada exitosamente' });
+
+      // Enviar notificación de cancelación
+      try {
+        const nombreSala = reservaACancelar.salaNombre || 'Sala';
+        const fecha = new Date(reservaACancelar.horaInicio.toDate ? reservaACancelar.horaInicio.toDate() : reservaACancelar.horaInicio);
+        const fechaStr = fecha.toLocaleDateString('es-ES');
+        const horaInicio = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        const horaFin = new Date(reservaACancelar.horaFin.toDate ? reservaACancelar.horaFin.toDate() : reservaACancelar.horaFin)
+          .toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+        await notificarReservaCancelada(
+          user.uid,
+          nombreSala,
+          fechaStr,
+          horaInicio,
+          horaFin,
+          reservaACancelar.id
+        );
+      } catch (error) {
+        console.error('Error al enviar notificación de cancelación:', error);
+      }
+
       setReservaACancelar(null);
       // Recargar lista
       cargarReservas();

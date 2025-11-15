@@ -8,6 +8,7 @@ import { db } from '../../../firebase/config';
 import { obtenerSedes } from '../../../services/sedesService';
 import { registrarLog } from '../../../services/logsService';
 import { useToast } from '../../../contexts/ToastContext';
+import { notificarSedeAsignada } from '../../../services/notificacionesService';
 
 export default function AsignarSedesModal({ usuario, onClose, onSuccess }) {
   const { showError } = useToast();
@@ -72,6 +73,15 @@ export default function AsignarSedesModal({ usuario, onClose, onSuccess }) {
           sedes: nombresSedesSeleccionadas || 'Ninguna'
         }
       );
+
+      // Enviar notificación al usuario
+      if (sedesSeleccionadas.length > 0) {
+        try {
+          await notificarSedeAsignada(usuario.id, nombresSedesSeleccionadas);
+        } catch (notifError) {
+          console.error('Error al enviar notificación de sedes:', notifError);
+        }
+      }
 
       onSuccess?.();
       onClose();

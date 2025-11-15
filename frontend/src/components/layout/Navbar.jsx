@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/config';
+import NotificacionesPanel from '../shared/NotificacionesPanel';
 
 function Navbar({ user, role }) {
   const handleLogout = async () => {
@@ -84,7 +85,11 @@ function Navbar({ user, role }) {
                 {getRoleBadge()}
               </span>
             </div>
-            <button 
+
+            {/* Panel de Notificaciones */}
+            <NotificacionesPanel usuarioId={user.uid} />
+
+            <button
               onClick={handleLogout}
               className="flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
             >

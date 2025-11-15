@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { crearReserva, validarDisponibilidad } from '../../services/reservasService';
 import { useAuth } from '../../hooks/useAuth';
 import { detectarJornada, JORNADAS } from '../../utils/constants';
+import { notificarReservaCreada } from '../../services/notificacionesService';
 
 function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
   const { user, userData } = useAuth(); // AGREGADO: userData
@@ -164,6 +165,22 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
 
     if (resultado.success) {
       setMensaje({ tipo: 'success', texto: '¡Reserva creada exitosamente!' });
+
+      // Enviar notificación al usuario
+      try {
+        await notificarReservaCreada(
+          user.uid,
+          sala.nombre || sala.id,
+          fecha,
+          horaInicio,
+          horaFin,
+          resultado.data.id
+        );
+      } catch (error) {
+        console.error('Error al enviar notificación:', error);
+        // No interrumpir el flujo si falla la notificación
+      }
+
       // Limpiar formulario
       setAsignatura('');
       setFecha('');
