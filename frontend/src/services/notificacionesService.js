@@ -290,14 +290,25 @@ export const notificarReservaCancelada = async (usuarioId, nombreSala, fecha, ho
 
 /**
  * Crea notificación de cuenta aprobada
+ * @param {string} usuarioId - ID del usuario
+ * @param {string} nombreUsuario - Nombre del usuario
+ * @param {string} sedesAsignadas - Nombres de las sedes asignadas (opcional)
  */
-export const notificarCuentaAprobada = async (usuarioId, nombreUsuario) => {
+export const notificarCuentaAprobada = async (usuarioId, nombreUsuario, sedesAsignadas = null) => {
+  let mensaje = `¡Bienvenido/a a SalaSmart, ${nombreUsuario}! Tu cuenta ha sido activada exitosamente.`;
+
+  if (sedesAsignadas) {
+    mensaje += ` Se te asignó acceso a: ${sedesAsignadas}. Ya puedes comenzar a reservar salas en tu sede.`;
+  } else {
+    mensaje += ` Ya puedes comenzar a reservar salas.`;
+  }
+
   return await crearNotificacion(
     usuarioId,
     TIPOS_NOTIFICACION.CUENTA_APROBADA,
-    '¡Cuenta activada!',
-    `Hola ${nombreUsuario}, tu cuenta ha sido aprobada. Ya puedes reservar salas`,
-    {}
+    '¡Bienvenido/a a SalaSmart!',
+    mensaje,
+    { sedes: sedesAsignadas }
   );
 };
 

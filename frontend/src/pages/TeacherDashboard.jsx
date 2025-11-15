@@ -4,6 +4,7 @@ import Sidebar from '../components/layout/Sidebar';
 import FormularioReserva from '../components/docente/FormularioReserva';
 import PlanoSalasDinamico from '../components/planos/PlanoSalasDinamico';
 import ChatBot from '../components/chatbot/ChatBot';
+import CuentaPendiente from '../components/shared/CuentaPendiente';
 import { useSalas } from '../hooks/useSalas';
 import { useAuth } from '../hooks/useAuth';
 import { ESTADOS_SALA } from '../utils/constants';
@@ -46,12 +47,32 @@ function TeacherDashboard() {
     }
   }, [sedesUnicas]);
 
-  const edificiosUnicos = filtroSede === 'todos'
-    ? [...new Set(salas.map(s => ({ id: s.edificioId, nombre: s.edificioCodigo || s.edificioId, sedeId: s.sedeId })).map(JSON.stringify))].map(JSON.parse)
-    : [...new Set(salas.filter(s => s.sedeId === filtroSede).map(s => ({ id: s.edificioId, nombre: s.edificioCodigo || s.edificioId })).map(JSON.stringify))].map(JSON.parse);
+  // Filtrar edificios según sedes afiliadas del usuario
+  const edificiosUnicos = React.useMemo(() => {
+    let salasParaEdificios = salas;
+
+    // Filtrar por sedes afiliadas (solo para no-admin)
+    if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+      salasParaEdificios = salasParaEdificios.filter(sala => userData.sedesAfiliadas.includes(sala.sedeId));
+    }
+
+    // Filtrar por sede seleccionada
+    if (filtroSede !== 'todos') {
+      salasParaEdificios = salasParaEdificios.filter(s => s.sedeId === filtroSede);
+    }
+
+    return [...new Set(salasParaEdificios.map(s => ({ id: s.edificioId, nombre: s.edificioCodigo || s.edificioId })).map(JSON.stringify))].map(JSON.parse);
+  }, [salas, userData, filtroSede]);
 
   // Pisos únicos (dinámicos según filtros de sede y edificio)
   let salasParaPisos = salas;
+
+  // PRIMERO filtrar por sedes afiliadas (solo para no-admin)
+  if (userData?.role !== 'admin' && userData?.sedesAfiliadas && userData.sedesAfiliadas.length > 0) {
+    salasParaPisos = salasParaPisos.filter(s => userData.sedesAfiliadas.includes(s.sedeId));
+  }
+
+  // Luego aplicar filtros de sede y edificio seleccionados
   if (filtroSede !== 'todos') {
     salasParaPisos = salasParaPisos.filter(s => s.sedeId === filtroSede);
   }
@@ -146,6 +167,11 @@ function TeacherDashboard() {
         </main>
       </div>
     );
+  }
+
+  // Verificar si el usuario no tiene sedes asignadas (solo para no-admin)
+  if (userData?.role !== 'admin' && (!userData?.sedesAfiliadas || userData.sedesAfiliadas.length === 0)) {
+    return <CuentaPendiente user={user} role={role} userData={userData} />;
   }
 
   return (

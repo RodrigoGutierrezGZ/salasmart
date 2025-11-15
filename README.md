@@ -112,6 +112,14 @@ firebase deploy --only firestore:rules
 - 3 roles: Estudiante, Docente, Admin
 - Sesión persistente
 - Protección de rutas por rol
+- **Sistema de Notificaciones en Tiempo Real:**
+  - Notificaciones para admin y docentes
+  - 7 tipos de notificaciones (reservas, cambios de rol, cuentas nuevas, etc.)
+  - Auto-marcado como leído al abrir panel
+  - Indicador de notificaciones no leídas (badge rojo)
+- **Páginas de Usuario:**
+  - Perfil con estadísticas de reservas
+  - Configuración (placeholder para futuras funciones)
 
 #### **Gestión de Salas Avanzada**
 - CRUD completo (Crear, Leer, Actualizar, Eliminar)
@@ -183,12 +191,12 @@ firebase deploy --only firestore:rules
 
 ## 📊 Estado del Proyecto
 
-- **Versión:** 2.6
-- **Estado:** ⚠️ En Desarrollo (Bug crítico en chatbot)
+- **Versión:** 2.7
+- **Estado:** ✅ Funcional (mejoras continuas)
 - **Plan Firebase:** Spark (gratuito)
 - **Costo Mensual:** $0 USD (100% gratuito con Gemini)
-- **Última actualización:** 4 de Noviembre, 2025
-- **Bug conocido:** Reservas con chatbot IA no se reflejan (ver BUGS_PENDIENTES.md)
+- **Última actualización:** 15 de Noviembre, 2025
+- **Última sesión:** Implementación de notificaciones + limpieza de código
 
 ---
 
@@ -285,6 +293,14 @@ git push origin main
 ## 🎯 Roadmap
 
 ### **Completado Recientemente ✅**
+
+#### **Sesión 15 Nov 2025 - Notificaciones y Limpieza**
+- [x] **Sistema de Notificaciones Completo** - 7 tipos de notificaciones en tiempo real
+- [x] **Mejora de Notificación de Cambio de Rol** - Ahora incluye nombre del usuario
+- [x] **Páginas de Usuario** - Perfil y Configuración implementadas
+- [x] **Limpieza de Código** - Eliminada funcionalidad de recuperación de contraseña (requiere Cloud Functions/plan Blaze)
+- [x] **Navegación Corregida** - Tabs de admin y páginas separadas funcionando correctamente
+- [x] **ChatBot Visible** - Ahora aparece en todas las páginas autenticadas
 
 #### **Sesión 4 Nov 2025 - UX/UI y Validaciones**
 - [x] **Vista de Cards mejorada** - Muestra TODAS las salas con sus estados (verde/amarillo/rojo)

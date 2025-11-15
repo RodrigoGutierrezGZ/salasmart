@@ -108,10 +108,8 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
             </p>
           </div>
 
-          {/* Campanita de Notificaciones (solo para admin y docente) */}
-          {(role === 'admin' || role === 'docente') && (
-            <NotificacionesPanel usuarioId={user?.uid} />
-          )}
+          {/* Campanita de Notificaciones */}
+          <NotificacionesPanel usuarioId={user?.uid} />
         </div>
 
         {/* Navigation */}

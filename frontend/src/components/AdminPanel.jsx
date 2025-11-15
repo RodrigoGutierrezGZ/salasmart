@@ -614,7 +614,15 @@ function AdminPanel() {
             try {
               const usuario = users.find(u => u.id === userId);
               const nombreUsuario = usuario?.nombre || usuario?.email?.split('@')[0] || 'Usuario';
-              await notificarCuentaAprobada(userId, nombreUsuario);
+
+              // Obtener nombres de las sedes asignadas
+              let nombresSedesAsignadas = null;
+              if (usuario?.sedesAfiliadas && usuario.sedesAfiliadas.length > 0) {
+                const sedesUsuario = sedesDisponibles.filter(s => usuario.sedesAfiliadas.includes(s.id));
+                nombresSedesAsignadas = sedesUsuario.map(s => s.nombre).join(', ');
+              }
+
+              await notificarCuentaAprobada(userId, nombreUsuario, nombresSedesAsignadas);
             } catch (notifError) {
               console.error('Error al enviar notificación de activación:', notifError);
             }
