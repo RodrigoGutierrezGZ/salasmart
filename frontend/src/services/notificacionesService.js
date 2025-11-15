@@ -349,6 +349,25 @@ export const notificarReservaCanceladaPorUsuario = async (adminIds, nombreUsuari
 };
 
 /**
+ * Notifica a un usuario cuando su rol es cambiado
+ */
+export const notificarRolCambiado = async (usuarioId, nombreUsuario, nuevoRol) => {
+  const roles = {
+    estudiante: 'Estudiante',
+    docente: 'Docente',
+    admin: 'Administrador'
+  };
+
+  return await crearNotificacion(
+    usuarioId,
+    TIPOS_NOTIFICACION.ROL_CAMBIADO,
+    'Rol de usuario actualizado',
+    `${nombreUsuario}, tu rol ha sido actualizado a ${roles[nuevoRol] || nuevoRol}`,
+    { nuevoRol }
+  );
+};
+
+/**
  * Notifica a admins cuando un docente crea una nueva reserva
  */
 export const notificarNuevaReserva = async (adminIds, nombreDocente, nombreSala, fecha, horaInicio, horaFin) => {
@@ -364,3 +383,4 @@ export const notificarNuevaReserva = async (adminIds, nombreDocente, nombreSala,
 
   return await Promise.all(promesas);
 };
+

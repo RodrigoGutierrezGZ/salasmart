@@ -9,7 +9,6 @@ import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
-import RecuperarPassword from './pages/RecuperarPassword';
 import Perfil from './pages/Perfil';
 import Settings from './pages/Settings';
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -37,7 +36,6 @@ function App() {
               <Route path="/" element={!user ? <Home /> : <Navigate to="/dashboard" />} />
               <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
               <Route path="/registro" element={!user ? <Registro /> : <Navigate to="/dashboard" />} />
-              <Route path="/recuperar-password" element={!user ? <RecuperarPassword /> : <Navigate to="/dashboard" />} />
 
               {/* Rutas protegidas */}
               <Route path="/dashboard" element={<ProtectedRoute />} />

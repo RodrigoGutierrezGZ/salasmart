@@ -114,16 +114,6 @@ const Login = () => {
             </div>
           </label>
 
-          {/* Olvidé mi contraseña */}
-          <div className="text-right">
-            <Link
-              to="/recuperar-password"
-              className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-            >
-              ¿Olvidaste tu contraseña?
-            </Link>
-          </div>
-
           <button
             className="w-full bg-primary text-white font-medium py-3 px-4 rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-background-dark transition-all duration-200 shadow-sm hover:shadow-md"
             type="submit"

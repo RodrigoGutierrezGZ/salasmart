@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import Sidebar from '../components/layout/Sidebar';
+import ChatBot from '../components/chatbot/ChatBot';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
@@ -242,6 +243,9 @@ export default function Perfil() {
           )}
         </div>
       </div>
+
+      {/* ChatBot */}
+      <ChatBot />
     </div>
   );
 }

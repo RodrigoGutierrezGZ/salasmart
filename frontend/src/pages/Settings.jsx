@@ -6,6 +6,7 @@
 
 import { useAuth } from '../hooks/useAuth';
 import Sidebar from '../components/layout/Sidebar';
+import ChatBot from '../components/chatbot/ChatBot';
 
 export default function Settings() {
   const { user, role } = useAuth();
@@ -124,6 +125,9 @@ export default function Settings() {
           </div>
         </div>
       </div>
+
+      {/* ChatBot */}
+      <ChatBot />
     </div>
   );
 }

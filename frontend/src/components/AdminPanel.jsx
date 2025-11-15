@@ -38,7 +38,7 @@ import { actualizarNombresDesdeEmails } from '../utils/actualizarNombresUsuarios
 import { obtenerSedes } from '../services/sedesService';
 import { obtenerEdificiosPorSede } from '../services/edificiosService';
 import { obtenerPisosPorEdificio } from '../services/pisosService';
-import { notificarCuentaAprobada, notificarSedeAsignada } from '../services/notificacionesService';
+import { notificarCuentaAprobada, notificarSedeAsignada, notificarRolCambiado } from '../services/notificacionesService';
 
 // Chart.js
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -574,9 +574,16 @@ function AdminPanel() {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
+      // Obtener información del usuario antes de actualizar
+      const usuario = users.find(u => u.id === userId);
+      const nombreUsuario = usuario?.nombre || usuario?.email?.split('@')[0] || 'Usuario';
+
       await updateDoc(doc(db, 'users', userId), { role: newRole });
       showSuccess('Rol actualizado exitosamente');
       fetchUsers();
+
+      // Notificar al usuario del cambio de rol
+      await notificarRolCambiado(userId, nombreUsuario, newRole);
 
       await registrarLog('USUARIOS', 'cambiar_rol', `Usuario ${userId}`, userId, { nuevoRol: newRole });
     } catch (error) {
