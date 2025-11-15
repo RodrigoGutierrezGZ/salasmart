@@ -9,6 +9,9 @@ import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
+import RecuperarPassword from './pages/RecuperarPassword';
+import Perfil from './pages/Perfil';
+import Settings from './pages/Settings';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import LoadingScreen from './components/layout/LoadingScreen';
 import MisReservasPage from './pages/MisReservasPage';
@@ -34,11 +37,13 @@ function App() {
               <Route path="/" element={!user ? <Home /> : <Navigate to="/dashboard" />} />
               <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
               <Route path="/registro" element={!user ? <Registro /> : <Navigate to="/dashboard" />} />
+              <Route path="/recuperar-password" element={!user ? <RecuperarPassword /> : <Navigate to="/dashboard" />} />
 
               {/* Rutas protegidas */}
               <Route path="/dashboard" element={<ProtectedRoute />} />
               <Route path="/mis-reservas" element={<ProtectedRoute><MisReservasPage /></ProtectedRoute>} />
-              <Route path="/perfil" element={<ProtectedRoute><div className="p-8"><h1>Perfil de Usuario</h1><p>Próximamente...</p></div></ProtectedRoute>} />
+              <Route path="/perfil" element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
+              <Route path="/configuracion" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
