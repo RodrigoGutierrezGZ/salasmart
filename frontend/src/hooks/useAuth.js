@@ -1,6 +1,6 @@
 // src/hooks/useAuth.js
 import { useState, useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
 
@@ -56,9 +56,23 @@ export function useAuth() {
         const userDocRef = doc(db, 'users', currentUser.uid);
         unsubscribeUserDoc = onSnapshot(
           userDocRef,
-          (docSnap) => {
+          async (docSnap) => {
             if (docSnap.exists()) {
               const data = docSnap.data();
+
+              // Verificar si el usuario fue eliminado
+              if (data.eliminado === true) {
+                console.log('Usuario marcado como eliminado, cerrando sesión...');
+                setRole(null);
+                setUserData(null);
+                clearSessionCache();
+                // Guardar flag para mostrar mensaje en login
+                localStorage.setItem('cuenta_eliminada', 'true');
+                await signOut(auth);
+                setLoading(false);
+                return;
+              }
+
               setRole(data.role);
               setUserData(data);
 
@@ -73,9 +87,13 @@ export function useAuth() {
                 userData: data,
               });
             } else {
+              // El documento no existe (fue eliminado completamente)
+              // Cerrar sesión automáticamente para evitar pantalla en blanco
+              console.log('Documento de usuario no encontrado, cerrando sesión...');
               setRole(null);
               setUserData(null);
               clearSessionCache();
+              await signOut(auth);
             }
             setLoading(false);
           },

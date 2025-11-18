@@ -14,6 +14,8 @@ const Registro = () => {
   const [generandoEmail, setGenerandoEmail] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [registering, setRegistering] = useState(false);
   const navigate = useNavigate();
@@ -175,28 +177,52 @@ const Registro = () => {
 
               <div className="flex flex-col">
                 <label className="mb-2 text-sm font-medium text-neutral-dark dark:text-neutral-light" htmlFor="password">Contraseña</label>
-                <input 
-                  className="form-input w-full rounded-DEFAULT border-neutral-light dark:border-gray-600 bg-background-light dark:bg-gray-700 px-4 py-3 text-neutral-dark dark:text-neutral-light placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20" 
-                  id="password" 
-                  placeholder="Crea una contraseña segura" 
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <input
+                    className="form-input w-full rounded-DEFAULT border-neutral-light dark:border-gray-600 bg-background-light dark:bg-gray-700 px-4 py-3 pr-12 text-neutral-dark dark:text-neutral-light placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    id="password"
+                    placeholder="Crea una contraseña segura"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                      {showPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
               </div>
 
               <div className="flex flex-col">
                 <label className="mb-2 text-sm font-medium text-neutral-dark dark:text-neutral-light" htmlFor="confirm-password">Confirmar Contraseña</label>
-                <input 
-                  className="form-input w-full rounded-DEFAULT border-neutral-light dark:border-gray-600 bg-background-light dark:bg-gray-700 px-4 py-3 text-neutral-dark dark:text-neutral-light placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20" 
-                  id="confirm-password" 
-                  placeholder="Confirma tu contraseña" 
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <input
+                    className="form-input w-full rounded-DEFAULT border-neutral-light dark:border-gray-600 bg-background-light dark:bg-gray-700 px-4 py-3 pr-12 text-neutral-dark dark:text-neutral-light placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    id="confirm-password"
+                    placeholder="Confirma tu contraseña"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                      {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
               </div>
 
               {/* INFO: Todas las cuentas se crean como estudiantes inactivos */}

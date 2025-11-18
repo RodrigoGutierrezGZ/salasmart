@@ -77,9 +77,9 @@ function UsuariosTab({
         >
           <span className="material-symbols-outlined text-base">pending</span>
           Pendientes de Aprobación
-          {users.filter(u => !u.activo).length > 0 && (
+          {users.filter(u => !u.activo && u.eliminado !== true).length > 0 && (
             <span className="ml-1 rounded-full bg-yellow-500 px-2 py-0.5 text-xs font-bold text-white">
-              {users.filter(u => !u.activo).length}
+              {users.filter(u => !u.activo && u.eliminado !== true).length}
             </span>
           )}
         </button>

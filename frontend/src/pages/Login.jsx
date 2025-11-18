@@ -8,14 +8,26 @@ import LoadingScreen from '../components/layout/LoadingScreen';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
   const navigate = useNavigate();
-  
+
   const location = useLocation();
   const status = new URLSearchParams(location.search).get('status');
   const registrationSuccess = status === 'registered';
   const registrationPending = status === 'pending';
+
+  // Verificar si la cuenta fue eliminada
+  const [cuentaEliminada, setCuentaEliminada] = useState(false);
+
+  React.useEffect(() => {
+    const eliminada = localStorage.getItem('cuenta_eliminada');
+    if (eliminada === 'true') {
+      setCuentaEliminada(true);
+      localStorage.removeItem('cuenta_eliminada');
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -55,6 +67,22 @@ const Login = () => {
         {error && (
           <div className="w-full mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
             <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+          </div>
+        )}
+        {cuentaEliminada && (
+          <div className="w-full mb-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined text-red-600 dark:text-red-400">cancel</span>
+              <div>
+                <p className="text-sm font-bold text-red-900 dark:text-red-100">
+                  Cuenta eliminada
+                </p>
+                <p className="mt-1 text-xs text-red-800 dark:text-red-200">
+                  Tu cuenta ha sido <strong>eliminada</strong> por un administrador. Ya no puedes acceder al sistema.
+                  Si crees que esto es un error, contacta al administrador.
+                </p>
+              </div>
+            </div>
           </div>
         )}
         {registrationSuccess && (
@@ -100,15 +128,25 @@ const Login = () => {
           <label className="flex flex-col w-full">
             <p className="text-slate-800 dark:text-slate-200 text-sm font-medium leading-normal pb-2">Contraseña</p>
             <div className="flex w-full flex-1 items-stretch rounded-lg border border-slate-300 dark:border-slate-700 focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all duration-200">
-              <input 
-                className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden bg-transparent text-slate-800 dark:text-slate-200 focus:outline-0 focus:ring-0 border-0 h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 p-3 text-base font-normal leading-normal" 
-                placeholder="Introduce tu contraseña" 
-                type="password"
+              <input
+                className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden bg-transparent text-slate-800 dark:text-slate-200 focus:outline-0 focus:ring-0 border-0 h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 p-3 text-base font-normal leading-normal"
+                placeholder="Introduce tu contraseña"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <div aria-hidden="true" className="text-slate-400 dark:text-slate-500 flex items-center justify-center px-3">
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 flex items-center justify-center px-3 transition-colors"
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                  {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+              <div aria-hidden="true" className="text-slate-400 dark:text-slate-500 flex items-center justify-center px-3 border-l border-slate-300 dark:border-slate-700">
                 <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>lock</span>
               </div>
             </div>

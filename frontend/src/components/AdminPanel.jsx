@@ -650,13 +650,19 @@ function AdminPanel() {
     setConfirmDialog({
       isOpen: true,
       title: 'Eliminar Usuario',
-      message: `¿Estás seguro de que deseas eliminar al usuario "${userEmail}"?\n\nEsta acción NO se puede deshacer.`,
+      message: `¿Estás seguro de que deseas eliminar al usuario "${userEmail}"?\n\nEl usuario no podrá volver a iniciar sesión.`,
       confirmText: 'Eliminar',
       cancelText: 'Cancelar',
       type: 'danger',
       onConfirm: async () => {
         try {
-          await deleteDoc(doc(db, 'users', userId));
+          // No eliminamos el documento, solo lo marcamos como eliminado
+          // Esto evita el bug de pantalla en blanco cuando el usuario intenta loguearse
+          await updateDoc(doc(db, 'users', userId), {
+            activo: false,
+            eliminado: true,
+            fechaEliminacion: new Date()
+          });
           await registrarLog('USUARIOS', 'eliminar', userEmail, userId, {});
           showSuccess(`Usuario "${userEmail}" eliminado exitosamente`);
           // El listener en tiempo real actualizará automáticamente
@@ -685,6 +691,9 @@ function AdminPanel() {
   };
 
   const filteredUsers = users.filter(u => {
+    // No mostrar usuarios eliminados
+    if (u.eliminado === true) return false;
+
     const matchesSearch = u.email?.toLowerCase().includes(searchUser.toLowerCase());
     const matchesRole = filterRole === 'todos' || u.role === filterRole;
     const matchesStatus = usuariosSubTab === 'activos' ? u.activo === true : u.activo === false;

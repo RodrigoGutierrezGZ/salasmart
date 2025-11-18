@@ -156,14 +156,19 @@ function StudentDashboard() {
     );
   }
 
-  // Verificar si el usuario está INACTIVO o no tiene sedes asignadas
+  // Verificar si el usuario está INACTIVO, ELIMINADO o no tiene sedes asignadas
   if (userData?.role !== 'admin') {
-    // PRIMERO: Verificar si la cuenta está aprobada (activo = true)
+    // PRIMERO: Verificar si la cuenta fue eliminada
+    if (userData?.eliminado === true) {
+      return <CuentaPendiente user={user} role={role} userData={userData} />;
+    }
+
+    // SEGUNDO: Verificar si la cuenta está aprobada (activo = true)
     if (userData?.activo === false) {
       return <CuentaPendiente user={user} role={role} userData={userData} />;
     }
 
-    // SEGUNDO: Si está activo pero no tiene sedes asignadas
+    // TERCERO: Si está activo pero no tiene sedes asignadas
     if (!userData?.sedesAfiliadas || userData.sedesAfiliadas.length === 0) {
       return <CuentaPendiente user={user} role={role} userData={userData} />;
     }
