@@ -98,7 +98,7 @@ export async function crearPiso(datos, imagenFile) {
     console.log('✅ [pisosService] Piso creado con ID:', pisoId);
 
     try {
-      // 2. Usar imagen local en lugar de Firebase Storage (sin CORS)
+      // 2. Usar imagen local en lugar de Firebase Storage (sin plan Blaze)
       const { imagenURL, imagenPath, imagenMetadata } = await usarImagenLocal(
         imagenFile,
         datos.numero
@@ -171,11 +171,14 @@ async function usarImagenLocal(imagenFile, numeroPiso) {
   }
 }
 
-/* ============================================
-   CÓDIGO COMENTADO: Firebase Storage Upload
-   Descomentar cuando se configure CORS
-   ============================================
-
+/**
+ * Subir imagen del piso a Firebase Storage
+ * @param {File} imagenFile - Archivo de imagen
+ * @param {string} sedeId - ID de la sede
+ * @param {string} edificioId - ID del edificio
+ * @param {string} pisoId - ID del piso
+ * @returns {Promise<Object>} URLs y metadata de la imagen
+ */
 async function subirImagenPiso(imagenFile, sedeId, edificioId, pisoId) {
   try {
     console.log('📤 [pisosService] Subiendo imagen a Storage...');
@@ -219,8 +222,6 @@ async function subirImagenPiso(imagenFile, sedeId, edificioId, pisoId) {
     throw new Error('Error al subir la imagen del plano');
   }
 }
-
-============================================ */
 
 /**
  * Validar archivo de imagen

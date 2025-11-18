@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { obtenerSedes } from '../../services/sedesService';
 import { obtenerEdificiosPorSede } from '../../services/edificiosService';
@@ -62,11 +62,37 @@ function EditorPlanos() {
     cargarSedesIniciales();
   }, []);
 
-  // Cargar salas al cambiar piso seleccionado
+  // Listener en TIEMPO REAL para salas al cambiar piso seleccionado
   useEffect(() => {
-    if (pisoSeleccionado) {
-      cargarSalas();
+    if (!pisoSeleccionado) {
+      setSalas([]);
+      setSalasDelPiso([]);
+      return;
     }
+
+    const unsubscribe = onSnapshot(
+      collection(db, 'salas'),
+      (snapshot) => {
+        const todasSalas = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        setSalas(todasSalas);
+
+        // Filtrar por pisoId (nuevo sistema) o piso (retrocompatibilidad)
+        const salasPiso = todasSalas.filter(s =>
+          s.pisoId === pisoSeleccionado || s.piso === pisoSeleccionado
+        );
+        setSalasDelPiso(salasPiso);
+      },
+      (error) => {
+        console.error('Error en listener de salas:', error);
+        mostrarMensaje('error', 'Error al cargar las salas');
+      }
+    );
+
+    return () => unsubscribe();
   }, [pisoSeleccionado]);
 
   /**
@@ -119,29 +145,6 @@ function EditorPlanos() {
    */
   const handlePisoChange = (pisoId) => {
     setPisoSeleccionado(pisoId);
-  };
-
-  /**
-   * Cargar salas del piso seleccionado
-   */
-  const cargarSalas = async () => {
-    try {
-      const salasSnapshot = await getDocs(collection(db, 'salas'));
-      const todasSalas = salasSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      setSalas(todasSalas);
-      // Filtrar por pisoId (nuevo sistema) o piso (retrocompatibilidad)
-      const salasPiso = todasSalas.filter(s =>
-        s.pisoId === pisoSeleccionado || s.piso === pisoSeleccionado
-      );
-      setSalasDelPiso(salasPiso);
-    } catch (error) {
-      console.error('Error al cargar salas:', error);
-      mostrarMensaje('error', 'Error al cargar las salas');
-    }
   };
 
   // Sistema Pick & Place: Click para tomar, click para soltar
@@ -223,7 +226,7 @@ function EditorPlanos() {
         await actualizarCoordenadasSala(salaArrastrada.id, xLimitado, yLimitado);
 
         mostrarMensaje('success', `Sala ${salaArrastrada.nombre} movida exitosamente`);
-        cargarSalas();
+        // El listener en tiempo real actualizará automáticamente
       } catch (error) {
         console.error('Error al mover sala:', error);
         mostrarMensaje('error', 'Error al mover la sala');
@@ -296,7 +299,7 @@ function EditorPlanos() {
 
       mostrarMensaje('success', `Sala ${nombreUpper} creada exitosamente`);
       limpiarFormulario();
-      cargarSalas();
+      // El listener en tiempo real actualizará automáticamente
     } catch (error) {
       console.error('Error al guardar sala:', error);
       mostrarMensaje('error', 'Error al guardar la sala');
@@ -309,7 +312,7 @@ function EditorPlanos() {
     try {
       await eliminarSala(salaId);
       mostrarMensaje('success', `Sala ${nombreSala} eliminada`);
-      cargarSalas();
+      // El listener en tiempo real actualizará automáticamente
     } catch (error) {
       console.error('Error al eliminar sala:', error);
       mostrarMensaje('error', error.message || 'Error al eliminar la sala');

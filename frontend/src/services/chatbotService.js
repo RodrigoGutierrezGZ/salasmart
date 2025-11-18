@@ -747,30 +747,37 @@ async function consultarDisponibilidadSala(args) {
         return aTime - bTime;
       });
 
-    // Si se especificó una hora, verificar si está ocupada en ese momento
+    // Si se especificó una hora, verificar si está disponible considerando duración mínima (45 min)
     if (hora) {
       const [horaNum, minNum] = hora.split(':').map(Number);
       const horaConsulta = new Date(fechaConsulta);
       horaConsulta.setHours(horaNum, minNum, 0, 0);
 
-      const reservaEnEsaHora = reservasDelDia.find(r => {
+      // Calcular hora de fin con duración mínima de 45 minutos
+      const DURACION_MINIMA_HORAS = 0.75; // 45 minutos
+      const horaFinConsulta = new Date(horaConsulta);
+      horaFinConsulta.setMinutes(horaFinConsulta.getMinutes() + (DURACION_MINIMA_HORAS * 60));
+
+      // Verificar si hay conflicto con alguna reserva existente
+      // Conflicto si: (horaInicio < reserva.fin) Y (horaFin > reserva.inicio)
+      const reservaConflictiva = reservasDelDia.find(r => {
         const inicio = r.horaInicio?.toDate();
         const fin = r.horaFin?.toDate();
-        return horaConsulta >= inicio && horaConsulta < fin;
+        return horaConsulta < fin && horaFinConsulta > inicio;
       });
 
-      if (reservaEnEsaHora) {
-        const inicio = reservaEnEsaHora.horaInicio.toDate();
-        const fin = reservaEnEsaHora.horaFin.toDate();
+      if (reservaConflictiva) {
+        const inicio = reservaConflictiva.horaInicio.toDate();
+        const fin = reservaConflictiva.horaFin.toDate();
 
         return {
           exito: true,
           disponible: false,
           sala: sala,
-          mensaje: `La sala ${sala.nombre} (${sala.nombreCompleto}) está OCUPADA el ${fechaConsulta.toLocaleDateString('es-CL')} a las ${hora}.`,
+          mensaje: `La sala ${sala.nombre} (${sala.nombreCompleto}) NO está disponible el ${fechaConsulta.toLocaleDateString('es-CL')} a las ${hora} (se solaparía con una reserva existente de ${inicio.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })} a ${fin.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}).`,
           reservaActual: {
-            asignatura: reservaEnEsaHora.asignatura,
-            docente: reservaEnEsaHora.nombreDocente,
+            asignatura: reservaConflictiva.asignatura,
+            docente: reservaConflictiva.nombreDocente,
             horaInicio: inicio.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }),
             horaFin: fin.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })
           }

@@ -1,7 +1,7 @@
 // src/hooks/useAuth.js
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
 
 // Caché de sesión para evitar re-fetching innecesario
@@ -45,45 +45,59 @@ export function useAuth() {
   const [userData, setUserData] = useState(cache?.userData || null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    let unsubscribeUserDoc = null;
+
+    // Listener de autenticación
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          const data = userDocSnap.data();
-          setRole(data.role);
-          setUserData(data);
-
-          // Guardar en caché para navegación instantánea
-          setSessionCache({
-            user: {
-              uid: currentUser.uid,
-              email: currentUser.email,
-              displayName: currentUser.displayName,
-            },
-            role: data.role,
-            userData: data,
-          });
-        } else {
-          setRole(null);
-          setUserData(null);
-          clearSessionCache();
-        }
         setUser(currentUser);
+
+        // Listener en TIEMPO REAL del documento del usuario
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        unsubscribeUserDoc = onSnapshot(
+          userDocRef,
+          (docSnap) => {
+            if (docSnap.exists()) {
+              const data = docSnap.data();
+              setRole(data.role);
+              setUserData(data);
+
+              // Guardar en caché para navegación instantánea
+              setSessionCache({
+                user: {
+                  uid: currentUser.uid,
+                  email: currentUser.email,
+                  displayName: currentUser.displayName,
+                },
+                role: data.role,
+                userData: data,
+              });
+            } else {
+              setRole(null);
+              setUserData(null);
+              clearSessionCache();
+            }
+            setLoading(false);
+          },
+          (error) => {
+            console.error('Error en listener de usuario:', error);
+            setLoading(false);
+          }
+        );
       } else {
         setUser(null);
         setRole(null);
         setUserData(null);
         clearSessionCache();
+        setLoading(false);
       }
-
-      // Sin delay artificial - actualización instantánea
-      setLoading(false);
     });
 
     return () => {
-      unsubscribe();
+      unsubscribeAuth();
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc();
+      }
     };
   }, []);
 

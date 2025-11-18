@@ -179,38 +179,46 @@ function AdminPanel() {
     }
   };
 
-  // Cargar Usuarios
-  const fetchUsers = async () => {
-    setLoadingUsers(true);
-    try {
-      const usersSnapshot = await getDocs(collection(db, 'users'));
-      const usersData = usersSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          activo: data.activo !== undefined ? data.activo : true
-        };
-      });
-      setUsers(usersData);
-
-      // Migración: Actualizar usuarios sin campo activo
-      for (const doc of usersSnapshot.docs) {
-        const data = doc.data();
-        if (data.activo === undefined) {
-          await updateDoc(doc.ref, { activo: true });
-        }
-      }
-    } catch (error) {
-      console.error("Error al obtener usuarios: ", error);
-      setMessageUser("No se pudieron cargar los usuarios.");
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
+  // Cargar Usuarios en TIEMPO REAL
   useEffect(() => {
-    fetchUsers();
+    setLoadingUsers(true);
+    const unsubscribeUsers = onSnapshot(
+      collection(db, 'users'),
+      async (snapshot) => {
+        try {
+          const usersData = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+              activo: data.activo !== undefined ? data.activo : true
+            };
+          });
+          setUsers(usersData);
+
+          // Migración: Actualizar usuarios sin campo activo (solo primera vez)
+          for (const docSnap of snapshot.docs) {
+            const data = docSnap.data();
+            if (data.activo === undefined) {
+              await updateDoc(docSnap.ref, { activo: true });
+            }
+          }
+
+          setLoadingUsers(false);
+        } catch (error) {
+          console.error("Error al procesar usuarios: ", error);
+          setMessageUser("No se pudieron cargar los usuarios.");
+          setLoadingUsers(false);
+        }
+      },
+      (error) => {
+        console.error("Error en listener de usuarios: ", error);
+        setMessageUser("Error al escuchar cambios de usuarios.");
+        setLoadingUsers(false);
+      }
+    );
+
+    return () => unsubscribeUsers();
   }, []);
 
   // Cargar Reservas
@@ -580,7 +588,7 @@ function AdminPanel() {
 
       await updateDoc(doc(db, 'users', userId), { role: newRole });
       showSuccess('Rol actualizado exitosamente');
-      fetchUsers();
+      // El listener en tiempo real actualizará automáticamente
 
       // Notificar al usuario del cambio de rol
       await notificarRolCambiado(userId, nombreUsuario, newRole);
@@ -628,7 +636,7 @@ function AdminPanel() {
             }
           }
 
-          fetchUsers();
+          // El listener en tiempo real actualizará automáticamente
           await registrarLog('USUARIOS', accion, `Usuario ${userId}`, userId, {});
         } catch (error) {
           showError(`Error al ${accion} el usuario`);
@@ -651,7 +659,7 @@ function AdminPanel() {
           await deleteDoc(doc(db, 'users', userId));
           await registrarLog('USUARIOS', 'eliminar', userEmail, userId, {});
           showSuccess(`Usuario "${userEmail}" eliminado exitosamente`);
-          fetchUsers();
+          // El listener en tiempo real actualizará automáticamente
         } catch (error) {
           showError(`Error al eliminar el usuario "${userEmail}"`);
           console.error("Error deleting user:", error);
@@ -672,7 +680,7 @@ function AdminPanel() {
 
   const handleSedesAsignadas = () => {
     setMessageUser('✅ Sedes asignadas exitosamente.');
-    fetchUsers();
+    // El listener en tiempo real actualizará automáticamente
     setTimeout(() => setMessageUser(''), 3000);
   };
 
@@ -707,7 +715,7 @@ function AdminPanel() {
 
           if (resultado.exito) {
             showSuccess(`${resultado.actualizados} usuario(s) actualizado(s) exitosamente`);
-            fetchUsers();
+            // El listener en tiempo real actualizará automáticamente
 
             await registrarLog('USUARIOS', 'migrar_nombres', 'Sistema', 'admin', {
               usuariosActualizados: resultado.actualizados,

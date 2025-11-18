@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase/config';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { Row, Col, Card, Spinner, Alert, Form } from 'react-bootstrap';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Pie } from 'react-chartjs-2';
@@ -15,6 +15,12 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 function DashboardEstadisticas() {
   const { showError } = useToast();
   const [loading, setLoading] = useState(true);
+
+  // Estados para datos en tiempo real
+  const [salas, setSalas] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [reservas, setReservas] = useState([]);
+
   const [stats, setStats] = useState({
     totalSalas: 0,
     totalUsuarios: 0,
@@ -28,28 +34,44 @@ function DashboardEstadisticas() {
   const [filtroFechaInicio, setFiltroFechaInicio] = useState('');
   const [filtroFechaFin, setFiltroFechaFin] = useState('');
 
+  // Listeners en TIEMPO REAL para las 3 colecciones
   useEffect(() => {
-    cargarEstadisticas();
-  }, [filtroFechaInicio, filtroFechaFin]);
+    // Listener de Salas
+    const unsubscribeSalas = onSnapshot(collection(db, 'salas'), (snapshot) => {
+      const salasData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setSalas(salasData);
+    });
 
-  const cargarEstadisticas = async () => {
+    // Listener de Usuarios
+    const unsubscribeUsuarios = onSnapshot(collection(db, 'users'), (snapshot) => {
+      const usuariosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setUsuarios(usuariosData);
+    });
+
+    // Listener de Reservas
+    const unsubscribeReservas = onSnapshot(collection(db, 'reservas'), (snapshot) => {
+      const reservasData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setReservas(reservasData);
+    });
+
+    return () => {
+      unsubscribeSalas();
+      unsubscribeUsuarios();
+      unsubscribeReservas();
+    };
+  }, []);
+
+  // Recalcular estadísticas cuando cambien los datos o filtros
+  useEffect(() => {
+    calcularEstadisticas();
+  }, [salas, usuarios, reservas, filtroFechaInicio, filtroFechaFin]);
+
+  const calcularEstadisticas = () => {
     setLoading(true);
     try {
-      // 1. Total de Salas
-      const salasSnapshot = await getDocs(collection(db, 'salas'));
-      const totalSalas = salasSnapshot.size;
-
-      // 2. Total de Usuarios
-      const usersSnapshot = await getDocs(collection(db, 'users'));
-      const totalUsuarios = usersSnapshot.size;
-
-      // 3. TRAER TODAS LAS RESERVAS (sin índices compuestos)
-      // Filtramos en el frontend para evitar índices complejos
-      const reservasSnapshot = await getDocs(collection(db, 'reservas'));
-      const todasReservas = reservasSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const totalSalas = salas.length;
+      const totalUsuarios = usuarios.length;
+      const todasReservas = reservas;
 
       // Fechas para filtrar
       const ahora = new Date();

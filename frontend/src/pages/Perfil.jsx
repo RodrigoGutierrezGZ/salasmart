@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import Sidebar from '../components/layout/Sidebar';
 import ChatBot from '../components/chatbot/ChatBot';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
 export default function Perfil() {
@@ -21,19 +21,25 @@ export default function Perfil() {
   const [loading, setLoading] = useState(true);
   const [sedes, setSedes] = useState([]);
 
-  // Cargar estadísticas del usuario
+  // Cargar estadísticas del usuario en TIEMPO REAL
   useEffect(() => {
-    const cargarEstadisticas = async () => {
-      if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-      try {
-        // Obtener reservas del usuario
-        const reservasQuery = query(
-          collection(db, 'reservas'),
-          where('usuarioId', '==', user.uid)
-        );
-        const reservasSnapshot = await getDocs(reservasQuery);
-        const reservas = reservasSnapshot.docs.map(doc => doc.data());
+    setLoading(true);
+
+    // Listener en TIEMPO REAL para reservas del usuario
+    const reservasQuery = query(
+      collection(db, 'reservas'),
+      where('usuarioId', '==', user.uid)
+    );
+
+    const unsubscribeReservas = onSnapshot(
+      reservasQuery,
+      (snapshot) => {
+        const reservas = snapshot.docs.map(doc => doc.data());
 
         // Calcular estadísticas
         const ahora = new Date();
@@ -50,22 +56,32 @@ export default function Perfil() {
           reservasCompletadas: completadas.length
         });
 
-        // Cargar nombres de sedes
-        if (userData?.sedesAfiliadas?.length > 0) {
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Error en listener de reservas:', error);
+        setLoading(false);
+      }
+    );
+
+    // Cargar nombres de sedes (una sola vez, no necesita tiempo real)
+    const cargarSedes = async () => {
+      if (userData?.sedesAfiliadas?.length > 0) {
+        try {
           const sedesQuery = query(collection(db, 'sedes'));
           const sedesSnapshot = await getDocs(sedesQuery);
           const todasSedes = sedesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           const sedesUsuario = todasSedes.filter(s => userData.sedesAfiliadas.includes(s.id));
           setSedes(sedesUsuario.map(s => s.nombre));
+        } catch (error) {
+          console.error('Error al cargar sedes:', error);
         }
-      } catch (error) {
-        console.error('Error al cargar estadísticas:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
-    cargarEstadisticas();
+    cargarSedes();
+
+    return () => unsubscribeReservas();
   }, [user, userData]);
 
   const getRoleBadge = () => {

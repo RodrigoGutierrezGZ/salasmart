@@ -60,6 +60,13 @@ function StudentDashboard() {
     return [...new Set(salasParaEdificios.map(s => ({ id: s.edificioId, nombre: s.edificioCodigo || s.edificioId })).map(JSON.stringify))].map(JSON.parse);
   }, [salas, userData, filtroSede]);
 
+  // Auto-seleccionar edificio si solo hay uno disponible
+  useEffect(() => {
+    if (edificiosUnicos.length === 1 && filtroEdificio === 'todos') {
+      setFiltroEdificio(edificiosUnicos[0].id);
+    }
+  }, [edificiosUnicos]);
+
   // Pisos únicos (dinámicos según filtros de sede y edificio)
   let salasParaPisos = salas;
 
@@ -149,9 +156,17 @@ function StudentDashboard() {
     );
   }
 
-  // Verificar si el usuario no tiene sedes asignadas (solo para no-admin)
-  if (userData?.role !== 'admin' && (!userData?.sedesAfiliadas || userData.sedesAfiliadas.length === 0)) {
-    return <CuentaPendiente user={user} role={role} userData={userData} />;
+  // Verificar si el usuario está INACTIVO o no tiene sedes asignadas
+  if (userData?.role !== 'admin') {
+    // PRIMERO: Verificar si la cuenta está aprobada (activo = true)
+    if (userData?.activo === false) {
+      return <CuentaPendiente user={user} role={role} userData={userData} />;
+    }
+
+    // SEGUNDO: Si está activo pero no tiene sedes asignadas
+    if (!userData?.sedesAfiliadas || userData.sedesAfiliadas.length === 0) {
+      return <CuentaPendiente user={user} role={role} userData={userData} />;
+    }
   }
 
   return (
@@ -267,7 +282,9 @@ function StudentDashboard() {
                 {(() => {
                   // Si solo hay 1 sede, no contar filtroSede (se auto-selecciona)
                   const sedeModificada = sedesUnicas.length > 1 && filtroSede !== 'todos';
-                  const hayFiltrosAplicados = sedeModificada || filtroEdificio !== 'todos' || filtroPiso !== 'todos' || filtroCapacidad !== 'todos';
+                  // Si solo hay 1 edificio, no contar filtroEdificio (se auto-selecciona)
+                  const edificioModificado = edificiosUnicos.length > 1 && filtroEdificio !== 'todos';
+                  const hayFiltrosAplicados = sedeModificada || edificioModificado || filtroPiso !== 'todos' || filtroCapacidad !== 'todos';
 
                   return hayFiltrosAplicados && (
                     <button
