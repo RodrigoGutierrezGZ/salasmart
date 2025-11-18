@@ -7,6 +7,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import Sidebar from '../components/layout/Sidebar';
+import MobileHeader from '../components/layout/MobileHeader';
+import MobileSidebar from '../components/layout/MobileSidebar';
 import ChatBot from '../components/chatbot/ChatBot';
 import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
@@ -20,6 +22,7 @@ export default function Perfil() {
   });
   const [loading, setLoading] = useState(true);
   const [sedes, setSedes] = useState([]);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Cargar estadísticas del usuario en TIEMPO REAL
   useEffect(() => {
@@ -94,16 +97,33 @@ export default function Perfil() {
 
   return (
     <div className="flex h-screen bg-gray-50">
+      {/* Sidebar Desktop */}
       <Sidebar user={user} role={role} />
+      
+      {/* Mobile Header */}
+      <MobileHeader 
+        user={user} 
+        role={role} 
+        userData={userData}
+        onMenuClick={() => setMobileSidebarOpen(true)}
+      />
+      
+      {/* Mobile Sidebar */}
+      <MobileSidebar 
+        user={user} 
+        role={role} 
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pt-16 lg:pt-0">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-8 py-6">
-          <h1 className="text-2xl font-bold text-gray-900">Mi Perfil</h1>
-          <p className="text-gray-600 mt-1">Información de tu cuenta y estadísticas</p>
+        <div className="bg-white border-b border-gray-200 px-4 lg:px-8 py-4 lg:py-6">
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Mi Perfil</h1>
+          <p className="text-gray-600 mt-1 text-sm lg:text-base">Información de tu cuenta y estadísticas</p>
         </div>
 
-        <div className="p-8 max-w-5xl mx-auto">
+        <div className="p-4 lg:p-8 max-w-5xl mx-auto">
           {/* Card de información personal */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
             {/* Banner superior */}
