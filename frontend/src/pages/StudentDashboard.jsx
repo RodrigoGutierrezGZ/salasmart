@@ -178,7 +178,7 @@ function StudentDashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-background-light">
+    <div className="flex h-screen bg-background-light dark:bg-gray-900">
       <Sidebar user={user} role={role} />
       <MobileSidebar 
         user={user} 
@@ -202,12 +202,12 @@ function StudentDashboard() {
           {/* Page Heading */}
           <header className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 lg:gap-4">
             <div className="flex flex-col gap-1 lg:gap-2">
-              <h1 className="flex items-center gap-2 lg:gap-3 text-xl lg:text-3xl font-bold tracking-tight text-neutral-dark">
+              <h1 className="flex items-center gap-2 lg:gap-3 text-xl lg:text-3xl font-bold tracking-tight text-neutral-dark dark:text-white">
                 <span className="material-symbols-outlined text-2xl lg:text-4xl text-secondary">domain</span>
                 <span className="hidden sm:inline">Consulta de Salas</span>
                 <span className="sm:hidden">Salas</span>
               </h1>
-              <p className="text-xs lg:text-base font-normal leading-normal text-gray-500 hidden sm:block">
+              <p className="text-xs lg:text-base font-normal leading-normal text-gray-500 dark:text-gray-300 hidden sm:block">
                 Visualiza la disponibilidad de salas en tiempo real.
               </p>
             </div>
@@ -225,7 +225,7 @@ function StudentDashboard() {
                     <select
                       value={filtroSede}
                       onChange={(e) => setFiltroSede(e.target.value)}
-                      className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light dark:border-gray-600 bg-white dark:bg-gray-800 pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-gray-200 shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                       style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                     >
                       <option value="todos">Todas las Sedes</option>
@@ -247,7 +247,7 @@ function StudentDashboard() {
                     <select
                       value={filtroEdificio}
                       onChange={(e) => setFiltroEdificio(e.target.value)}
-                      className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light dark:border-gray-600 bg-white dark:bg-gray-800 pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-gray-200 shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                       style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                     >
                       <option value="todos">Todos los Edificios</option>
@@ -268,7 +268,7 @@ function StudentDashboard() {
                   <select
                     value={filtroPiso}
                     onChange={(e) => setFiltroPiso(e.target.value)}
-                    className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light dark:border-gray-600 bg-white dark:bg-gray-800 pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-gray-200 shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                     style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     <option value="todos">Todos los Pisos</option>
@@ -333,11 +333,11 @@ function StudentDashboard() {
               <div className="flex flex-col sm:flex-row gap-3">
                 {/* Toggle Cards/Plano para vista mapa */}
                 {vistaActual === 'mapa' && (
-                  <div className="flex rounded-lg bg-neutral-light p-1">
+                  <div className="flex rounded-lg bg-neutral-light dark:bg-gray-700 p-1">
                     <button 
                       onClick={() => setTipoVista('cards')}
                       className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
-                        tipoVista === 'cards' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
+                        tipoVista === 'cards' ? 'bg-white dark:bg-gray-800 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-gray-300 font-medium'
                       }`}
                     >
                       <span className="material-symbols-outlined text-lg lg:text-xl">grid_view</span>
@@ -346,7 +346,7 @@ function StudentDashboard() {
                     <button 
                       onClick={() => setTipoVista('plano')}
                       className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
-                        tipoVista === 'plano' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
+                        tipoVista === 'plano' ? 'bg-white dark:bg-gray-800 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-gray-300 font-medium'
                       }`}
                     >
                       <span className="material-symbols-outlined text-lg lg:text-xl">map</span>
@@ -356,11 +356,11 @@ function StudentDashboard() {
                 )}
 
                 {/* Toggle Mapa/Lista */}
-                <div className="flex rounded-lg bg-neutral-light p-1">
+                <div className="flex rounded-lg bg-neutral-light dark:bg-gray-700 p-1">
                   <button 
                     onClick={() => setVistaActual('mapa')}
                     className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm font-semibold transition-all ${
-                      vistaActual === 'mapa' ? 'bg-white text-primary shadow-sm' : 'text-gray-600'
+                      vistaActual === 'mapa' ? 'bg-white dark:bg-gray-800 text-primary shadow-sm' : 'text-gray-600 dark:text-gray-300'
                     }`}
                   >
                     <span className="material-symbols-outlined text-lg lg:text-xl">check_circle</span>
@@ -370,7 +370,7 @@ function StudentDashboard() {
                   <button 
                     onClick={() => setVistaActual('lista')}
                     className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
-                      vistaActual === 'lista' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
+                      vistaActual === 'lista' ? 'bg-white dark:bg-gray-800 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-gray-300 font-medium'
                     }`}
                   >
                     <span className="material-symbols-outlined text-lg lg:text-xl">list</span>
@@ -382,7 +382,7 @@ function StudentDashboard() {
             </div>
 
             {/* Floor Plan View / Lista */}
-            <div className="rounded-lg border border-neutral-light bg-white p-3 lg:p-6 shadow-soft">
+            <div className="rounded-lg border border-neutral-light dark:border-gray-700 bg-white dark:bg-gray-800 p-3 lg:p-6 shadow-soft">
               {vistaActual === 'mapa' ? (
                 tipoVista === 'plano' ? (
                   /* Vista de Plano Dinámico */
@@ -400,7 +400,7 @@ function StudentDashboard() {
                       return (
                         <div
                           key={sala.id}
-                          className="group relative overflow-hidden rounded-xl border-2 bg-white p-4 sm:p-6 shadow-md border-neutral-light"
+                          className="group relative overflow-hidden rounded-xl border-2 bg-white dark:bg-gray-800 p-4 sm:p-6 shadow-md border-neutral-light dark:border-gray-600"
                         >
                           {/* Badge de estado */}
                           <div className="absolute right-4 top-4">
@@ -422,11 +422,11 @@ function StudentDashboard() {
 
                           {/* Contenido */}
                           <div className="mt-6 sm:mt-8">
-                            <h3 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-neutral-dark">
+                            <h3 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-neutral-dark dark:text-white">
                               {sala.nombre}
                             </h3>
                             
-                            <div className="space-y-2 sm:space-y-3 text-sm text-gray-600">
+                            <div className="space-y-2 sm:space-y-3 text-sm text-gray-600 dark:text-gray-300">
                               <div className="flex items-center gap-2">
                                 <span className="material-symbols-outlined text-lg text-primary">chair</span>
                                 <span className="font-medium">{sala.capacidad} personas</span>
@@ -454,7 +454,7 @@ function StudentDashboard() {
                   {salasMostrar.map((sala) => (
                     <div 
                       key={sala.id}
-                      className={`flex items-center justify-between rounded-lg border border-neutral-light p-3 sm:p-4 ${
+                      className={`flex items-center justify-between rounded-lg border border-neutral-light dark:border-gray-600 bg-white dark:bg-gray-800 p-3 sm:p-4 ${
                         sala.estado !== ESTADOS_SALA.DISPONIBLE && 'opacity-60'
                       }`}
                     >
@@ -467,8 +467,8 @@ function StudentDashboard() {
                           }`}>meeting_room</span>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-neutral-dark text-sm sm:text-base truncate">{sala.nombre}</p>
-                          <p className="text-xs sm:text-sm text-gray-500 truncate">Piso {sala.pisoNumero || sala.piso} • Capacidad: {sala.capacidad}</p>
+                          <p className="font-semibold text-neutral-dark dark:text-white text-sm sm:text-base truncate">{sala.nombre}</p>
+                          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 truncate">Piso {sala.pisoNumero || sala.piso} • Capacidad: {sala.capacidad}</p>
                         </div>
                       </div>
                       <span className={`rounded-full px-2 sm:px-3 py-1 text-xs font-medium flex-shrink-0 ${

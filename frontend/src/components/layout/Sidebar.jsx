@@ -79,7 +79,7 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
   };
 
   return (
-    <aside className="hidden lg:flex h-screen w-64 flex-shrink-0 flex-col border-r border-neutral-light bg-white p-4">
+    <aside className="hidden lg:flex h-full w-64 flex-col bg-white dark:bg-gray-800 border-r border-neutral-light dark:border-gray-700 p-4">
       {/* Logo y título */}
       <div className="flex flex-col gap-4">
         <div 
@@ -91,7 +91,7 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
             <path d="M2 17l10 5 10-5"></path>
             <path d="M2 12l10 5 10-5"></path>
           </svg>
-          <h1 className="text-xl font-bold text-neutral-dark group-hover:text-primary transition-colors">SalaSmart</h1>
+          <h1 className="text-xl font-bold text-neutral-dark dark:text-white group-hover:text-primary transition-colors">SalaSmart</h1>
         </div>
 
         {/* User Info */}
@@ -100,7 +100,7 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
             <span className="material-symbols-outlined text-primary">person</span>
           </div>
           <div className="flex flex-col flex-1">
-            <h2 className="text-sm font-semibold leading-normal text-neutral-dark">
+            <h2 className="text-sm font-semibold leading-normal text-neutral-dark dark:text-white">
               {user?.email?.split('@')[0] || 'Usuario'}
             </h2>
             <p className={`text-xs font-normal leading-normal ${roleInfo.color}`}>
@@ -131,7 +131,7 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                     isTabActive(item.tab) && location.pathname === '/dashboard'
                       ? 'bg-primary/10 text-primary'
-                      : 'text-gray-600 hover:bg-neutral-light'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700'
                   }`}
                 >
                   <span className="material-symbols-outlined">{item.icon}</span>
@@ -150,7 +150,7 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
                   isActive(item.path)
                     ? 'bg-primary/10 text-primary'
-                    : 'text-gray-600 hover:bg-neutral-light'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700'
                 }`}
               >
                 <span className="material-symbols-outlined">{item.icon}</span>
@@ -167,18 +167,18 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
       <div className="mt-auto flex flex-col gap-2">
         <Link
           to="/configuracion"
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 hover:bg-neutral-light"
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700"
         >
           <span className="material-symbols-outlined">settings</span>
-          <p className="text-sm font-medium leading-normal">Ajustes</p>
+          <p className="text-sm font-medium leading-normal dark:text-gray-300">Ajustes</p>
         </Link>
         
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 hover:bg-neutral-light"
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700"
         >
           <span className="material-symbols-outlined">logout</span>
-          <p className="text-sm font-medium leading-normal">Cerrar Sesión</p>
+          <p className="text-sm font-medium leading-normal dark:text-gray-300">Cerrar Sesión</p>
         </button>
       </div>
     </aside>

@@ -86,7 +86,7 @@ function MobileSidebar({ user, role, activeTab, onTabChange, isOpen, onClose }) 
       />
       
       {/* Mobile Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-56 bg-white border-r border-neutral-light z-50 lg:hidden transform transition-transform duration-300 ease-in-out">
+      <aside className="fixed left-0 top-0 h-full w-56 bg-white dark:bg-gray-800 border-r border-neutral-light dark:border-gray-700 z-50 lg:hidden transform transition-transform duration-300 ease-in-out">
         <div className="flex h-full flex-col p-3">
           {/* Header con botón cerrar */}
           <div className="flex items-center justify-between mb-3">
@@ -99,13 +99,13 @@ function MobileSidebar({ user, role, activeTab, onTabChange, isOpen, onClose }) 
                 <path d="M2 17l10 5 10-5"></path>
                 <path d="M2 12l10 5 10-5"></path>
               </svg>
-              <h2 className="text-lg font-bold text-neutral-dark">SalaSmart</h2>
+              <h2 className="text-lg font-bold text-neutral-dark dark:text-white">SalaSmart</h2>
             </div>
-            <button 
+            <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <span className="material-symbols-outlined">close</span>
+              <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">close</span>
             </button>
           </div>
 
@@ -143,7 +143,7 @@ function MobileSidebar({ user, role, activeTab, onTabChange, isOpen, onClose }) 
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                       isTabActive(item.tab) && location.pathname === '/dashboard'
                         ? 'bg-primary/10 text-primary'
-                        : 'text-gray-600 hover:bg-neutral-light'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700'
                     }`}
                   >
                     <span className="material-symbols-outlined">{item.icon}</span>

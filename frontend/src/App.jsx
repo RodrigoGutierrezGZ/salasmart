@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ToastContainer from './components/shared/ToastContainer';
 
 import Navbar from './components/layout/Navbar';
@@ -25,11 +26,12 @@ function App() {
   }
 
   return (
-    <ToastProvider>
-      <Router>
-        <div className="flex min-h-screen flex-col bg-background-light">
-          {/* Solo mostrar Navbar si NO está autenticado */}
-          {!user && <Navbar user={user} role={role} />}
+    <ThemeProvider>
+      <ToastProvider>
+        <Router>
+          <div className="flex min-h-screen flex-col bg-background-light dark:bg-gray-900">
+            {/* Solo mostrar Navbar si NO está autenticado */}
+            {!user && <Navbar user={user} role={role} />}
 
           <main className="flex-1">
             <Routes>
@@ -51,7 +53,8 @@ function App() {
           <ToastContainer />
         </div>
       </Router>
-    </ToastProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 

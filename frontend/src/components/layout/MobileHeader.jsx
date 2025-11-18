@@ -35,22 +35,22 @@ function MobileHeader({ user, role, onMenuClick }) {
   };
 
   return (
-    <header className="lg:hidden bg-white border-b border-neutral-light px-3 py-2 flex items-center justify-between fixed top-0 left-0 right-0 z-30 h-14">
+    <header className="lg:hidden bg-white dark:bg-gray-800 border-b border-neutral-light dark:border-gray-700 px-3 py-2 flex items-center justify-between fixed top-0 left-0 right-0 z-30 h-14">
       {/* Botón hamburguesa / Volver */}
       <div className="flex items-center gap-1">
         {needsBackButton && (
           <button 
             onClick={handleBackClick}
-            className="p-1.5 hover:bg-gray-100 rounded-md transition-colors flex-shrink-0"
+            className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex-shrink-0"
           >
-            <span className="material-symbols-outlined text-xl">arrow_back</span>
+            <span className="material-symbols-outlined text-xl text-gray-700 dark:text-gray-300">arrow_back</span>
           </button>
         )}
         <button 
           onClick={onMenuClick}
-          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors flex-shrink-0"
+          className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex-shrink-0"
         >
-          <span className="material-symbols-outlined text-xl">menu</span>
+          <span className="material-symbols-outlined text-xl text-gray-700 dark:text-gray-300">menu</span>
         </button>
       </div>
 
@@ -62,7 +62,7 @@ function MobileHeader({ user, role, onMenuClick }) {
             className="flex items-center gap-1.5 p-1.5 rounded-md hover:bg-gray-100 transition-colors"
           >
             <span className="material-symbols-outlined text-lg text-primary">home</span>
-            <span className="text-sm font-semibold text-neutral-dark">Inicio</span>
+            <span className="text-sm font-semibold text-neutral-dark dark:text-white">Inicio</span>
           </button>
         ) : (
           <div className="flex items-center gap-1.5 cursor-pointer" onClick={handleLogoClick}>
@@ -71,7 +71,7 @@ function MobileHeader({ user, role, onMenuClick }) {
               <path d="M2 17l10 5 10-5"></path>
               <path d="M2 12l10 5 10-5"></path>
             </svg>
-            <h1 className="text-base font-bold text-neutral-dark">SalaSmart</h1>
+            <h1 className="text-base font-bold text-neutral-dark dark:text-white">SalaSmart</h1>
           </div>
         )}
       </div>

@@ -812,7 +812,7 @@ function AdminPanel() {
 
   if (loadingSalas || loadingUsers || loadingReservas) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background-light">
+      <div className="flex h-screen items-center justify-center bg-background-light dark:bg-gray-900">
         <LoadingSpinner message="Cargando panel administrativo..." size="lg" />
       </div>
     );
@@ -823,7 +823,7 @@ function AdminPanel() {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   return (
-    <div className="flex h-screen bg-background-light">
+    <div className="flex h-screen bg-background-light dark:bg-gray-900">
       {/* Sidebar Desktop */}
       <Sidebar user={user} role={role} activeTab={activeTab} onTabChange={setActiveTab} />
       
@@ -846,9 +846,9 @@ function AdminPanel() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {/* Header */}
-        <div className="border-b border-neutral-light bg-white px-4 lg:px-8 py-4 lg:py-6">
+        <div className="border-b border-neutral-light dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:px-8 py-4 lg:py-6">
           <h1 className="flex items-center gap-2 lg:gap-3 text-xl lg:text-2xl font-bold text-neutral-dark">
             <span className="material-symbols-outlined text-2xl lg:text-3xl text-danger">admin_panel_settings</span>
             <span className="hidden sm:inline">Panel de Administración</span>

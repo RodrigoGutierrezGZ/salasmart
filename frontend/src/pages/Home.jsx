@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 function Home() {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
       {/* Hero Section */}
       <div className="mx-auto max-w-4xl text-center">
         <div className="mb-6 flex justify-center">
@@ -17,11 +17,11 @@ function Home() {
           </div>
         </div>
 
-        <h1 className="mb-6 text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+        <h1 className="mb-6 text-5xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-6xl">
           Bienvenido a <span className="text-primary">SalaSmart</span>
         </h1>
         
-        <p className="mb-8 text-xl text-slate-600">
+        <p className="mb-8 text-xl text-slate-600 dark:text-gray-300">
           Sistema inteligente para la gestión y reserva de salas universitarias en INACAP.
           <br />
           Optimiza el uso de espacios académicos de forma simple y eficiente.
@@ -36,7 +36,7 @@ function Home() {
           </Link>
           <Link
             to="/registro"
-            className="rounded-lg border-2 border-slate-300 bg-white px-8 py-4 text-lg font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all hover:scale-105"
+            className="rounded-lg border-2 border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-8 py-4 text-lg font-semibold text-slate-700 dark:text-gray-200 shadow-sm hover:bg-slate-50 dark:hover:bg-gray-700 transition-all hover:scale-105"
           >
             Registrarse
           </Link>
@@ -45,32 +45,32 @@ function Home() {
 
       {/* Features Section */}
       <div className="mt-20 grid max-w-5xl grid-cols-1 gap-8 sm:grid-cols-3">
-        <div className="rounded-xl bg-white p-6 shadow-soft">
+        <div className="rounded-xl bg-white dark:bg-gray-800 p-6 shadow-soft">
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-success/10">
             <span className="material-symbols-outlined text-2xl text-success">calendar_month</span>
           </div>
-          <h3 className="mb-2 text-lg font-semibold text-slate-900">Reserva Fácil</h3>
-          <p className="text-sm text-slate-600">
+          <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">Reserva Fácil</h3>
+          <p className="text-sm text-slate-600 dark:text-gray-300">
             Reserva salas en segundos con nuestro calendario interactivo y disponibilidad en tiempo real.
           </p>
         </div>
 
-        <div className="rounded-xl bg-white p-6 shadow-soft">
+        <div className="rounded-xl bg-white dark:bg-gray-800 p-6 shadow-soft">
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10">
             <span className="material-symbols-outlined text-2xl text-warning">meeting_room</span>
           </div>
-          <h3 className="mb-2 text-lg font-semibold text-slate-900">Gestión Inteligente</h3>
-          <p className="text-sm text-slate-600">
+          <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">Gestión Inteligente</h3>
+          <p className="text-sm text-slate-600 dark:text-gray-300">
             Visualiza la ocupación de salas y optimiza el uso de espacios académicos.
           </p>
         </div>
 
-        <div className="rounded-xl bg-white p-6 shadow-soft">
+        <div className="rounded-xl bg-white dark:bg-gray-800 p-6 shadow-soft">
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
             <span className="material-symbols-outlined text-2xl text-primary">insights</span>
           </div>
-          <h3 className="mb-2 text-lg font-semibold text-slate-900">Estadísticas</h3>
-          <p className="text-sm text-slate-600">
+          <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">Estadísticas</h3>
+          <p className="text-sm text-slate-600 dark:text-gray-300">
             Accede a reportes y estadísticas sobre el uso de las instalaciones.
           </p>
         </div>
