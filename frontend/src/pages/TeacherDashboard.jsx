@@ -1,6 +1,8 @@
 // src/pages/TeacherDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/layout/Sidebar';
+import MobileHeader from '../components/layout/MobileHeader';
+import MobileSidebar from '../components/layout/MobileSidebar';
 import FormularioReserva from '../components/docente/FormularioReserva';
 import PlanoSalasDinamico from '../components/planos/PlanoSalasDinamico';
 import ChatBot from '../components/chatbot/ChatBot';
@@ -17,6 +19,7 @@ function TeacherDashboard() {
   const [showListaSalas, setShowListaSalas] = useState(false);
   const [vistaActual, setVistaActual] = useState('disponibles'); // 'disponibles' o 'todas'
   const [tipoVista, setTipoVista] = useState('cards'); // 'cards' o 'plano'
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Obtener sedes únicas disponibles para el usuario (filtradas por sedes afiliadas)
   const sedesUnicas = React.useMemo(() => {
@@ -196,29 +199,46 @@ function TeacherDashboard() {
 
   return (
     <div className="flex h-screen bg-background-light">
+      {/* Sidebar Desktop */}
       <Sidebar user={user} role={role} />
       
+      {/* Mobile Header */}
+      <MobileHeader 
+        user={user} 
+        role={role} 
+        userData={userData}
+        onMenuClick={() => setMobileSidebarOpen(true)}
+      />
+      
+      {/* Mobile Sidebar */}
+      <MobileSidebar 
+        user={user} 
+        role={role} 
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
+      
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-8">
-        <div className="mx-auto max-w-7xl space-y-8">
+      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 p-4 lg:p-8">
+        <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8">
           
           {/* Page Heading */}
-          <header className="flex flex-wrap items-start justify-between gap-4">
+          <header className="flex flex-col lg:flex-row lg:flex-wrap items-start justify-between gap-4">
             <div className="flex flex-col gap-2">
-              <h1 className="flex items-center gap-3 text-3xl font-bold tracking-tight text-neutral-dark">
-                <span className="material-symbols-outlined text-4xl text-primary">school</span>
+              <h1 className="flex items-center gap-2 lg:gap-3 text-2xl lg:text-3xl font-bold tracking-tight text-neutral-dark">
+                <span className="material-symbols-outlined text-3xl lg:text-4xl text-primary">school</span>
                 <span>Panel del Docente</span>
               </h1>
-              <p className="text-base font-normal leading-normal text-gray-500">
+              <p className="text-sm lg:text-base font-normal leading-normal text-gray-500">
                 Gestiona tus reservas de salas y consulta disponibilidad en tiempo real.
               </p>
             </div>
             <button 
               onClick={() => setShowListaSalas(true)}
-              className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-semibold shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 lg:px-6 py-2 lg:py-3 text-white font-semibold shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl text-sm lg:text-base w-full lg:w-auto justify-center lg:justify-start"
             >
-              <span className="material-symbols-outlined">add_circle</span>
-              Nueva Reserva
+              <span className="material-symbols-outlined text-lg lg:text-xl">add_circle</span>
+              <span className="lg:inline">Nueva Reserva</span>
             </button>
           </header>
 

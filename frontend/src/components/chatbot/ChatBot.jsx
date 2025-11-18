@@ -218,19 +218,19 @@ function ChatBot() {
       {/* Botón flotante para abrir/cerrar chat */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-300 ${
+        className={`fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-50 flex h-12 w-12 lg:h-16 lg:w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-300 ${
           isOpen
             ? 'bg-danger hover:bg-danger/90 rotate-0'
             : 'bg-primary hover:bg-primary/90 hover:scale-110'
         }`}
         aria-label={isOpen ? 'Cerrar chat' : 'Abrir chat'}
       >
-        <span className="material-symbols-outlined text-3xl text-white">
+        <span className="material-symbols-outlined text-2xl lg:text-3xl text-white">
           {isOpen ? 'close' : 'chat'}
         </span>
         {/* Badge de notificación (opcional) */}
         {!isOpen && (
-          <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-danger text-xs font-bold text-white">
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 lg:h-6 lg:w-6 items-center justify-center rounded-full bg-danger text-xs font-bold text-white">
             !
           </span>
         )}
@@ -238,15 +238,15 @@ function ChatBot() {
 
       {/* Ventana del chat */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 flex h-[600px] w-[400px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl animate-slideUp">
+        <div className="fixed inset-x-2 bottom-16 top-20 lg:bottom-24 lg:right-6 lg:top-auto lg:left-auto lg:h-[600px] lg:w-[400px] z-50 flex flex-col overflow-hidden rounded-2xl lg:rounded-2xl bg-white shadow-2xl animate-slideUp">
           {/* Header */}
-          <div className="flex items-center justify-between bg-gradient-to-r from-primary to-primary/80 px-6 py-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
-                <span className="material-symbols-outlined text-2xl text-white">smart_toy</span>
+          <div className="flex items-center justify-between bg-gradient-to-r from-primary to-primary/80 px-4 py-3 lg:px-6 lg:py-4">
+            <div className="flex items-center gap-2 lg:gap-3">
+              <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-full bg-white/20">
+                <span className="material-symbols-outlined text-xl lg:text-2xl text-white">smart_toy</span>
               </div>
               <div>
-                <h3 className="font-bold text-white">Asistente SalaSmart</h3>
+                <h3 className="font-bold text-white text-sm lg:text-base">Asistente SalaSmart</h3>
                 <p className="text-xs text-white/80">En línea</p>
               </div>
             </div>
@@ -260,14 +260,14 @@ function ChatBot() {
           </div>
 
           {/* Mensajes */}
-          <div className="flex-1 overflow-y-auto bg-background-light p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto bg-background-light p-3 lg:p-4 space-y-3 lg:space-y-4">
             {conversacion.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex ${msg.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ${
+                  className={`max-w-[90%] lg:max-w-[85%] rounded-2xl px-3 py-2 lg:px-4 lg:py-3 shadow-sm ${
                     msg.tipo === 'usuario'
                       ? 'bg-primary text-white'
                       : msg.tipoMensaje === 'error'
@@ -360,9 +360,9 @@ function ChatBot() {
 
           {/* Sugerencias rápidas */}
           {conversacion.length <= 1 && !enviando && (
-            <div className="border-t border-neutral-light bg-white px-4 py-3">
+            <div className="border-t border-neutral-light bg-white px-3 py-2 lg:px-4 lg:py-3">
               <p className="mb-2 text-xs font-semibold text-gray-500">Sugerencias rápidas:</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 lg:gap-2">
                 {sugerencias.map((sug, index) => (
                   <button
                     key={index}
@@ -378,7 +378,7 @@ function ChatBot() {
           )}
 
           {/* Input de mensaje */}
-          <form onSubmit={handleEnviar} className="border-t border-neutral-light bg-white p-4">
+          <form onSubmit={handleEnviar} className="border-t border-neutral-light bg-white p-3 lg:p-4">
             <div className="flex items-end gap-2">
               <input
                 ref={inputRef}
@@ -387,14 +387,14 @@ function ChatBot() {
                 onChange={(e) => setMensaje(e.target.value)}
                 placeholder="Escribe tu mensaje..."
                 disabled={enviando}
-                className="flex-1 rounded-lg border border-neutral-light px-4 py-3 text-sm transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="flex-1 rounded-lg border border-neutral-light px-3 py-2 lg:px-4 lg:py-3 text-sm transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-gray-50 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
                 disabled={!mensaje.trim() || enviando}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-white shadow-md transition-all hover:bg-primary/90 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-primary disabled:hover:shadow-md"
+                className="flex h-9 w-9 lg:h-11 lg:w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-white shadow-md transition-all hover:bg-primary/90 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-primary disabled:hover:shadow-md"
               >
-                <span className="material-symbols-outlined">send</span>
+                <span className="material-symbols-outlined text-lg lg:text-xl">send</span>
               </button>
             </div>
           </form>

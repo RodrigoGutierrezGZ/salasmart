@@ -17,6 +17,8 @@ import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, getDocs, wri
 
 // Components
 import Sidebar from './layout/Sidebar';
+import MobileHeader from './layout/MobileHeader';
+import MobileSidebar from './layout/MobileSidebar';
 import ChatBot from './chatbot/ChatBot';
 import ConfirmDialog from './modals/ConfirmDialog';
 import LoadingSpinner from './shared/LoadingSpinner';
@@ -59,6 +61,7 @@ function AdminPanel() {
   const [salasSubTab, setSalasSubTab] = useState('lista');
   const [infraSubTab, setInfraSubTab] = useState('sedes');
   const [usuariosSubTab, setUsuariosSubTab] = useState('activos');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // ─────────────────────────────────────────────────────────────────
   // SALAS STATE
@@ -821,20 +824,40 @@ function AdminPanel() {
 
   return (
     <div className="flex h-screen bg-background-light">
+      {/* Sidebar Desktop */}
       <Sidebar user={user} role={role} activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      {/* Mobile Header */}
+      <MobileHeader 
+        user={user} 
+        role={role} 
+        userData={{}} // AdminPanel no necesita userData específico
+        onMenuClick={() => setMobileSidebarOpen(true)}
+      />
+      
+      {/* Mobile Sidebar */}
+      <MobileSidebar 
+        user={user} 
+        role={role} 
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0">
         {/* Header */}
-        <div className="border-b border-neutral-light bg-white px-8 py-6">
-          <h1 className="flex items-center gap-3 text-2xl font-bold text-neutral-dark">
-            <span className="material-symbols-outlined text-3xl text-danger">admin_panel_settings</span>
-            Panel de Administración
+        <div className="border-b border-neutral-light bg-white px-4 lg:px-8 py-4 lg:py-6">
+          <h1 className="flex items-center gap-2 lg:gap-3 text-xl lg:text-2xl font-bold text-neutral-dark">
+            <span className="material-symbols-outlined text-2xl lg:text-3xl text-danger">admin_panel_settings</span>
+            <span className="hidden sm:inline">Panel de Administración</span>
+            <span className="sm:hidden">Admin</span>
           </h1>
         </div>
 
         {/* Tab Content */}
-        <div className="p-8">
+        <div className="p-4 lg:p-8">
           {/* DASHBOARD TAB */}
           {activeTab === 'dashboard' && (
             <DashboardTab

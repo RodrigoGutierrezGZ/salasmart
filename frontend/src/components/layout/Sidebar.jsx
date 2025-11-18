@@ -79,7 +79,7 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
   };
 
   return (
-    <aside className="flex h-screen w-64 flex-shrink-0 flex-col border-r border-neutral-light bg-white p-4">
+    <aside className="hidden lg:flex h-screen w-64 flex-shrink-0 flex-col border-r border-neutral-light bg-white p-4">
       {/* Logo y título */}
       <div className="flex flex-col gap-4">
         <div 
