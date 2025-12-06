@@ -42,8 +42,8 @@ function DashboardTab({ stats, chartDataBar, chartDataDoughnut }) {
       {/* Charts */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Bar Chart */}
-        <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-neutral-dark">
+        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-soft">
+          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-neutral-dark dark:text-text-dark-primary">
             <span className="material-symbols-outlined text-primary">bar_chart</span>
             Reservas por Día (Última Semana)
           </h3>
@@ -53,8 +53,8 @@ function DashboardTab({ stats, chartDataBar, chartDataDoughnut }) {
         </div>
 
         {/* Doughnut Chart */}
-        <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-neutral-dark">
+        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-soft">
+          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-neutral-dark dark:text-text-dark-primary">
             <span className="material-symbols-outlined text-primary">pie_chart</span>
             Disponibilidad de Salas
           </h3>
@@ -65,7 +65,7 @@ function DashboardTab({ stats, chartDataBar, chartDataDoughnut }) {
       </div>
 
       {/* Actividad Reciente */}
-      <div className="rounded-lg border border-neutral-light bg-white px-6 py-5 shadow-soft">
+      <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark px-6 py-5 shadow-soft">
         <ActividadReciente limite={15} />
       </div>
     </div>

@@ -248,57 +248,47 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
 
   return (
     <div className="space-y-4">
-      {/* Header con Selector de Piso y Estadísticas */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        {/* Selector de Piso - DINÁMICO */}
-        <div className="flex gap-2 flex-wrap">
-          {pisosDisponibles.length > 0 ? (
-            pisosDisponibles.map(piso => (
-              <button
-                key={piso}
-                className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1 ${
-                  pisoSeleccionado === piso
-                    ? 'bg-primary text-white shadow-md'
-                    : 'bg-white text-gray-700 border border-neutral-light hover:bg-neutral-light'
-                }`}
-                onClick={() => setPisoSeleccionado(piso)}
-              >
-                <span className="material-symbols-outlined text-sm">layers</span>
-                Piso {piso}
-              </button>
-            ))
-          ) : (
-            <div className="text-sm text-gray-500 px-3 py-1.5">
-              No hay pisos con salas configuradas
-            </div>
-          )}
+      {/* Estadísticas de Disponibilidad */}
+      <div className="grid grid-cols-3 gap-3 lg:gap-4">
+        <div className="flex items-center gap-3 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 px-4 py-3 shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/20 dark:bg-green-500/30">
+            <span className="material-symbols-outlined text-xl text-green-600 dark:text-green-400">check_circle</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-2xl font-bold text-green-700 dark:text-green-400">
+              {salasDelPiso.filter(s => s.estado === 'disponible').length}
+            </p>
+            <p className="text-xs font-medium text-green-600 dark:text-green-500 truncate">Disponibles</p>
+          </div>
         </div>
 
-        {/* Estadísticas Compactas */}
-        <div className="flex gap-2">
-          <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-            <span className="text-sm font-semibold text-green-700">
-              {salasDelPiso.filter(s => s.estado === 'disponible').length} Disponibles
-            </span>
+        <div className="flex items-center gap-3 rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 px-4 py-3 shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/20 dark:bg-yellow-500/30">
+            <span className="material-symbols-outlined text-xl text-yellow-600 dark:text-yellow-400">schedule</span>
           </div>
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-            <span className="text-sm font-semibold text-yellow-700">
-              {salasDelPiso.filter(s => s.estado === 'proximamente').length} Próximamente
-            </span>
+          <div className="flex-1 min-w-0">
+            <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">
+              {salasDelPiso.filter(s => s.estado === 'proximamente').length}
+            </p>
+            <p className="text-xs font-medium text-yellow-600 dark:text-yellow-500 truncate">Próximamente</p>
           </div>
-          <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-1.5 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-red-500"></div>
-            <span className="text-sm font-semibold text-red-700">
-              {salasDelPiso.filter(s => s.estado === 'ocupado').length} Ocupadas
-            </span>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20 dark:bg-red-500/30">
+            <span className="material-symbols-outlined text-xl text-red-600 dark:text-red-400">cancel</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-2xl font-bold text-red-700 dark:text-red-400">
+              {salasDelPiso.filter(s => s.estado === 'ocupado').length}
+            </p>
+            <p className="text-xs font-medium text-red-600 dark:text-red-500 truncate">Ocupadas</p>
           </div>
         </div>
       </div>
 
       {/* Plano con Salas - Vista Horizontal Optimizada */}
-      <div className="rounded-lg border border-neutral-light bg-white shadow-soft overflow-hidden">
+      <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark shadow-soft overflow-hidden">
         <div className="bg-gradient-to-r from-primary to-primary/80 text-white px-4 py-2.5">
           <div className="flex items-center justify-between">
             <h5 className="font-bold flex items-center gap-2">
@@ -362,9 +352,12 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                     className="absolute bg-white rounded-lg shadow-2xl p-3 animate-fadeIn"
                     style={{
                       left: '50%',
-                      top: '100%',
+                      // Posicionar arriba si la sala está en la mitad inferior, abajo si está en la mitad superior
+                      bottom: sala.coordenadas.y > 50 ? '100%' : 'auto',
+                      top: sala.coordenadas.y <= 50 ? '100%' : 'auto',
                       transform: 'translateX(-50%)',
-                      marginTop: '8px',
+                      marginTop: sala.coordenadas.y <= 50 ? '8px' : '0',
+                      marginBottom: sala.coordenadas.y > 50 ? '8px' : '0',
                       minWidth: '240px',
                       maxWidth: '280px',
                       zIndex: 1001,

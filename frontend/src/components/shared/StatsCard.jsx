@@ -13,10 +13,10 @@ import React from 'react';
  */
 function StatsCard({ icon, iconColor, label, value }) {
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
+    <div className="flex flex-col gap-4 rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-soft">
       <span className={`material-symbols-outlined text-3xl ${iconColor}`}>{icon}</span>
-      <p className="text-sm font-medium text-gray-500">{label}</p>
-      <p className="text-4xl font-bold text-neutral-dark">{value}</p>
+      <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">{label}</p>
+      <p className="text-4xl font-bold text-neutral-dark dark:text-text-dark-primary">{value}</p>
     </div>
   );
 }

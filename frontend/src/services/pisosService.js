@@ -22,6 +22,7 @@ import {
 import { db, storage } from '../firebase/config';
 import { obtenerEdificioPorId } from './edificiosService';
 import { registrarLog } from './logsService';
+import { uploadImageToCloudinary } from './cloudinaryService';
 
 // Constantes para validación de imágenes
 const TIPOS_PERMITIDOS = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
@@ -98,10 +99,11 @@ export async function crearPiso(datos, imagenFile) {
     console.log('✅ [pisosService] Piso creado con ID:', pisoId);
 
     try {
-      // 2. Usar imagen local en lugar de Firebase Storage (sin plan Blaze)
-      const { imagenURL, imagenPath, imagenMetadata } = await usarImagenLocal(
+      // 2. Subir imagen a Cloudinary
+      const { imagenURL, imagenPath, imagenMetadata } = await subirImagenCloudinary(
         imagenFile,
-        datos.numero
+        pisoId,
+        edificio
       );
 
       // 3. Actualizar documento con URLs de la imagen
@@ -136,29 +138,41 @@ export async function crearPiso(datos, imagenFile) {
 }
 
 /**
- * Usar imagen local del directorio public/planos
- * @param {File} imagenFile - Archivo de imagen (para obtener metadata)
- * @param {number} numeroPiso - Número del piso
+ * Subir imagen a Cloudinary
+ * @param {File} imagenFile - Archivo de imagen
+ * @param {string} pisoId - ID del piso
+ * @param {Object} edificio - Datos del edificio
  * @returns {Promise<Object>} URLs y metadata de la imagen
  */
-async function usarImagenLocal(imagenFile, numeroPiso) {
+async function subirImagenCloudinary(imagenFile, pisoId, edificio) {
   try {
-    console.log('📁 [pisosService] Usando imagen local del directorio public/planos/');
+    console.log('📤 [pisosService] Subiendo imagen a Cloudinary...');
 
-    // Generar URL local: /planos/piso{numero}.jpg
-    // Las imágenes deben estar en frontend/public/planos/piso1.jpg, piso2.jpg, etc.
-    const imagenPath = `/planos/piso${numeroPiso}.jpg`;
-    const imagenURL = imagenPath; // En Vite, las rutas de public/ son accesibles directamente
+    // Subir a Cloudinary con carpeta específica
+    const folder = `salasmart/planos/${edificio.sedeCodigo}/${edificio.codigo}`;
 
+    const uploadResult = await uploadImageToCloudinary(imagenFile, {
+      folder,
+      onProgress: (percent) => {
+        console.log(`📊 [pisosService] Progreso de carga: ${percent}%`);
+      }
+    });
+
+    console.log('✅ [pisosService] Imagen subida a Cloudinary');
+
+    const imagenURL = uploadResult.url;
+    const imagenPath = uploadResult.publicId;
     const imagenMetadata = {
-      nombre: `piso${numeroPiso}.jpg`,
-      tamaño: imagenFile ? imagenFile.size : 0,
-      tipo: imagenFile ? imagenFile.type : 'image/jpeg',
+      nombre: imagenFile.name,
+      tamaño: uploadResult.bytes,
+      tipo: imagenFile.type,
+      ancho: uploadResult.width,
+      alto: uploadResult.height,
+      formato: uploadResult.format,
+      publicId: uploadResult.publicId,
       fechaSubida: Timestamp.now(),
-      local: true // Indicador de que es imagen local
+      cloudinary: true // Indicador de que es imagen de Cloudinary
     };
-
-    console.log('✅ [pisosService] Imagen local configurada:', imagenURL);
 
     return {
       imagenURL,
@@ -166,8 +180,8 @@ async function usarImagenLocal(imagenFile, numeroPiso) {
       imagenMetadata
     };
   } catch (error) {
-    console.error('❌ [pisosService] Error al configurar imagen local:', error);
-    throw new Error('Error al configurar la imagen del plano');
+    console.error('❌ [pisosService] Error al subir imagen a Cloudinary:', error);
+    throw error;
   }
 }
 
@@ -443,14 +457,14 @@ export async function actualizarPiso(pisoId, datos) {
 }
 
 /**
- * Actualizar imagen del plano de un piso (versión local)
+ * Actualizar imagen del plano de un piso (versión Cloudinary)
  * @param {string} pisoId - ID del piso
  * @param {File} imagenFile - Nueva imagen
  * @returns {Promise<void>}
  */
 export async function actualizarImagenPiso(pisoId, imagenFile) {
   try {
-    console.log('📝 [pisosService] Actualizando referencia de imagen del piso:', pisoId);
+    console.log('📝 [pisosService] Actualizando imagen del piso:', pisoId);
 
     // Validar archivo
     validarArchivo(imagenFile);
@@ -461,10 +475,17 @@ export async function actualizarImagenPiso(pisoId, imagenFile) {
       throw new Error('Piso no encontrado');
     }
 
-    // Usar imagen local (no se sube, solo se actualiza la referencia)
-    const { imagenURL, imagenPath, imagenMetadata } = await usarImagenLocal(
+    // Obtener datos del edificio para la carpeta de Cloudinary
+    const edificio = await obtenerEdificioPorId(pisoActual.edificioId);
+    if (!edificio) {
+      throw new Error('Edificio no encontrado');
+    }
+
+    // Subir nueva imagen a Cloudinary
+    const { imagenURL, imagenPath, imagenMetadata } = await subirImagenCloudinary(
       imagenFile,
-      pisoActual.numero
+      pisoId,
+      edificio
     );
 
     // Actualizar documento
@@ -475,7 +496,8 @@ export async function actualizarImagenPiso(pisoId, imagenFile) {
       fechaActualizacion: Timestamp.now()
     });
 
-    console.log('✅ [pisosService] Referencia de imagen actualizada. Asegúrate de que la imagen esté en public/planos/piso' + pisoActual.numero + '.jpg');
+    console.log('✅ [pisosService] Imagen del piso actualizada exitosamente');
+    console.log('🔗 [pisosService] Nueva URL:', imagenURL);
 
     // Registrar log
     await registrarLog(

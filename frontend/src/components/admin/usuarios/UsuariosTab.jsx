@@ -44,8 +44,8 @@ function UsuariosTab({
       {messageUser && (
         <div className={`flex items-center gap-2 rounded-lg p-4 ${
           messageUser.includes('✅') || messageUser.includes('exitosamente')
-            ? 'bg-success/10 border border-success/30 text-success'
-            : 'bg-danger/10 border border-danger/30 text-danger'
+            ? 'bg-success/10 dark:bg-success/20 border border-success/30 dark:border-success/50 text-success'
+            : 'bg-danger/10 dark:bg-danger/20 border border-danger/30 dark:border-danger/50 text-danger'
         }`}>
           <span className="material-symbols-outlined">
             {messageUser.includes('✅') || messageUser.includes('exitosamente') ? 'check_circle' : 'error'}
@@ -55,13 +55,13 @@ function UsuariosTab({
       )}
 
       {/* Sub-Tabs Navigation */}
-      <div className="flex gap-2 rounded-lg border border-neutral-light bg-white p-2">
+      <div className="flex gap-2 rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-2">
         <button
           onClick={() => setUsuariosSubTab('activos')}
           className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
             usuariosSubTab === 'activos'
               ? 'bg-primary text-white shadow-md'
-              : 'text-gray-600 hover:bg-gray-100'
+              : 'text-gray-600 dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover'
           }`}
         >
           <span className="material-symbols-outlined text-base">check_circle</span>
@@ -72,7 +72,7 @@ function UsuariosTab({
           className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
             usuariosSubTab === 'pendientes'
               ? 'bg-primary text-white shadow-md'
-              : 'text-gray-600 hover:bg-gray-100'
+              : 'text-gray-600 dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover'
           }`}
         >
           <span className="material-symbols-outlined text-base">pending</span>
@@ -87,15 +87,15 @@ function UsuariosTab({
 
       {/* Botón de Migración de Nombres */}
       {hayUsuariosSinNombre && (
-        <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
+        <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30 p-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-start gap-3 flex-1">
-              <span className="material-symbols-outlined text-purple-600">badge</span>
+              <span className="material-symbols-outlined text-purple-600 dark:text-purple-400">badge</span>
               <div>
-                <p className="text-sm font-semibold text-purple-900">
+                <p className="text-sm font-semibold text-purple-900 dark:text-purple-300">
                   Actualizar Nombres de Usuarios
                 </p>
-                <p className="mt-1 text-xs text-purple-700">
+                <p className="mt-1 text-xs text-purple-700 dark:text-purple-300">
                   Hay usuarios con nombre "usuario". Este botón los actualizará automáticamente extrayendo el nombre desde su email institucional.
                 </p>
               </div>
@@ -116,74 +116,74 @@ function UsuariosTab({
 
       {/* Info y Filtros según vista */}
       {usuariosSubTab === 'pendientes' ? (
-        <div className="rounded-xl border-2 border-blue-300 bg-blue-100 p-5 shadow-sm">
+        <div className="rounded-xl border-2 border-blue-300 dark:border-blue-800 bg-blue-100 dark:bg-blue-900/30 p-5 shadow-sm">
           <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-500">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-500 dark:bg-blue-600">
               <span className="material-symbols-outlined text-white text-2xl">info</span>
             </div>
             <div className="flex-1">
-              <h3 className="text-base font-bold text-blue-900 mb-2">
+              <h3 className="text-base font-bold text-blue-900 dark:text-blue-300 mb-2">
                 Cuentas Pendientes de Aprobación
               </h3>
-              <p className="text-sm leading-relaxed text-blue-800">
+              <p className="text-sm leading-relaxed text-blue-800 dark:text-blue-300">
                 Estas cuentas fueron registradas pero están inactivas. Puedes <strong className="font-semibold">cambiar el rol</strong> si corresponde (docente/admin) y luego hacer clic en <strong className="font-semibold">Aprobar</strong> para activarlas, o <strong className="font-semibold">Rechazar</strong> para eliminarlas.
               </p>
             </div>
           </div>
         </div>
       ) : (
-        <div className="rounded-lg border border-neutral-light bg-white p-4 shadow-soft">
+        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-4 shadow-soft">
           <div className="flex flex-wrap gap-4">
             <div className="flex-1">
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-text-dark-secondary">search</span>
                 <input
                   type="text"
                   value={searchUser}
                   onChange={(e) => setSearchUser(e.target.value)}
                   placeholder="Buscar por email..."
-                  className="w-full rounded-lg border border-neutral-light py-2 pl-10 pr-4 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary py-2 pl-10 pr-4 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary"
                 />
               </div>
             </div>
             <select
               value={filterRole}
               onChange={(e) => setFilterRole(e.target.value)}
-              className="rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="todos">Todos los roles</option>
-              <option value="estudiante">Estudiantes</option>
-              <option value="docente">Docentes</option>
-              <option value="admin">Administradores</option>
+              <option value="todos" className="dark:bg-neutral-dark">Todos los roles</option>
+              <option value="estudiante" className="dark:bg-neutral-dark">Estudiantes</option>
+              <option value="docente" className="dark:bg-neutral-dark">Docentes</option>
+              <option value="admin" className="dark:bg-neutral-dark">Administradores</option>
             </select>
           </div>
         </div>
       )}
 
       {/* Users Table */}
-      <div className="rounded-lg border border-neutral-light bg-white shadow-soft overflow-hidden">
+      <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark shadow-soft overflow-hidden">
         <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-100 sticky top-0 z-20 shadow-sm">
+            <thead className="bg-gray-100 dark:bg-neutral-dark sticky top-0 z-20 shadow-sm">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 bg-gray-100">Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 bg-gray-100">Rol</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 bg-gray-100">Sedes</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 bg-gray-100">Estado</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 bg-gray-100">Acciones</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Usuario</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Rol</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Sedes</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Estado</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-light">
+            <tbody className="divide-y divide-neutral-light dark:divide-border-dark">
               {filteredUsers.map((u) => {
                 // No mostrar nuestra propia cuenta
                 if (u.id === auth.currentUser?.uid) return null;
 
                 return (
-                  <tr key={u.id} className="hover:bg-neutral-light/30">
+                  <tr key={u.id} className="hover:bg-neutral-light/30 dark:hover:bg-card-bg-dark-hover">
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-semibold text-neutral-dark">{u.nombre || 'Sin nombre'}</p>
-                        <p className="text-sm text-gray-500">{u.email}</p>
+                        <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{u.nombre || 'Sin nombre'}</p>
+                        <p className="text-sm text-gray-500 dark:text-text-dark-secondary">{u.email}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -196,23 +196,23 @@ function UsuariosTab({
                         <select
                           value={u.role}
                           onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                          className="rounded-lg border border-neutral-light bg-white px-3 py-1.5 text-sm font-semibold focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                          className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-1.5 text-sm font-semibold focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                           title="Cambiar rol del usuario"
                         >
-                          <option value="estudiante">Estudiante</option>
-                          <option value="docente">Docente</option>
-                          <option value="admin">Administrador</option>
+                          <option value="estudiante" className="dark:bg-neutral-dark">Estudiante</option>
+                          <option value="docente" className="dark:bg-neutral-dark">Docente</option>
+                          <option value="admin" className="dark:bg-neutral-dark">Administrador</option>
                         </select>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         {u.sedesAfiliadas && u.sedesAfiliadas.length > 0 ? (
-                          <span className="text-xs font-semibold text-gray-700">
+                          <span className="text-xs font-semibold text-gray-700 dark:text-text-dark-primary">
                             {u.sedesAfiliadas.length} sede{u.sedesAfiliadas.length > 1 ? 's' : ''}
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-400">Sin sedes</span>
+                          <span className="text-xs text-gray-400 dark:text-text-dark-secondary">Sin sedes</span>
                         )}
                         <button
                           onClick={() => handleAbrirModalSedes(u)}
@@ -225,7 +225,7 @@ function UsuariosTab({
                     </td>
                     <td className="px-6 py-4">
                       <span className={`rounded-full px-3 py-1 text-xs font-bold ${
-                        u.activo ? 'bg-success/10 text-success' : 'bg-gray-100 text-gray-600'
+                        u.activo ? 'bg-success/10 dark:bg-success/20 text-success' : 'bg-gray-100 dark:bg-neutral-dark text-gray-600 dark:text-text-dark-secondary'
                       }`}>
                         {u.activo ? 'Activo' : 'Inactivo'}
                       </span>
@@ -278,9 +278,9 @@ function UsuariosTab({
           </table>
 
           {filteredUsers.length === 0 && (
-            <div className="px-6 py-12 text-center text-gray-500">
-              <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">person_off</span>
-              <p className="text-lg font-semibold">No hay usuarios que mostrar</p>
+            <div className="px-6 py-12 text-center text-gray-500 dark:text-text-dark-secondary">
+              <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">person_off</span>
+              <p className="text-lg font-semibold dark:text-text-dark-primary">No hay usuarios que mostrar</p>
               <p className="text-sm mt-2">
                 {usuariosSubTab === 'pendientes'
                   ? 'No hay cuentas pendientes de aprobación.'

@@ -14,11 +14,15 @@ export default {
         "warning": "#F59E0B",
         "danger": "#EF4444",
         "background-light": "#FAFAFA",
-        "background-dark": "#1F2937",
-        "neutral-dark": "#1F2937",
+        "background-dark": "#1e293b",        // Slate-800 - Más claro y azulado
+        "neutral-dark": "#334155",           // Slate-700 - Mejor contraste
         "neutral-light": "#F3F4F6",
         "card-bg-light": "#FFFFFF",
-        "card-bg-dark": "#2d3748",
+        "card-bg-dark": "#334155",           // Slate-700 - Visible contra el fondo
+        "card-bg-dark-hover": "#475569",     // Slate-600 - Para hover states
+        "border-dark": "#64748b",            // Slate-500 - Bordes visibles
+        "text-dark-primary": "#f1f5f9",      // Slate-100 - Texto principal
+        "text-dark-secondary": "#cbd5e1",    // Slate-300 - Texto secundario
       },
       fontFamily: {
         "display": ["Inter", "sans-serif"],

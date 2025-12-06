@@ -96,18 +96,33 @@ function ChatBot() {
 
     try {
       // Construir historial para Claude (formato requerido por la API)
-      const historialClaude = conversacion.map(msg => ({
+      // IMPORTANTE: Filtrar para que siempre empiece con 'user' y alterne correctamente
+      let historialClaude = conversacion.map(msg => ({
         role: msg.tipo === 'usuario' ? 'user' : 'assistant',
         content: msg.texto
       }));
 
+      // Eliminar mensajes del inicio hasta encontrar el primer mensaje 'user'
+      while (historialClaude.length > 0 && historialClaude[0].role !== 'user') {
+        historialClaude.shift();
+      }
+
+      // Filtrar mensajes vacíos
+      historialClaude = historialClaude.filter(msg => msg.content && msg.content.trim());
+
       // Procesar mensaje con Claude AI
       const respuesta = await procesarMensaje(mensajeUsuario, user, userData, historialClaude);
+
+      // Validar que la respuesta tenga texto antes de agregarla
+      if (!respuesta.texto || !respuesta.texto.trim()) {
+        console.error('Respuesta vacía de Claude:', respuesta);
+        throw new Error('La respuesta del asistente está vacía');
+      }
 
       const nuevoMensajeBot = {
         id: Date.now() + 1,
         tipo: 'bot',
-        texto: respuesta.texto,
+        texto: respuesta.texto.trim(),
         tipoMensaje: respuesta.tipo,
         datos: respuesta.datos,
         timestamp: new Date()
@@ -172,18 +187,33 @@ function ChatBot() {
 
     try {
       // Construir historial para Claude
-      const historialClaude = conversacion.map(msg => ({
+      // IMPORTANTE: Filtrar para que siempre empiece con 'user' y alterne correctamente
+      let historialClaude = conversacion.map(msg => ({
         role: msg.tipo === 'usuario' ? 'user' : 'assistant',
         content: msg.texto
       }));
 
+      // Eliminar mensajes del inicio hasta encontrar el primer mensaje 'user'
+      while (historialClaude.length > 0 && historialClaude[0].role !== 'user') {
+        historialClaude.shift();
+      }
+
+      // Filtrar mensajes vacíos
+      historialClaude = historialClaude.filter(msg => msg.content && msg.content.trim());
+
       // Procesar mensaje con Claude AI
       const respuesta = await procesarMensaje(mensajeUsuario, user, userData, historialClaude);
+
+      // Validar que la respuesta tenga texto antes de agregarla
+      if (!respuesta.texto || !respuesta.texto.trim()) {
+        console.error('Respuesta vacía de Claude:', respuesta);
+        throw new Error('La respuesta del asistente está vacía');
+      }
 
       const nuevoMensajeBot = {
         id: Date.now() + 1,
         tipo: 'bot',
-        texto: respuesta.texto,
+        texto: respuesta.texto.trim(),
         tipoMensaje: respuesta.tipo,
         datos: respuesta.datos,
         timestamp: new Date()

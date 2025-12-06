@@ -69,10 +69,18 @@ function TeacherDashboard() {
 
   // Auto-seleccionar edificio si solo hay uno disponible
   useEffect(() => {
-    if (edificiosUnicos.length === 1 && filtroEdificio === 'todos') {
+    if (edificiosUnicos.length === 1) {
+      // Siempre establecer el único edificio disponible
       setFiltroEdificio(edificiosUnicos[0].id);
+    } else if (edificiosUnicos.length > 1 && filtroEdificio !== 'todos') {
+      // Si hay múltiples edificios, verificar que el actual siga siendo válido
+      const edificioValido = edificiosUnicos.find(e => e.id === filtroEdificio);
+      if (!edificioValido) {
+        // Si el edificio seleccionado ya no existe, resetear
+        setFiltroEdificio('todos');
+      }
     }
-  }, [edificiosUnicos]);
+  }, [edificiosUnicos, filtroEdificio]);
 
   // Pisos únicos (dinámicos según filtros de sede y edificio)
   let salasParaPisos = salas;
@@ -167,12 +175,12 @@ function TeacherDashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-screen">
+      <div className="flex h-screen bg-background-light dark:bg-background-dark">
         <Sidebar user={user} role={role} />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-gray-600">Cargando...</p>
+            <p className="mt-4 text-gray-600 dark:text-text-dark-secondary">Cargando...</p>
           </div>
         </main>
       </div>
@@ -198,7 +206,7 @@ function TeacherDashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-background-light">
+    <div className="flex h-screen bg-background-light dark:bg-background-dark">
       {/* Sidebar Desktop */}
       <Sidebar user={user} role={role} />
       
@@ -219,21 +227,21 @@ function TeacherDashboard() {
       />
       
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 p-4 lg:p-8">
-        <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8">
+      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 px-4 lg:px-8 pb-4 lg:pb-8">
+        <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8 pt-4 lg:pt-8">
           
           {/* Page Heading */}
           <header className="flex flex-col lg:flex-row lg:flex-wrap items-start justify-between gap-4">
             <div className="flex flex-col gap-2">
-              <h1 className="flex items-center gap-2 lg:gap-3 text-2xl lg:text-3xl font-bold tracking-tight text-neutral-dark">
+              <h1 className="flex items-center gap-2 lg:gap-3 text-2xl lg:text-3xl font-bold tracking-tight text-neutral-dark dark:text-text-dark-primary">
                 <span className="material-symbols-outlined text-3xl lg:text-4xl text-primary">school</span>
                 <span>Panel del Docente</span>
               </h1>
-              <p className="text-sm lg:text-base font-normal leading-normal text-gray-500">
+              <p className="text-sm lg:text-base font-normal leading-normal text-gray-500 dark:text-text-dark-secondary">
                 Gestiona tus reservas de salas y consulta disponibilidad en tiempo real.
               </p>
             </div>
-            <button 
+            <button
               onClick={() => setShowListaSalas(true)}
               className="flex items-center gap-2 rounded-lg bg-primary px-4 lg:px-6 py-2 lg:py-3 text-white font-semibold shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl text-sm lg:text-base w-full lg:w-auto justify-center lg:justify-start"
             >
@@ -244,9 +252,9 @@ function TeacherDashboard() {
 
           {/* Error Alert */}
           {error && (
-            <div className="flex items-center gap-3 rounded-lg border border-danger/30 bg-danger/10 p-4">
-              <span className="material-symbols-outlined text-danger">error</span>
-              <p className="text-sm text-danger">{error}</p>
+            <div className="flex items-center gap-3 rounded-lg border border-danger/30 dark:border-danger/50 bg-danger/10 dark:bg-danger/20 p-4">
+              <span className="material-symbols-outlined text-danger dark:text-danger">error</span>
+              <p className="text-sm text-danger dark:text-danger">{error}</p>
             </div>
           )}
 
@@ -255,20 +263,20 @@ function TeacherDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               
               {/* Tipo de Vista: Cards vs Plano */}
-              <div className="flex rounded-lg bg-neutral-light p-1">
-                <button 
+              <div className="flex rounded-lg bg-neutral-light dark:bg-card-bg-dark p-1">
+                <button
                   onClick={() => setTipoVista('cards')}
                   className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm font-semibold transition-all ${
-                    tipoVista === 'cards' ? 'bg-white text-primary shadow-sm' : 'text-gray-600'
+                    tipoVista === 'cards' ? 'bg-white dark:bg-primary/20 text-primary shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xl">grid_view</span>
                   Cards
                 </button>
-                <button 
+                <button
                   onClick={() => setTipoVista('plano')}
                   className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm transition-all ${
-                    tipoVista === 'plano' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
+                    tipoVista === 'plano' ? 'bg-white dark:bg-primary/20 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary font-medium'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xl">map</span>
@@ -277,20 +285,20 @@ function TeacherDashboard() {
               </div>
 
               {/* View Toggle: Disponibles vs Todas */}
-              <div className="flex rounded-lg bg-neutral-light p-1">
-                <button 
+              <div className="flex rounded-lg bg-neutral-light dark:bg-card-bg-dark p-1">
+                <button
                   onClick={() => setVistaActual('disponibles')}
                   className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm font-semibold transition-all ${
-                    vistaActual === 'disponibles' ? 'bg-white text-primary shadow-sm' : 'text-gray-600'
+                    vistaActual === 'disponibles' ? 'bg-white dark:bg-primary/20 text-primary shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xl">check_circle</span>
                   Solo Disponibles
                 </button>
-                <button 
+                <button
                   onClick={() => setVistaActual('todas')}
                   className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm transition-all ${
-                    vistaActual === 'todas' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
+                    vistaActual === 'todas' ? 'bg-white dark:bg-primary/20 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary font-medium'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xl">list</span>
@@ -306,7 +314,7 @@ function TeacherDashboard() {
                     <select
                       value={filtroSede}
                       onChange={(e) => setFiltroSede(e.target.value)}
-                      className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      className="h-10 appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark pl-4 pr-10 text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                       style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                     >
                       <option value="todos">Todas las Sedes</option>
@@ -316,7 +324,7 @@ function TeacherDashboard() {
                         </option>
                       ))}
                     </select>
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
                       expand_more
                     </span>
                   </div>
@@ -328,7 +336,7 @@ function TeacherDashboard() {
                     <select
                       value={filtroEdificio}
                       onChange={(e) => setFiltroEdificio(e.target.value)}
-                      className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      className="h-10 appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark pl-4 pr-10 text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                       style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                     >
                       <option value="todos">Todos los Edificios</option>
@@ -338,7 +346,7 @@ function TeacherDashboard() {
                         </option>
                       ))}
                     </select>
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
                       expand_more
                     </span>
                   </div>
@@ -349,7 +357,7 @@ function TeacherDashboard() {
                   <select
                     value={filtroPiso}
                     onChange={(e) => setFiltroPiso(e.target.value)}
-                    className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    className="h-10 appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark pl-4 pr-10 text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                     style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     <option value="todos">Todos los Pisos</option>
@@ -359,17 +367,17 @@ function TeacherDashboard() {
                       </option>
                     ))}
                   </select>
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
                     expand_more
                   </span>
                 </div>
-                
+
                 {/* Filtro de Capacidad */}
                 <div className="relative">
                   <select
                     value={filtroCapacidad}
                     onChange={(e) => setFiltroCapacidad(e.target.value)}
-                    className="h-10 appearance-none rounded-lg border border-neutral-light bg-white pl-4 pr-10 text-sm font-medium text-gray-700 shadow-soft transition-all hover:bg-neutral-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    className="h-10 appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark pl-4 pr-10 text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                     style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     <option value="todos">Todas las Capacidades</option>
@@ -377,7 +385,7 @@ function TeacherDashboard() {
                     <option value="mediana">Mediana (16-30)</option>
                     <option value="grande">Grande (&gt;30)</option>
                   </select>
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
                     expand_more
                   </span>
                 </div>
@@ -399,7 +407,7 @@ function TeacherDashboard() {
                         setFiltroPiso('todos');
                         setFiltroCapacidad('todos');
                       }}
-                      className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-4 text-sm font-semibold text-danger transition-all hover:bg-danger/20"
+                      className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-danger/30 dark:border-danger/50 bg-danger/10 dark:bg-danger/20 px-4 text-sm font-semibold text-danger dark:text-danger transition-all hover:bg-danger/20 dark:hover:bg-danger/30"
                     >
                       <span className="material-symbols-outlined text-base">close</span>
                       Limpiar
@@ -412,7 +420,7 @@ function TeacherDashboard() {
             {/* Renderizado condicional: Plano o Cards */}
             {tipoVista === 'plano' ? (
               /* Vista de Plano Dinámico */
-              <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
+              <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-soft">
                 <PlanoSalasDinamico
                   pisoInicial={filtroPiso === 'todos' ? 1 : parseInt(filtroPiso)}
                   filtroSede={filtroSede}
@@ -433,10 +441,10 @@ function TeacherDashboard() {
                     key={sala.id}
                     className={`group relative flex flex-col gap-4 rounded-lg border-2 p-6 shadow-soft transition-all hover:shadow-md ${
                       isDisponible
-                        ? 'border-success/30 bg-success/5 hover:border-success/50'
+                        ? 'border-success/30 dark:border-success/50 bg-success/5 dark:bg-success/10 hover:border-success/50 dark:hover:border-success'
                         : isOcupado
-                          ? 'border-danger/30 bg-danger/5 hover:border-danger/50'
-                          : 'border-warning/30 bg-warning/5 hover:border-warning/50'
+                          ? 'border-danger/30 dark:border-danger/50 bg-danger/5 dark:bg-danger/10 hover:border-danger/50 dark:hover:border-danger'
+                          : 'border-warning/30 dark:border-warning/50 bg-warning/5 dark:bg-warning/10 hover:border-warning/50 dark:hover:border-warning'
                     }`}
                   >
                     {/* Badge de estado más grande y visible */}
@@ -446,7 +454,7 @@ function TeacherDashboard() {
                           ? 'bg-success text-white'
                           : isOcupado
                             ? 'bg-danger text-white'
-                            : 'bg-warning text-neutral-dark'
+                            : 'bg-warning text-neutral-dark dark:text-gray-900'
                       }`}>
                         <span className="material-symbols-outlined text-sm">
                           {isDisponible ? 'check_circle' : isOcupado ? 'cancel' : 'schedule'}
@@ -459,27 +467,27 @@ function TeacherDashboard() {
                     <div className="flex items-center gap-3">
                       <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${
                         isDisponible
-                          ? 'bg-success/20'
+                          ? 'bg-success/20 dark:bg-success/30'
                           : isOcupado
-                            ? 'bg-danger/20'
-                            : 'bg-warning/20'
+                            ? 'bg-danger/20 dark:bg-danger/30'
+                            : 'bg-warning/20 dark:bg-warning/30'
                       }`}>
                         <span className={`material-symbols-outlined text-2xl ${
                           isDisponible
-                            ? 'text-success'
-                            : isOcupado
-                              ? 'text-danger'
-                              : 'text-warning'
+                            ? 'text-success dark:text-success'
+                          : isOcupado
+                              ? 'text-danger dark:text-danger'
+                              : 'text-warning dark:text-warning'
                         }`}>meeting_room</span>
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-neutral-dark">{sala.nombre}</h3>
-                        <p className="text-sm text-gray-500">Piso {sala.piso}</p>
+                        <h3 className="text-lg font-bold text-neutral-dark dark:text-text-dark-primary">{sala.nombre}</h3>
+                        <p className="text-sm text-gray-500 dark:text-text-dark-secondary">Piso {sala.piso}</p>
                       </div>
                     </div>
 
                     {/* Detalles */}
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-text-dark-secondary">
                       <div className="flex items-center gap-1">
                         <span className="material-symbols-outlined text-base">chair</span>
                         <span>{sala.capacidad} personas</span>
@@ -494,7 +502,7 @@ function TeacherDashboard() {
 
                     {/* Info adicional si está ocupada */}
                     {!isDisponible && sala.textoSecundario && (
-                      <p className="text-xs text-gray-500">{sala.textoSecundario}</p>
+                      <p className="text-xs text-gray-500 dark:text-text-dark-secondary">{sala.textoSecundario}</p>
                     )}
 
                     {/* Botón de reservar */}
@@ -504,7 +512,7 @@ function TeacherDashboard() {
                       className={`mt-2 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
                         isDisponible
                           ? 'bg-primary text-white hover:bg-primary/90 shadow-sm hover:shadow-md'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                       }`}
                     >
                       <span className="material-symbols-outlined text-lg">
@@ -520,10 +528,10 @@ function TeacherDashboard() {
 
             {/* Empty state */}
             {salasMostrar.length === 0 && (
-              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-light bg-white p-12">
-                <span className="material-symbols-outlined text-6xl text-gray-300">search_off</span>
-                <p className="mt-4 text-lg font-semibold text-gray-600">No hay salas disponibles</p>
-                <p className="text-sm text-gray-500">Intenta cambiar los filtros o vuelve más tarde</p>
+              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-12">
+                <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">search_off</span>
+                <p className="mt-4 text-lg font-semibold text-gray-600 dark:text-text-dark-primary">No hay salas disponibles</p>
+                <p className="text-sm text-gray-500 dark:text-text-dark-secondary">Intenta cambiar los filtros o vuelve más tarde</p>
               </div>
             )}
           </section>
@@ -534,7 +542,7 @@ function TeacherDashboard() {
       {/* Modal Lista de Salas */}
       {showListaSalas && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-2xl animate-slideUp">
+          <div className="relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl bg-white dark:bg-neutral-dark shadow-2xl animate-slideUp">
             {/* Header */}
             <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 px-8 py-6">
               <div className="flex items-center justify-between">
@@ -569,10 +577,10 @@ function TeacherDashboard() {
                       }}
                       className={`group relative cursor-pointer overflow-hidden rounded-xl border-2 p-6 shadow-md transition-all hover:shadow-xl ${
                         isDisponible
-                          ? 'border-success/30 bg-success/5 hover:border-success'
+                          ? 'border-success/30 dark:border-success/50 bg-success/5 dark:bg-success/10 hover:border-success'
                           : isOcupado
-                            ? 'border-danger/30 bg-danger/5 hover:border-danger'
-                            : 'border-warning/30 bg-warning/5 hover:border-warning'
+                            ? 'border-danger/30 dark:border-danger/50 bg-danger/5 dark:bg-danger/10 hover:border-danger'
+                            : 'border-warning/30 dark:border-warning/50 bg-warning/5 dark:bg-warning/10 hover:border-warning'
                       }`}
                     >
                       {/* Badge de estado mejorado */}
@@ -582,7 +590,7 @@ function TeacherDashboard() {
                             ? 'bg-success text-white'
                             : isOcupado
                               ? 'bg-danger text-white'
-                              : 'bg-warning text-neutral-dark'
+                              : 'bg-warning text-neutral-dark dark:text-gray-900'
                         }`}>
                           <span className="material-symbols-outlined text-sm">
                             {isDisponible ? 'check_circle' : isOcupado ? 'cancel' : 'schedule'}
@@ -593,11 +601,11 @@ function TeacherDashboard() {
 
                       {/* Contenido */}
                       <div className="mt-8">
-                        <h3 className="mb-4 text-xl font-bold text-neutral-dark group-hover:text-primary transition-colors">
+                        <h3 className="mb-4 text-xl font-bold text-neutral-dark dark:text-text-dark-primary group-hover:text-primary transition-colors">
                           {sala.nombre}
                         </h3>
-                        
-                        <div className="space-y-3 text-sm text-gray-600">
+
+                        <div className="space-y-3 text-sm text-gray-600 dark:text-text-dark-secondary">
                           <div className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-lg text-primary">chair</span>
                             <span className="font-medium">{sala.capacidad} personas</span>
@@ -615,7 +623,7 @@ function TeacherDashboard() {
                         </div>
 
                         {/* Botón de acción */}
-                        <div className="mt-6 pt-4 border-t border-neutral-light">
+                        <div className="mt-6 pt-4 border-t border-neutral-light dark:border-border-dark">
                           <span className="flex items-center gap-2 text-sm font-semibold text-primary group-hover:gap-3 transition-all">
                             Seleccionar sala
                             <span className="material-symbols-outlined text-lg">arrow_forward</span>
@@ -629,8 +637,8 @@ function TeacherDashboard() {
 
               {salasMostrar.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">search_off</span>
-                  <p className="text-lg text-gray-500">No hay salas disponibles con los filtros seleccionados</p>
+                  <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">search_off</span>
+                  <p className="text-lg text-gray-500 dark:text-text-dark-secondary">No hay salas disponibles con los filtros seleccionados</p>
                 </div>
               )}
             </div>
@@ -641,7 +649,7 @@ function TeacherDashboard() {
       {/* Modal Formulario Reserva - MEJORADO */}
       {showFormulario && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-2xl animate-slideUp">
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-white dark:bg-neutral-dark shadow-2xl animate-slideUp">
             {/* Header con gradiente */}
             <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 px-8 py-6">
               <div className="flex items-center justify-between">
