@@ -28,7 +28,7 @@
 
 export const CLOUDINARY_CONFIG = {
   // REEMPLAZA CON TU CLOUD NAME de Cloudinary
-  cloudName: 'tu-cloud-name',
+  cloudName: 'dejcfgcqr',
 
   // REEMPLAZA CON TU UPLOAD PRESET (debe ser unsigned)
   uploadPreset: 'salasmart_planos',
@@ -64,8 +64,8 @@ export const CLOUDINARY_CONFIG = {
  */
 export function isCloudinaryConfigured() {
   return CLOUDINARY_CONFIG.cloudName !== 'tu-cloud-name' &&
-         CLOUDINARY_CONFIG.uploadPreset !== 'salasmart_planos' ||
-         CLOUDINARY_CONFIG.cloudName.length > 0;
+         CLOUDINARY_CONFIG.cloudName.length > 0 &&
+         CLOUDINARY_CONFIG.uploadPreset.length > 0;
 }
 
 /**
@@ -80,7 +80,59 @@ export function getUploadUrl() {
 }
 
 /**
- * Generar URL de imagen con transformaciones
+ * Generar URL de imagen con transformaciones optimizadas
+ * @param {string} publicId - ID público de la imagen en Cloudinary
+ * @param {Object} options - Opciones de transformación
+ * @param {number} options.width - Ancho deseado
+ * @param {number} options.height - Alto deseado
+ * @param {string} options.quality - Calidad ('auto:good', 'auto:best', 'auto:eco')
+ * @param {string} options.format - Formato ('auto', 'webp', 'jpg', 'png')
+ * @param {boolean} options.responsive - Habilitar responsiveness
+ * @returns {string}
+ */
+export function getOptimizedImageUrl(publicId, options = {}) {
+  if (!publicId || !CLOUDINARY_CONFIG.cloudName) {
+    return publicId; // Retornar URL original si no es de Cloudinary
+  }
+
+  const {
+    width = 2000,
+    height = null,
+    quality = 'auto:good',
+    format = 'auto',
+    responsive = true,
+    crop = 'limit'
+  } = options;
+
+  let transformations = [`q_${quality}`, `f_${format}`];
+
+  if (width) transformations.push(`w_${width}`);
+  if (height) transformations.push(`h_${height}`);
+  if (crop) transformations.push(`c_${crop}`);
+  
+  // Agregar DPR (Device Pixel Ratio) para pantallas retina
+  if (responsive) {
+    transformations.push('dpr_auto');
+  }
+
+  const transformStr = transformations.join(',');
+  
+  // Si la URL ya es completa de Cloudinary, reemplazar la parte de transformaciones
+  if (publicId.includes('cloudinary.com')) {
+    // Extraer el public ID de la URL completa
+    const parts = publicId.split('/upload/');
+    if (parts.length === 2) {
+      return `${parts[0]}/upload/${transformStr}/${parts[1]}`;
+    }
+    return publicId;
+  }
+
+  // Generar URL completa
+  return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/image/upload/${transformStr}/${publicId}`;
+}
+
+/**
+ * Generar URL de imagen con transformaciones (versión anterior)
  * @param {string} publicId - ID público de la imagen en Cloudinary
  * @param {string} transformType - Tipo de transformación ('plano' o 'thumbnail')
  * @returns {string}

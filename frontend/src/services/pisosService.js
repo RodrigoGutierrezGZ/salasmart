@@ -142,9 +142,10 @@ export async function crearPiso(datos, imagenFile) {
  * @param {File} imagenFile - Archivo de imagen
  * @param {string} pisoId - ID del piso
  * @param {Object} edificio - Datos del edificio
+ * @param {Function} onProgressCallback - Callback para progreso (opcional)
  * @returns {Promise<Object>} URLs y metadata de la imagen
  */
-async function subirImagenCloudinary(imagenFile, pisoId, edificio) {
+async function subirImagenCloudinary(imagenFile, pisoId, edificio, onProgressCallback) {
   try {
     console.log('📤 [pisosService] Subiendo imagen a Cloudinary...');
 
@@ -155,6 +156,10 @@ async function subirImagenCloudinary(imagenFile, pisoId, edificio) {
       folder,
       onProgress: (percent) => {
         console.log(`📊 [pisosService] Progreso de carga: ${percent}%`);
+        // Llamar al callback externo si existe
+        if (onProgressCallback && typeof onProgressCallback === 'function') {
+          onProgressCallback(percent);
+        }
       }
     });
 
@@ -460,9 +465,10 @@ export async function actualizarPiso(pisoId, datos) {
  * Actualizar imagen del plano de un piso (versión Cloudinary)
  * @param {string} pisoId - ID del piso
  * @param {File} imagenFile - Nueva imagen
+ * @param {Function} onProgress - Callback para progreso (opcional)
  * @returns {Promise<void>}
  */
-export async function actualizarImagenPiso(pisoId, imagenFile) {
+export async function actualizarImagenPiso(pisoId, imagenFile, onProgress) {
   try {
     console.log('📝 [pisosService] Actualizando imagen del piso:', pisoId);
 
@@ -481,11 +487,12 @@ export async function actualizarImagenPiso(pisoId, imagenFile) {
       throw new Error('Edificio no encontrado');
     }
 
-    // Subir nueva imagen a Cloudinary
+    // Subir nueva imagen a Cloudinary con callback de progreso
     const { imagenURL, imagenPath, imagenMetadata } = await subirImagenCloudinary(
       imagenFile,
       pisoId,
-      edificio
+      edificio,
+      onProgress
     );
 
     // Actualizar documento
