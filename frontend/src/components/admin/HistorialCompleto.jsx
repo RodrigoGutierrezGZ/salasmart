@@ -109,8 +109,8 @@ export default function HistorialCompleto() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Historial de Actividad</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-text-dark-primary">Historial de Actividad</h2>
+          <p className="text-sm text-gray-500 dark:text-text-dark-secondary">
             Registro completo de todas las acciones en el sistema
           </p>
         </div>
@@ -126,15 +126,15 @@ export default function HistorialCompleto() {
       </div>
 
       {/* Filtros */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-lg border border-gray-200 dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-sm">
         <div className="grid gap-4 md:grid-cols-4">
           {/* Búsqueda */}
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
               Buscar
             </label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-text-dark-secondary">
                 search
               </span>
               <input
@@ -142,57 +142,57 @@ export default function HistorialCompleto() {
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
                 placeholder="Buscar por entidad, usuario o tipo..."
-                className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="w-full rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary py-2 pl-10 pr-4 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary"
               />
             </div>
           </div>
 
           {/* Filtro por tipo */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
               Tipo
             </label>
             <select
               value={filtroTipo}
               onChange={(e) => setFiltroTipo(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              className="w-full rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
             >
-              <option value="">Todos</option>
-              <option value="SEDES">Sedes</option>
-              <option value="EDIFICIOS">Edificios</option>
-              <option value="PISOS">Pisos</option>
-              <option value="SALAS">Salas</option>
-              <option value="USUARIOS">Usuarios</option>
-              <option value="RESERVAS">Reservas</option>
+              <option value="" className="dark:bg-neutral-dark">Todos</option>
+              <option value="SEDES" className="dark:bg-neutral-dark">Sedes</option>
+              <option value="EDIFICIOS" className="dark:bg-neutral-dark">Edificios</option>
+              <option value="PISOS" className="dark:bg-neutral-dark">Pisos</option>
+              <option value="SALAS" className="dark:bg-neutral-dark">Salas</option>
+              <option value="USUARIOS" className="dark:bg-neutral-dark">Usuarios</option>
+              <option value="RESERVAS" className="dark:bg-neutral-dark">Reservas</option>
             </select>
           </div>
 
           {/* Filtro por acción */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
               Acción
             </label>
             <select
               value={filtroAccion}
               onChange={(e) => setFiltroAccion(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              className="w-full rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-2 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
             >
-              <option value="">Todas</option>
-              <option value="crear">Crear</option>
-              <option value="editar">Editar</option>
-              <option value="eliminar">Eliminar</option>
-              <option value="activar">Activar</option>
-              <option value="desactivar">Desactivar</option>
-              <option value="cambiar_imagen">Cambiar imagen</option>
-              <option value="reservar">Reservar</option>
-              <option value="cancelar">Cancelar</option>
+              <option value="" className="dark:bg-neutral-dark">Todas</option>
+              <option value="crear" className="dark:bg-neutral-dark">Crear</option>
+              <option value="editar" className="dark:bg-neutral-dark">Editar</option>
+              <option value="eliminar" className="dark:bg-neutral-dark">Eliminar</option>
+              <option value="activar" className="dark:bg-neutral-dark">Activar</option>
+              <option value="desactivar" className="dark:bg-neutral-dark">Desactivar</option>
+              <option value="cambiar_imagen" className="dark:bg-neutral-dark">Cambiar imagen</option>
+              <option value="reservar" className="dark:bg-neutral-dark">Reservar</option>
+              <option value="cancelar" className="dark:bg-neutral-dark">Cancelar</option>
             </select>
           </div>
         </div>
 
         {/* Botones de acción */}
-        <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4">
-          <div className="text-sm text-gray-600">
+        <div className="mt-4 flex items-center justify-between border-t border-gray-200 dark:border-border-dark pt-4">
+          <div className="text-sm text-gray-600 dark:text-text-dark-secondary">
             Mostrando {logsFiltrados.length} de {logs.length} registros
             {filtroTipo || filtroAccion || busqueda ? ' (filtrados)' : ''}
           </div>
@@ -201,7 +201,7 @@ export default function HistorialCompleto() {
             {(filtroTipo || filtroAccion || busqueda) && (
               <button
                 onClick={limpiarFiltros}
-                className="rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-200"
+                className="rounded-lg bg-gray-100 dark:bg-neutral-dark px-4 py-2 text-sm text-gray-700 dark:text-text-dark-secondary transition hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover"
               >
                 Limpiar filtros
               </button>
@@ -211,33 +211,33 @@ export default function HistorialCompleto() {
       </div>
 
       {/* Lista de logs */}
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-lg border border-gray-200 dark:border-border-dark bg-white dark:bg-card-bg-dark shadow-sm">
         {cargando && logs.length === 0 ? (
           <div className="flex items-center justify-center py-16">
             <div className="text-center">
               <div className="mb-4 inline-block h-10 w-10 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600"></div>
-              <p className="text-sm text-gray-500">Cargando historial...</p>
+              <p className="text-sm text-gray-500 dark:text-text-dark-secondary">Cargando historial...</p>
             </div>
           </div>
         ) : error ? (
           <div className="p-8">
-            <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+            <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 p-6">
               <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-2xl text-red-600">error</span>
+                <span className="material-symbols-outlined text-2xl text-red-600 dark:text-red-400">error</span>
                 <div>
-                  <p className="font-medium text-red-900">Error al cargar</p>
-                  <p className="mt-1 text-sm text-red-700">{error}</p>
+                  <p className="font-medium text-red-900 dark:text-red-300">Error al cargar</p>
+                  <p className="mt-1 text-sm text-red-700 dark:text-red-300">{error}</p>
                 </div>
               </div>
             </div>
           </div>
         ) : logsFiltrados.length === 0 ? (
           <div className="p-12 text-center">
-            <span className="material-symbols-outlined mb-4 text-6xl text-gray-400">
+            <span className="material-symbols-outlined mb-4 text-6xl text-gray-400 dark:text-gray-600">
               search_off
             </span>
-            <p className="mb-2 text-lg font-medium text-gray-900">No hay registros</p>
-            <p className="text-sm text-gray-500">
+            <p className="mb-2 text-lg font-medium text-gray-900 dark:text-text-dark-primary">No hay registros</p>
+            <p className="text-sm text-gray-500 dark:text-text-dark-secondary">
               {filtroTipo || filtroAccion || busqueda
                 ? 'Intenta cambiar los filtros'
                 : 'Aún no hay actividad en el sistema'}
@@ -248,23 +248,23 @@ export default function HistorialCompleto() {
             {/* Tabla de logs */}
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="border-b border-gray-200 bg-gray-50">
+                <thead className="border-b border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-neutral-dark">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
                       Acción
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
                       Tipo
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
                       Usuario
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
                       Fecha
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-border-dark">
                   {logsFiltrados.map((log) => (
                     <LogRow key={log.id} log={log} />
                   ))}
@@ -274,16 +274,16 @@ export default function HistorialCompleto() {
 
             {/* Footer con paginación */}
             {!mostrandoTodos && logs.length >= limite && (
-              <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
+              <div className="border-t border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-neutral-dark px-6 py-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-text-dark-secondary">
                     Mostrando {logs.length} registros
                   </p>
                   <div className="flex gap-2">
                     <button
                       onClick={cargarMas}
                       disabled={cargando}
-                      className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:opacity-50"
+                      className="rounded-lg bg-white dark:bg-card-bg-dark px-4 py-2 text-sm font-medium text-gray-700 dark:text-text-dark-secondary transition hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover disabled:opacity-50"
                     >
                       Cargar 50 más
                     </button>
@@ -323,18 +323,18 @@ function LogRow({ log }) {
 
   return (
     <>
-      <tr className="transition hover:bg-gray-50">
+      <tr className="transition hover:bg-gray-50 dark:hover:bg-card-bg-dark-hover">
         <td className="px-6 py-4">
           <div className="flex items-center gap-3">
             <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${colorClasses}`}>
               <span className="material-symbols-outlined text-base">{icono}</span>
             </div>
             <div className="min-w-0">
-              <p className="font-medium text-gray-900">{texto}</p>
+              <p className="font-medium text-gray-900 dark:text-text-dark-primary">{texto}</p>
               {tieneDetalles && (
                 <button
                   onClick={() => setExpandido(!expandido)}
-                  className="mt-1 text-xs text-purple-600 hover:text-purple-700"
+                  className="mt-1 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300"
                 >
                   {expandido ? 'Ocultar detalles' : 'Ver detalles'}
                 </button>
@@ -343,19 +343,19 @@ function LogRow({ log }) {
           </div>
         </td>
         <td className="px-6 py-4">
-          <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
+          <span className="inline-flex rounded-full bg-gray-100 dark:bg-neutral-dark px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-text-dark-primary">
             {log.tipo}
           </span>
         </td>
         <td className="px-6 py-4">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-sm text-gray-400">person</span>
-            <span className="text-sm text-gray-900">{log.usuarioEmail || 'Sistema'}</span>
+            <span className="material-symbols-outlined text-sm text-gray-400 dark:text-text-dark-secondary">person</span>
+            <span className="text-sm text-gray-900 dark:text-text-dark-primary">{log.usuarioEmail || 'Sistema'}</span>
           </div>
         </td>
         <td className="px-6 py-4">
           <span
-            className="cursor-help text-sm text-gray-500"
+            className="cursor-help text-sm text-gray-500 dark:text-text-dark-secondary"
             title={formatearTimestampAbsoluto(log.timestamp)}
           >
             {tiempoRelativo}
@@ -366,14 +366,14 @@ function LogRow({ log }) {
       {/* Fila expandida con detalles */}
       {expandido && tieneDetalles && (
         <tr>
-          <td colSpan="4" className="bg-gray-50 px-6 py-4">
-            <div className="rounded-lg bg-white p-4">
-              <p className="mb-3 text-xs font-medium uppercase text-gray-500">Detalles</p>
+          <td colSpan="4" className="bg-gray-50 dark:bg-neutral-dark px-6 py-4">
+            <div className="rounded-lg bg-white dark:bg-card-bg-dark p-4">
+              <p className="mb-3 text-xs font-medium uppercase text-gray-500 dark:text-text-dark-secondary">Detalles</p>
               <dl className="grid gap-3 text-sm md:grid-cols-2">
                 {Object.entries(log.datos).map(([key, value]) => (
                   <div key={key} className="flex gap-2">
-                    <dt className="font-medium text-gray-700">{traducirClave(key)}:</dt>
-                    <dd className="flex-1 text-gray-900">
+                    <dt className="font-medium text-gray-700 dark:text-text-dark-secondary">{traducirClave(key)}:</dt>
+                    <dd className="flex-1 text-gray-900 dark:text-text-dark-primary">
                       {key === 'origen' ? (
                         // Badge especial para origen
                         value === 'chatbot' ? (

@@ -17,7 +17,7 @@ function InfraestructuraTab({ infraSubTab, setInfraSubTab }) {
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             infraSubTab === 'sedes'
               ? 'bg-primary text-white'
-              : 'bg-white text-gray-700 border border-neutral-light hover:bg-neutral-light'
+              : 'bg-white dark:bg-neutral-dark text-gray-700 dark:text-text-dark-secondary border border-neutral-light dark:border-border-dark hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
           }`}
         >
           <span className="material-symbols-outlined">location_city</span>
@@ -28,7 +28,7 @@ function InfraestructuraTab({ infraSubTab, setInfraSubTab }) {
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             infraSubTab === 'edificios'
               ? 'bg-primary text-white'
-              : 'bg-white text-gray-700 border border-neutral-light hover:bg-neutral-light'
+              : 'bg-white dark:bg-neutral-dark text-gray-700 dark:text-text-dark-secondary border border-neutral-light dark:border-border-dark hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
           }`}
         >
           <span className="material-symbols-outlined">domain</span>

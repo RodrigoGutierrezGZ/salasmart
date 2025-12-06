@@ -77,7 +77,7 @@ export default function ActividadReciente({ limite = 15 }) {
     <div className="space-y-4">
       {/* Header con filtros */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-text-dark-primary">
           Actividad Reciente
         </h3>
 
@@ -86,37 +86,37 @@ export default function ActividadReciente({ limite = 15 }) {
           <select
             value={filtroTipo}
             onChange={(e) => setFiltroTipo(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            className="rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-1.5 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
             style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', paddingRight: '2rem' }}
           >
-            <option value="">Todos los tipos</option>
-            <option value="SEDES">Sedes</option>
-            <option value="EDIFICIOS">Edificios</option>
-            <option value="PISOS">Pisos</option>
-            <option value="SALAS">Salas</option>
+            <option value="" className="dark:bg-neutral-dark">Todos los tipos</option>
+            <option value="SEDES" className="dark:bg-neutral-dark">Sedes</option>
+            <option value="EDIFICIOS" className="dark:bg-neutral-dark">Edificios</option>
+            <option value="PISOS" className="dark:bg-neutral-dark">Pisos</option>
+            <option value="SALAS" className="dark:bg-neutral-dark">Salas</option>
           </select>
 
           {/* Filtro por acción */}
           <select
             value={filtroAccion}
             onChange={(e) => setFiltroAccion(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            className="rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-1.5 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
             style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', paddingRight: '2rem' }}
           >
-            <option value="">Todas las acciones</option>
-            <option value="crear">Crear</option>
-            <option value="editar">Editar</option>
-            <option value="eliminar">Eliminar</option>
-            <option value="activar">Activar</option>
-            <option value="desactivar">Desactivar</option>
-            <option value="cambiar_imagen">Cambiar imagen</option>
+            <option value="" className="dark:bg-neutral-dark">Todas las acciones</option>
+            <option value="crear" className="dark:bg-neutral-dark">Crear</option>
+            <option value="editar" className="dark:bg-neutral-dark">Editar</option>
+            <option value="eliminar" className="dark:bg-neutral-dark">Eliminar</option>
+            <option value="activar" className="dark:bg-neutral-dark">Activar</option>
+            <option value="desactivar" className="dark:bg-neutral-dark">Desactivar</option>
+            <option value="cambiar_imagen" className="dark:bg-neutral-dark">Cambiar imagen</option>
           </select>
 
           {/* Botón limpiar filtros */}
           {(filtroTipo || filtroAccion) && (
             <button
               onClick={limpiarFiltros}
-              className="rounded-lg bg-gray-100 px-3 py-1.5 text-sm text-gray-700 transition hover:bg-gray-200"
+              className="rounded-lg bg-gray-100 dark:bg-neutral-dark px-3 py-1.5 text-sm text-gray-700 dark:text-text-dark-secondary transition hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover"
             >
               Limpiar filtros
             </button>
@@ -126,7 +126,7 @@ export default function ActividadReciente({ limite = 15 }) {
           <button
             onClick={cargarLogs}
             disabled={cargando}
-            className="rounded-lg bg-purple-50 px-3 py-1.5 text-sm text-purple-700 transition hover:bg-purple-100 disabled:opacity-50"
+            className="rounded-lg bg-purple-50 dark:bg-purple-900/30 px-3 py-1.5 text-sm text-purple-700 dark:text-purple-400 transition hover:bg-purple-100 dark:hover:bg-purple-900/50 disabled:opacity-50"
           >
             <span className="material-symbols-outlined text-base">refresh</span>
           </button>
@@ -139,26 +139,26 @@ export default function ActividadReciente({ limite = 15 }) {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="mb-3 inline-block h-8 w-8 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600"></div>
-              <p className="text-sm text-gray-500">Cargando historial...</p>
+              <p className="text-sm text-gray-500 dark:text-text-dark-secondary">Cargando historial...</p>
             </div>
           </div>
         ) : error ? (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+          <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 p-4">
             <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-red-600">error</span>
+              <span className="material-symbols-outlined text-red-600 dark:text-red-400">error</span>
               <div>
-                <p className="font-medium text-red-900">Error al cargar</p>
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="font-medium text-red-900 dark:text-red-300">Error al cargar</p>
+                <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
               </div>
             </div>
           </div>
         ) : logs.length === 0 ? (
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-            <span className="material-symbols-outlined mb-3 text-5xl text-gray-400">
+          <div className="rounded-lg border border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-neutral-dark p-8 text-center">
+            <span className="material-symbols-outlined mb-3 text-5xl text-gray-400 dark:text-gray-600">
               history
             </span>
-            <p className="mb-1 font-medium text-gray-900">No hay cambios aún</p>
-            <p className="text-sm text-gray-500">
+            <p className="mb-1 font-medium text-gray-900 dark:text-text-dark-primary">No hay cambios aún</p>
+            <p className="text-sm text-gray-500 dark:text-text-dark-secondary">
               Los cambios en el sistema aparecerán aquí
             </p>
           </div>
@@ -191,7 +191,7 @@ function LogCard({ log }) {
   const tieneDetalles = log.datos && Object.keys(log.datos).length > 0;
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+    <div className="rounded-lg border border-gray-200 dark:border-border-dark bg-white dark:bg-card-bg-dark p-4 shadow-sm transition hover:shadow-md">
       <div className="flex items-start gap-3">
         {/* Ícono de la acción */}
         <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${colorClasses}`}>
@@ -201,10 +201,10 @@ function LogCard({ log }) {
         {/* Contenido */}
         <div className="min-w-0 flex-1">
           {/* Texto de la acción */}
-          <p className="font-medium text-gray-900">{texto}</p>
+          <p className="font-medium text-gray-900 dark:text-text-dark-primary">{texto}</p>
 
           {/* Usuario y tiempo */}
-          <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
+          <div className="mt-1 flex items-center gap-2 text-sm text-gray-500 dark:text-text-dark-secondary">
             <span className="material-symbols-outlined text-base">person</span>
             <span className="truncate">{log.usuarioEmail || 'Usuario'}</span>
             <span>•</span>
@@ -221,7 +221,7 @@ function LogCard({ log }) {
             <div className="mt-2">
               <button
                 onClick={() => setExpandido(!expandido)}
-                className="flex items-center gap-1 text-sm text-purple-600 transition hover:text-purple-700"
+                className="flex items-center gap-1 text-sm text-purple-600 dark:text-purple-400 transition hover:text-purple-700 dark:hover:text-purple-300"
               >
                 <span className="material-symbols-outlined text-base">
                   {expandido ? 'expand_less' : 'expand_more'}
@@ -230,12 +230,12 @@ function LogCard({ log }) {
               </button>
 
               {expandido && (
-                <div className="mt-2 rounded-lg bg-gray-50 p-3">
+                <div className="mt-2 rounded-lg bg-gray-50 dark:bg-neutral-dark p-3">
                   <dl className="space-y-2 text-sm">
                     {Object.entries(log.datos).map(([key, value]) => (
                       <div key={key} className="flex gap-2">
-                        <dt className="font-medium text-gray-700">{traducirClave(key)}:</dt>
-                        <dd className="flex-1 text-gray-900">
+                        <dt className="font-medium text-gray-700 dark:text-text-dark-secondary">{traducirClave(key)}:</dt>
+                        <dd className="flex-1 text-gray-900 dark:text-text-dark-primary">
                           {key === 'origen' ? (
                             // Badge especial para origen
                             value === 'chatbot' ? (
@@ -264,7 +264,7 @@ function LogCard({ log }) {
 
         {/* Badge del tipo */}
         <div className="flex-shrink-0">
-          <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+          <span className="inline-flex rounded-full bg-gray-100 dark:bg-neutral-dark px-2.5 py-0.5 text-xs font-medium text-gray-700 dark:text-text-dark-primary">
             {log.tipo}
           </span>
         </div>

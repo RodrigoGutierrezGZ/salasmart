@@ -90,6 +90,10 @@ Cuando el usuario pida "todas las salas", "dime todas", "cuáles hay disponibles
 4. Agrupa por edificio/piso para mejor organización
 5. Si hay más de 15 salas, organízalas en una lista estructurada pero NO omitas ninguna
 
+Cuando el usuario pregunte "qué salas están ocupadas" o "cuáles están en uso":
+- Ejecuta buscar_salas con soloOcupadas=true
+- Lista las salas que están ocupadas EN ESTE MOMENTO
+
 Ejemplo de formato cuando listas todas:
 "Encontré X salas en total:
 
@@ -107,7 +111,12 @@ Piso 1: CINE-B101, LAB-B102..."
 - Si falta dato, pregunta solo eso
 - Usa emojis moderadamente
 - Si estudiante intenta reservar: explica que solo docentes pueden
-- Cuando menciones una sala, indica su ubicación completa (piso, edificio, sede)`;
+- Cuando menciones una sala, indica su ubicación completa (piso, edificio, sede)
+
+## CRÍTICO - Generación de respuestas:
+- SIEMPRE genera una respuesta de texto, incluso si ejecutas herramientas
+- NUNCA retornes solo tool_use sin texto
+- Después de cada herramienta, explica los resultados en lenguaje natural`;
 
 /**
  * Declaración de herramientas (tools) para Claude
@@ -158,7 +167,7 @@ const HERRAMIENTAS_DISPONIBLES = [
   },
   {
     name: "buscar_salas",
-    description: "Busca salas según criterios específicos (edificio, piso, capacidad, disponibilidad). IMPORTANTE: Cuando el usuario mencione un edificio específico (ej: 'edificio principal', 'edificio A'), DEBES usar el parámetro edificioCodigo para filtrar.",
+    description: "Busca salas según criterios específicos (edificio, piso, capacidad, disponibilidad). IMPORTANTE: Cuando el usuario mencione un edificio específico (ej: 'edificio principal', 'edificio A'), DEBES usar el parámetro edificioCodigo para filtrar. Si preguntan por salas ocupadas, usa soloOcupadas=true.",
     input_schema: {
       type: "object",
       properties: {
@@ -181,6 +190,10 @@ const HERRAMIENTAS_DISPONIBLES = [
         soloDisponibles: {
           type: "boolean",
           description: "Si es true, muestra solo salas disponibles en este momento. Por defecto false."
+        },
+        soloOcupadas: {
+          type: "boolean",
+          description: "Si es true, muestra solo salas que están ocupadas en este momento. Por defecto false. Usar cuando el usuario pregunte específicamente por salas ocupadas o en uso."
         }
       }
     }
@@ -597,8 +610,8 @@ async function buscarSalasDesdeClaude(args, userData) {
       salas = salas.filter(s => s.pisoNumero === args.pisoNumero);
     }
 
-    // Filtrar por disponibilidad (si se solicita)
-    if (args.soloDisponibles) {
+    // Filtrar por disponibilidad o ocupación (si se solicita)
+    if (args.soloDisponibles || args.soloOcupadas) {
       const ahora = new Date();
       const reservasSnapshot = await getDocs(collection(db, 'reservas'));
       const reservasActivas = reservasSnapshot.docs
@@ -616,7 +629,18 @@ async function buscarSalasDesdeClaude(args, userData) {
           const fin = r.horaFin?.toDate();
           return inicio && fin && ahora >= inicio && ahora < fin;
         });
-        return !ocupada;
+
+        // Si solo disponibles, retornar las que NO están ocupadas
+        if (args.soloDisponibles) {
+          return !ocupada;
+        }
+
+        // Si solo ocupadas, retornar las que SÍ están ocupadas
+        if (args.soloOcupadas) {
+          return ocupada;
+        }
+
+        return true;
       });
     }
 
@@ -659,21 +683,30 @@ async function buscarSalasDesdeClaude(args, userData) {
     // Construir mensaje descriptivo
     const sedes = Object.keys(salasPorSede);
     const edificios = Object.keys(salasPorEdificio);
-    let mensaje = `Encontré ${salas.length} sala${salas.length !== 1 ? 's' : ''}.`;
+
+    // Mensaje diferente si se busca solo ocupadas
+    let mensaje = '';
+    if (args.soloOcupadas) {
+      mensaje = `${salas.length === 0 ? 'No hay' : salas.length} sala${salas.length !== 1 ? 's' : ''} ocupada${salas.length !== 1 ? 's' : ''} en este momento.`;
+    } else if (args.soloDisponibles) {
+      mensaje = `${salas.length === 0 ? 'No hay' : salas.length} sala${salas.length !== 1 ? 's' : ''} disponible${salas.length !== 1 ? 's' : ''} en este momento.`;
+    } else {
+      mensaje = `Encontré ${salas.length} sala${salas.length !== 1 ? 's' : ''}.`;
+    }
 
     // Mencionar sedes solo si hay más de una
-    if (sedes.length > 1) {
+    if (sedes.length > 1 && salas.length > 0) {
       mensaje += ` Distribuidas en ${sedes.length} sedes: `;
       mensaje += sedes.map(sede => `${salasPorSede[sede].length} en ${sede}`).join(', ');
       mensaje += '.';
     }
 
     // Mencionar edificios (dentro de la(s) sede(s))
-    if (edificios.length > 1) {
+    if (edificios.length > 1 && salas.length > 0) {
       mensaje += ` Por edificio: `;
       mensaje += edificios.map(ed => `${salasPorEdificio[ed].length} en el ${ed}`).join(', ');
       mensaje += '.';
-    } else if (edificios.length === 1 && sedes.length === 1) {
+    } else if (edificios.length === 1 && sedes.length === 1 && salas.length > 0) {
       mensaje += ` Todas en el ${edificios[0]}.`;
     }
 
@@ -1023,7 +1056,7 @@ export async function consultarClaude(mensajeUsuario, user, userData, historial 
     // Llamar a Claude con tools y SYSTEM PROMPT DINÁMICO
     const response = await client.messages.create({
       model: CLAUDE_MODEL,
-      max_tokens: 1000,
+      max_tokens: 2048, // Aumentado de 1000 a 2048 para evitar que se quede sin tokens
       temperature: CLAUDE_TEMPERATURE,
       system: systemPromptConContexto, // Ahora incluye el rol del usuario
       messages: mensajes,
@@ -1049,10 +1082,20 @@ export async function consultarClaude(mensajeUsuario, user, userData, historial 
 
         const resultado = await ejecutarFuncion(nombreFuncion, argumentos, user, userData);
 
+        // Limitar el tamaño del resultado para evitar problemas de tokens
+        let resultadoLimitado = { ...resultado };
+
+        // Si el resultado tiene un array de salas muy grande, limitarlo
+        if (resultadoLimitado.salas && Array.isArray(resultadoLimitado.salas) && resultadoLimitado.salas.length > 20) {
+          const totalSalas = resultadoLimitado.salas.length;
+          resultadoLimitado.salas = resultadoLimitado.salas.slice(0, 20);
+          resultadoLimitado.mensaje = (resultadoLimitado.mensaje || '') + `\n(Mostrando 20 de ${totalSalas} salas totales)`;
+        }
+
         resultadosHerramientas.push({
           type: 'tool_result',
           tool_use_id: toolUse.id,
-          content: JSON.stringify(resultado)
+          content: JSON.stringify(resultadoLimitado)
         });
 
         console.log(`   ✅ Resultado:`, resultado.exito ? 'Éxito' : 'Error');
@@ -1073,18 +1116,35 @@ export async function consultarClaude(mensajeUsuario, user, userData, historial 
 
       const response2 = await client.messages.create({
         model: CLAUDE_MODEL,
-        max_tokens: 1000,
+        max_tokens: 2048, // Aumentado de 1000 a 2048 para evitar que se quede sin tokens
         temperature: CLAUDE_TEMPERATURE,
-        system: systemPromptConContexto, // Usar mismo system prompt con info del usuario
+        system: systemPromptConContexto + '\n\nIMPORTANTE: Después de recibir los resultados de las herramientas, SIEMPRE debes generar una respuesta de texto explicando los resultados al usuario de forma clara y concisa.',
         messages: mensajesConResultados,
         tools: HERRAMIENTAS_DISPONIBLES
       });
+
+      console.log('📩 Segunda respuesta de Claude (después de herramientas):', response2);
+      console.log('📝 Contenido de response2:', JSON.stringify(response2.content, null, 2));
 
       // Extraer texto de la respuesta
       const textoRespuesta = response2.content
         .filter(block => block.type === 'text')
         .map(block => block.text)
-        .join('\n');
+        .join('\n')
+        .trim();
+
+      // Validar que la respuesta tenga contenido
+      if (!textoRespuesta) {
+        console.error('⚠️ Claude retornó respuesta vacía después de ejecutar herramientas');
+        console.error('   → stop_reason:', response2.stop_reason);
+        console.error('   → usage:', response2.usage);
+        console.error('   → content blocks:', response2.content.map(b => b.type));
+        return {
+          texto: 'Procesé tu solicitud pero no pude generar una respuesta. Por favor intenta reformular tu pregunta.',
+          tipo: 'error',
+          usandoIA: true
+        };
+      }
 
       // Determinar tipo de respuesta según resultado
       const algunaExitosa = toolUseBlocks.some((tool, i) => {
@@ -1109,7 +1169,18 @@ export async function consultarClaude(mensajeUsuario, user, userData, historial 
     const textoRespuesta = response.content
       .filter(block => block.type === 'text')
       .map(block => block.text)
-      .join('\n');
+      .join('\n')
+      .trim();
+
+    // Validar que la respuesta tenga contenido
+    if (!textoRespuesta) {
+      console.error('⚠️ Claude retornó respuesta vacía sin herramientas');
+      return {
+        texto: 'No pude generar una respuesta. Por favor intenta reformular tu pregunta.',
+        tipo: 'error',
+        usandoIA: true
+      };
+    }
 
     return {
       texto: textoRespuesta,

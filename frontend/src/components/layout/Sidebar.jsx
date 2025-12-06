@@ -79,28 +79,28 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
   };
 
   return (
-    <aside className="hidden lg:flex h-full w-64 flex-col bg-white dark:bg-gray-800 border-r border-neutral-light dark:border-gray-700 p-4">
+    <aside className="hidden lg:flex h-screen w-64 flex-shrink-0 flex-col border-r border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark p-4">
       {/* Logo y título */}
       <div className="flex flex-col gap-4">
-        <div 
+        <div
           onClick={handleLogoClick}
-          className="flex items-center gap-3 px-2 cursor-pointer group transition-all hover:bg-primary/5 rounded-lg py-2 -mx-2"
+          className="flex items-center gap-3 px-2 cursor-pointer group transition-all hover:bg-primary/5 dark:hover:bg-primary/10 rounded-lg py-2 -mx-2"
         >
           <svg className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
             <path d="M2 17l10 5 10-5"></path>
             <path d="M2 12l10 5 10-5"></path>
           </svg>
-          <h1 className="text-xl font-bold text-neutral-dark dark:text-white group-hover:text-primary transition-colors">SalaSmart</h1>
+          <h1 className="text-xl font-bold text-neutral-dark dark:text-text-dark-primary group-hover:text-primary transition-colors">SalaSmart</h1>
         </div>
 
         {/* User Info */}
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
             <span className="material-symbols-outlined text-primary">person</span>
           </div>
           <div className="flex flex-col flex-1">
-            <h2 className="text-sm font-semibold leading-normal text-neutral-dark dark:text-white">
+            <h2 className="text-sm font-semibold leading-normal text-neutral-dark dark:text-text-dark-primary">
               {user?.email?.split('@')[0] || 'Usuario'}
             </h2>
             <p className={`text-xs font-normal leading-normal ${roleInfo.color}`}>
@@ -130,8 +130,8 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
                   onClick={handleClick}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                     isTabActive(item.tab) && location.pathname === '/dashboard'
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700'
+                      ? 'bg-primary/10 dark:bg-primary/20 text-primary'
+                      : 'text-gray-600 dark:text-text-dark-secondary hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
                   }`}
                 >
                   <span className="material-symbols-outlined">{item.icon}</span>
@@ -149,8 +149,8 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
                 to={item.path}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
                   isActive(item.path)
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700'
+                    ? 'bg-primary/10 dark:bg-primary/20 text-primary'
+                    : 'text-gray-600 dark:text-text-dark-secondary hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
                 }`}
               >
                 <span className="material-symbols-outlined">{item.icon}</span>
@@ -167,18 +167,18 @@ function Sidebar({ user, role, activeTab, onTabChange }) {
       <div className="mt-auto flex flex-col gap-2">
         <Link
           to="/configuracion"
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700"
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 dark:text-text-dark-secondary hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover transition-colors"
         >
           <span className="material-symbols-outlined">settings</span>
-          <p className="text-sm font-medium leading-normal dark:text-gray-300">Ajustes</p>
+          <p className="text-sm font-medium leading-normal">Ajustes</p>
         </Link>
-        
+
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700"
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 dark:text-text-dark-secondary hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover transition-colors"
         >
           <span className="material-symbols-outlined">logout</span>
-          <p className="text-sm font-medium leading-normal dark:text-gray-300">Cerrar Sesión</p>
+          <p className="text-sm font-medium leading-normal">Cerrar Sesión</p>
         </button>
       </div>
     </aside>

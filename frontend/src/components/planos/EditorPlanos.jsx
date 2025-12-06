@@ -9,7 +9,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { obtenerSedes } from '../../services/sedesService';
 import { obtenerEdificiosPorSede } from '../../services/edificiosService';
-import { obtenerPisosPorEdificio } from '../../services/pisosService';
+import { obtenerPisosPorEdificio, actualizarImagenPiso } from '../../services/pisosService';
 import { crearSala, eliminarSala, actualizarCoordenadasSala } from '../../services/salasService';
 
 function EditorPlanos() {
@@ -35,9 +35,14 @@ function EditorPlanos() {
   const [mostrarMensajeEdicion, setMostrarMensajeEdicion] = useState(true);
   const [panelLateralAbierto, setPanelLateralAbierto] = useState(true);
 
+  // Estados para subida de imagen
+  const [subiendoImagen, setSubiendoImagen] = useState(false);
+  const [progresoSubida, setProgresoSubida] = useState(0);
+
   const imagenRef = useRef(null);
   const contenedorPlanoRef = useRef(null);
   const panelAcordeonRef = useRef(null);
+  const inputImagenRef = useRef(null);
 
   // Formulario de sala
   const [formulario, setFormulario] = useState({
@@ -345,6 +350,59 @@ function EditorPlanos() {
     setTimeout(() => setMensaje({ tipo: '', texto: '' }), 3000);
   };
 
+  /**
+   * Handler para cambiar la imagen del plano
+   */
+  const handleCambiarImagen = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    const tiposPermitidos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    if (!tiposPermitidos.includes(file.type)) {
+      mostrarMensaje('error', 'Formato no válido. Use PNG, JPG o WEBP');
+      return;
+    }
+
+    // Validar tamaño (10MB máximo)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      mostrarMensaje('error', `Imagen muy grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo: 10MB`);
+      return;
+    }
+
+    try {
+      setSubiendoImagen(true);
+      setProgresoSubida(0);
+
+      await actualizarImagenPiso(pisoSeleccionado, file);
+
+      mostrarMensaje('success', '¡Imagen del plano actualizada exitosamente!');
+      setProgresoSubida(100);
+
+      // Recargar la imagen después de un delay para que Cloudinary la procese
+      setTimeout(() => {
+        if (imagenRef.current) {
+          // Agregar timestamp para forzar recarga
+          const pisoActual = pisosDisponibles.find(p => p.id === pisoSeleccionado);
+          if (pisoActual?.imagenURL) {
+            imagenRef.current.src = pisoActual.imagenURL + '?t=' + Date.now();
+          }
+        }
+      }, 1000);
+    } catch (error) {
+      console.error('Error al subir imagen:', error);
+      mostrarMensaje('error', error.message || 'Error al subir la imagen');
+    } finally {
+      setSubiendoImagen(false);
+      setProgresoSubida(0);
+      // Limpiar el input
+      if (inputImagenRef.current) {
+        inputImagenRef.current.value = '';
+      }
+    }
+  };
+
   const tiposSala = [
     { value: 'aula_teorica', label: 'Aula Teórica' },
     { value: 'laboratorio', label: 'Laboratorio' },
@@ -374,12 +432,12 @@ function EditorPlanos() {
       {/* Header con título */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-neutral-dark dark:text-text-dark-primary flex items-center gap-2">
             <span className="material-symbols-outlined text-primary">map</span>
             Editor de Planos
           </h2>
           {pisoActual && (
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-gray-600 dark:text-text-dark-secondary mt-1">
               {sedeActual?.nombre} → {edificioActual?.nombre} → Piso {pisoActual.numero}
             </p>
           )}
@@ -402,7 +460,7 @@ function EditorPlanos() {
             modoEdicion
               ? 'bg-danger text-white shadow-md'
               : 'bg-primary text-white shadow-md hover:bg-primary/90'
-          }`}
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
           disabled={!pisoSeleccionado}
         >
           <span className="material-symbols-outlined text-sm">
@@ -413,21 +471,21 @@ function EditorPlanos() {
       </div>
 
       {/* Filtros jerárquicos: Sede → Edificio → Piso */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-4 shadow-sm">
         <div className="grid grid-cols-3 gap-4">
           {/* Selector de Sede */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
               Sede *
             </label>
             <select
               value={sedeSeleccionada}
               onChange={(e) => handleSedeChange(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Seleccionar sede...</option>
+              <option value="" className="dark:bg-neutral-dark">Seleccionar sede...</option>
               {sedesDisponibles.map((sede) => (
-                <option key={sede.id} value={sede.id}>
+                <option key={sede.id} value={sede.id} className="dark:bg-neutral-dark">
                   {sede.nombre}
                 </option>
               ))}
@@ -436,20 +494,20 @@ function EditorPlanos() {
 
           {/* Selector de Edificio */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
               Edificio *
             </label>
             <select
               value={edificioSeleccionado}
               onChange={(e) => handleEdificioChange(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
               disabled={!sedeSeleccionada}
             >
-              <option value="">
+              <option value="" className="dark:bg-neutral-dark">
                 {sedeSeleccionada ? 'Seleccionar edificio...' : 'Primero selecciona una sede'}
               </option>
               {edificiosDisponibles.map((edificio) => (
-                <option key={edificio.id} value={edificio.id}>
+                <option key={edificio.id} value={edificio.id} className="dark:bg-neutral-dark">
                   {edificio.nombre}
                 </option>
               ))}
@@ -458,20 +516,20 @@ function EditorPlanos() {
 
           {/* Selector de Piso */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
               Piso *
             </label>
             <select
               value={pisoSeleccionado}
               onChange={(e) => handlePisoChange(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
               disabled={!edificioSeleccionado}
             >
-              <option value="">
+              <option value="" className="dark:bg-neutral-dark">
                 {edificioSeleccionado ? 'Seleccionar piso...' : 'Primero selecciona un edificio'}
               </option>
               {pisosDisponibles.map((piso) => (
-                <option key={piso.id} value={piso.id}>
+                <option key={piso.id} value={piso.id} className="dark:bg-neutral-dark">
                   Piso {piso.numero} - {piso.nombre}
                 </option>
               ))}
@@ -481,7 +539,7 @@ function EditorPlanos() {
 
         {/* Información adicional */}
         {pisoSeleccionado && (
-          <div className="mt-4 rounded-lg bg-blue-50 p-3 text-sm text-blue-800">
+          <div className="mt-4 rounded-lg bg-primary/10 dark:bg-primary/20 p-3 text-sm text-primary dark:text-primary">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-base">info</span>
               <p>
@@ -496,7 +554,11 @@ function EditorPlanos() {
       {/* Mensajes flotantes - Posición fija sin mover contenido */}
       <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4 pointer-events-none">
         {mensaje.texto && (
-          <div className={`rounded-lg p-3 shadow-lg pointer-events-auto animate-slideDown ${mensaje.tipo === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+          <div className={`rounded-lg p-3 shadow-lg pointer-events-auto animate-slideDown ${
+            mensaje.tipo === 'success'
+              ? 'bg-success/10 text-success border border-success/30 dark:bg-success/20 dark:border-success/40'
+              : 'bg-danger/10 text-danger border border-danger/30 dark:bg-danger/20 dark:border-danger/40'
+          }`}>
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-sm">
                 {mensaje.tipo === 'success' ? 'check_circle' : 'error'}
@@ -508,8 +570,8 @@ function EditorPlanos() {
 
         {/* Instrucciones mientras se mueve una sala */}
         {modoEdicion && arrastrando && salaArrastrada && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3 shadow-lg pointer-events-auto animate-slideDown mt-2">
-            <div className="flex items-center gap-2 text-green-800">
+          <div className="bg-success/10 border border-success/30 dark:bg-success/20 dark:border-success/40 rounded-lg p-3 shadow-lg pointer-events-auto animate-slideDown mt-2">
+            <div className="flex items-center gap-2 text-success">
               <span className="material-symbols-outlined animate-pulse">touch_app</span>
               <div className="flex-1">
                 <p className="font-bold">Moviendo sala: {salaArrastrada.nombre}</p>
@@ -521,8 +583,8 @@ function EditorPlanos() {
 
         {/* Instrucciones cuando está en modo edición - Dismissible */}
         {modoEdicion && !arrastrando && mostrarMensajeEdicion && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 shadow-lg pointer-events-auto animate-slideDown mt-2">
-            <div className="flex items-start gap-2 text-blue-800">
+          <div className="bg-primary/10 border border-primary/30 dark:bg-primary/20 dark:border-primary/40 rounded-lg p-3 shadow-lg pointer-events-auto animate-slideDown mt-2">
+            <div className="flex items-start gap-2 text-primary">
               <span className="material-symbols-outlined">info</span>
               <div className="flex-1">
                 <p className="font-medium mb-1">Modo Edición Activo:</p>
@@ -533,7 +595,7 @@ function EditorPlanos() {
               </div>
               <button
                 onClick={() => setMostrarMensajeEdicion(false)}
-                className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 p-1 rounded transition-colors"
+                className="text-primary hover:bg-primary/20 p-1 rounded transition-colors"
                 title="Cerrar mensaje"
               >
                 <span className="material-symbols-outlined text-lg">close</span>
@@ -550,23 +612,44 @@ function EditorPlanos() {
         <>
         {/* Plano Interactivo - Ancho completo */}
         <div>
-          <div className="rounded-lg border border-neutral-light bg-white shadow-soft overflow-hidden">
+          <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark shadow-soft overflow-hidden">
             <div className="bg-gradient-to-r from-primary to-primary/80 text-white px-4 py-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-bold flex items-center gap-2">
                   <span className="material-symbols-outlined">location_on</span>
                   Plano Interactivo - {pisoActual.nombre || `Piso ${pisoActual.numero}`}
                 </h4>
-                <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
-                  {salasDelPiso.length} salas
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
+                    {salasDelPiso.length} salas
+                  </span>
+                  {/* Botón para cambiar imagen del plano */}
+                  <button
+                    onClick={() => inputImagenRef.current?.click()}
+                    disabled={subiendoImagen}
+                    className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Cambiar imagen del plano"
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      {subiendoImagen ? 'sync' : 'upload'}
+                    </span>
+                    {subiendoImagen ? `Subiendo... ${progresoSubida}%` : 'Cambiar Imagen'}
+                  </button>
+                  <input
+                    ref={inputImagenRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/webp"
+                    onChange={handleCambiarImagen}
+                    className="hidden"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Contenedor con aspect ratio fijo 16:9 para consistencia entre vistas */}
             <div
               ref={contenedorPlanoRef}
-              className="relative select-none bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center"
+              className="relative select-none bg-neutral-light/30 dark:bg-neutral-dark/30 rounded-lg overflow-hidden flex items-center justify-center"
               style={{
                 aspectRatio: '16 / 9',
                 cursor: arrastrando ? 'crosshair' : (modoEdicion ? 'crosshair' : 'default')
@@ -649,7 +732,7 @@ function EditorPlanos() {
         </div>
 
         {/* Panel Acordeón: Formulario o Lista de Salas */}
-        <div ref={panelAcordeonRef} className="rounded-lg border border-neutral-light bg-white shadow-soft overflow-hidden">
+        <div ref={panelAcordeonRef} className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark shadow-soft overflow-hidden">
           {/* Header clickeable para expandir/colapsar */}
           <button
             onClick={() => {
@@ -686,17 +769,17 @@ function EditorPlanos() {
 
           {/* Contenido colapsable */}
           {panelLateralAbierto && (
-          <div className="p-4 max-h-96 overflow-y-auto border-t border-neutral-light">
+          <div className="p-4 max-h-96 overflow-y-auto border-t border-neutral-light dark:border-border-dark">
 
           {/* Formulario de Nueva Sala */}
           {mostrandoFormulario ? (
               <div className="space-y-3">
                 {/* Nombre */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">Nombre *</label>
                   <input
                     type="text"
-                    className="w-full rounded-lg border border-neutral-light px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary"
                     value={formulario.nombre}
                     onChange={(e) => setFormulario({ ...formulario, nombre: e.target.value })}
                     placeholder="A310, LAB-01"
@@ -706,10 +789,10 @@ function EditorPlanos() {
                 {/* Capacidad y Tipo */}
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Capacidad</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">Capacidad</label>
                     <input
                       type="number"
-                      className="w-full rounded-lg border border-neutral-light px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                       value={formulario.capacidad}
                       onChange={(e) => setFormulario({ ...formulario, capacidad: e.target.value })}
                       min="1"
@@ -717,29 +800,29 @@ function EditorPlanos() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Tipo</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">Tipo</label>
                     <select
-                      className="w-full rounded-lg border border-neutral-light px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                       value={formulario.tipo}
                       onChange={(e) => setFormulario({ ...formulario, tipo: e.target.value })}
                     >
                       {tiposSala.map(tipo => (
-                        <option key={tipo.value} value={tipo.value}>{tipo.label}</option>
+                        <option key={tipo.value} value={tipo.value} className="dark:bg-neutral-dark">{tipo.label}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
                 {/* Equipamiento */}
-                <div className="border-t border-neutral-light pt-3">
-                  <h5 className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
+                <div className="border-t border-neutral-light dark:border-border-dark pt-3">
+                  <h5 className="text-sm font-bold text-gray-700 dark:text-text-dark-primary mb-2 flex items-center gap-1">
                     <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>settings</span>
                     Equipamiento
                   </h5>
 
                   {/* Checkboxes en grid */}
                   <div className="grid grid-cols-2 gap-2 mb-3">
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-text-dark-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formulario.equipamiento.proyector}
@@ -752,7 +835,7 @@ function EditorPlanos() {
                       <span>Proyector</span>
                     </label>
 
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-text-dark-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formulario.equipamiento.aire_acondicionado}
@@ -765,7 +848,7 @@ function EditorPlanos() {
                       <span>A/C</span>
                     </label>
 
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-text-dark-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formulario.equipamiento.parlantes}
@@ -778,7 +861,7 @@ function EditorPlanos() {
                       <span>Parlantes</span>
                     </label>
 
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-text-dark-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formulario.equipamiento.microfono}
@@ -791,7 +874,7 @@ function EditorPlanos() {
                       <span>Micrófono</span>
                     </label>
 
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-text-dark-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formulario.equipamiento.camara}
@@ -808,10 +891,10 @@ function EditorPlanos() {
                   {/* Números */}
                   <div className="grid grid-cols-2 gap-2 mb-2">
                     <div>
-                      <label className="block text-xs text-gray-600 mb-1">Computadores</label>
+                      <label className="block text-xs text-gray-600 dark:text-text-dark-secondary mb-1">Computadores</label>
                       <input
                         type="number"
-                        className="w-full rounded border border-neutral-light px-2 py-1 text-sm"
+                        className="w-full rounded border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-2 py-1 text-sm"
                         value={formulario.equipamiento.computadores}
                         onChange={(e) => setFormulario({
                           ...formulario,
@@ -822,10 +905,10 @@ function EditorPlanos() {
                     </div>
 
                     <div>
-                      <label className="block text-xs text-gray-600 mb-1">Enchufes</label>
+                      <label className="block text-xs text-gray-600 dark:text-text-dark-secondary mb-1">Enchufes</label>
                       <input
                         type="number"
-                        className="w-full rounded border border-neutral-light px-2 py-1 text-sm"
+                        className="w-full rounded border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-2 py-1 text-sm"
                         value={formulario.equipamiento.enchufes}
                         onChange={(e) => setFormulario({
                           ...formulario,
@@ -837,9 +920,9 @@ function EditorPlanos() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-gray-600 mb-1">Pizarra</label>
+                    <label className="block text-xs text-gray-600 dark:text-text-dark-secondary mb-1">Pizarra</label>
                     <select
-                      className="w-full rounded border border-neutral-light px-2 py-1 text-sm"
+                      className="w-full rounded border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-2 py-1 text-sm"
                       value={formulario.equipamiento.pizarra}
                       onChange={(e) => setFormulario({
                         ...formulario,
@@ -847,7 +930,7 @@ function EditorPlanos() {
                       })}
                     >
                       {tiposPizarra.map(tipo => (
-                        <option key={tipo.value} value={tipo.value}>{tipo.label}</option>
+                        <option key={tipo.value} value={tipo.value} className="dark:bg-neutral-dark">{tipo.label}</option>
                       ))}
                     </select>
                   </div>
@@ -857,14 +940,14 @@ function EditorPlanos() {
                 <div className="flex gap-2 pt-2">
                   <button
                     onClick={handleGuardarSala}
-                    className="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-success text-white px-4 py-2 rounded-lg font-semibold hover:bg-success/90 transition-colors flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-sm">save</span>
                     Guardar
                   </button>
                   <button
                     onClick={limpiarFormulario}
-                    className="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-500 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-gray-400 dark:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-sm">cancel</span>
                     Cancelar
@@ -875,7 +958,7 @@ function EditorPlanos() {
             /* Lista de Salas del Piso */
             <div>
                 {salasDelPiso.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-gray-500 dark:text-text-dark-secondary">
                     <span className="material-symbols-outlined text-4xl mb-2 block">inbox</span>
                     <p className="text-sm">No hay salas en este piso</p>
                     <p className="text-xs mt-1">Activa el modo edición para agregar</p>
@@ -883,22 +966,22 @@ function EditorPlanos() {
                 ) : (
                   <div className="space-y-2">
                     {salasDelPiso.map(sala => (
-                      <div key={sala.id} className="border border-neutral-light rounded-lg p-3 hover:bg-blue-50 transition-colors">
+                      <div key={sala.id} className="border border-neutral-light dark:border-border-dark rounded-lg p-3 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h5 className="font-bold text-gray-800">{sala.nombre}</h5>
-                            <p className="text-xs text-gray-600 mt-1">
+                            <h5 className="font-bold text-neutral-dark dark:text-text-dark-primary">{sala.nombre}</h5>
+                            <p className="text-xs text-gray-600 dark:text-text-dark-secondary mt-1">
                               {tiposSala.find(t => t.value === sala.tipo)?.label} • {sala.capacidad} personas
                             </p>
                             {sala.coordenadas && (
-                              <p className="text-xs text-gray-500 mt-1">
+                              <p className="text-xs text-gray-500 dark:text-text-dark-secondary mt-1">
                                 📍 ({sala.coordenadas.x.toFixed(1)}%, {sala.coordenadas.y.toFixed(1)}%)
                               </p>
                             )}
                           </div>
                           <button
                             onClick={() => handleEliminarSala(sala.id, sala.nombre)}
-                            className="text-red-500 hover:bg-red-50 p-1 rounded transition-colors"
+                            className="text-danger hover:bg-danger/10 p-1 rounded transition-colors"
                             title="Eliminar sala"
                           >
                             <span className="material-symbols-outlined text-sm">delete</span>
@@ -918,10 +1001,10 @@ function EditorPlanos() {
         ) : (
           // Mensaje cuando no hay piso seleccionado
           <div>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
-              <span className="material-symbols-outlined text-6xl text-gray-400 mb-4 block">map</span>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">Selecciona un piso para ver el plano</h3>
-              <p className="text-gray-500">Usa los filtros arriba para elegir Sede → Edificio → Piso</p>
+            <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-neutral-light/30 dark:bg-neutral-dark/30 p-12 text-center">
+              <span className="material-symbols-outlined text-6xl text-gray-400 dark:text-gray-600 mb-4 block">map</span>
+              <h3 className="text-xl font-bold text-neutral-dark dark:text-text-dark-primary mb-2">Selecciona un piso para ver el plano</h3>
+              <p className="text-gray-500 dark:text-text-dark-secondary">Usa los filtros arriba para elegir Sede → Edificio → Piso</p>
             </div>
           </div>
         )}
@@ -947,6 +1030,13 @@ function EditorPlanos() {
         }
         .animate-slideDown {
           animation: slideDown 0.3s ease-out;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        button:disabled .material-symbols-outlined {
+          animation: spin 1s linear infinite;
         }
       `}</style>
     </div>

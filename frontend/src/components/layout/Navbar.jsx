@@ -20,15 +20,15 @@ function Navbar({ user, role }) {
   };
 
   const getRoleBadgeColor = () => {
-    if (role === 'admin') return 'bg-red-100 text-red-800';
-    if (role === 'docente') return 'bg-blue-100 text-blue-800';
-    return 'bg-green-100 text-green-800';
+    if (role === 'admin') return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+    if (role === 'docente') return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
+    return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
   };
 
   if (!user) {
     // Navbar para usuarios NO autenticados
     return (
-      <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+      <nav className="sticky top-0 z-50 border-b border-slate-200 dark:border-border-dark bg-white/80 dark:bg-neutral-dark/80 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
@@ -37,14 +37,14 @@ function Navbar({ user, role }) {
                 <path d="M2 17l10 5 10-5"></path>
                 <path d="M2 12l10 5 10-5"></path>
               </svg>
-              <Link to="/" className="text-xl font-bold text-slate-800">
+              <Link to="/" className="text-xl font-bold text-slate-800 dark:text-text-dark-primary">
                 SalaSmart
               </Link>
             </div>
             <div className="flex items-center gap-4">
-              <Link 
-                to="/login" 
-                className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+              <Link
+                to="/login"
+                className="text-sm font-medium text-slate-600 dark:text-text-dark-secondary hover:text-slate-900 dark:hover:text-text-dark-primary transition-colors"
               >
                 Iniciar Sesión
               </Link>
@@ -63,7 +63,7 @@ function Navbar({ user, role }) {
 
   // Navbar para usuarios AUTENTICADOS
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+    <nav className="sticky top-0 z-50 border-b border-slate-200 dark:border-border-dark bg-white/80 dark:bg-neutral-dark/80 backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-3">
@@ -72,21 +72,21 @@ function Navbar({ user, role }) {
               <path d="M2 17l10 5 10-5"></path>
               <path d="M2 12l10 5 10-5"></path>
             </svg>
-            <Link to="/dashboard" className="text-xl font-bold text-slate-800">
+            <Link to="/dashboard" className="text-xl font-bold text-slate-800 dark:text-text-dark-primary">
               SalaSmart
             </Link>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
-              <span className="text-sm text-slate-600">{user.email}</span>
+              <span className="text-sm text-slate-600 dark:text-text-dark-secondary">{user.email}</span>
               <span className={`rounded-full px-3 py-1 text-xs font-medium ${getRoleBadgeColor()}`}>
                 {getRoleBadge()}
               </span>
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
+              className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-border-dark px-4 py-2 text-sm font-medium text-slate-700 dark:text-text-dark-secondary hover:bg-slate-50 dark:hover:bg-card-bg-dark-hover transition-all"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>logout</span>
               Cerrar Sesión

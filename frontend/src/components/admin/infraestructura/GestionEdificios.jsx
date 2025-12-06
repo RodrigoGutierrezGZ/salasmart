@@ -394,12 +394,12 @@ export default function GestionEdificios() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">🏢 Gestión de Edificios y Pisos</h2>
-          <p className="text-gray-600 mt-1">Administra los edificios de cada sede y sus pisos</p>
+          <h2 className="text-2xl font-bold text-neutral-dark dark:text-text-dark-primary">🏢 Gestión de Edificios y Pisos</h2>
+          <p className="text-gray-600 dark:text-text-dark-secondary mt-1">Administra los edificios de cada sede y sus pisos</p>
         </div>
         <button
           onClick={abrirFormularioCrear}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={sedes.length === 0}
         >
           + Crear Edificio
@@ -409,9 +409,9 @@ export default function GestionEdificios() {
       {/* Mensajes */}
       {mensaje.texto && (
         <div className={`mb-4 p-4 rounded-lg ${
-          mensaje.tipo === 'success' ? 'bg-green-100 text-green-800' :
-          mensaje.tipo === 'error' ? 'bg-red-100 text-red-800' :
-          'bg-blue-100 text-blue-800'
+          mensaje.tipo === 'success' ? 'bg-success/10 text-success dark:bg-success/20 dark:text-success' :
+          mensaje.tipo === 'error' ? 'bg-danger/10 text-danger dark:bg-danger/20 dark:text-danger' :
+          'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary'
         }`}>
           {mensaje.texto}
         </div>
@@ -419,17 +419,17 @@ export default function GestionEdificios() {
 
       {/* Filtro por Sede */}
       <div className="mb-6">
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-2">
           Filtrar por Sede
         </label>
         <select
           value={sedeSeleccionada}
           onChange={(e) => setSedeSeleccionada(e.target.value)}
-          className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full md:w-64 px-4 py-2 border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
         >
-          <option value="todas">Todas las Sedes</option>
+          <option value="todas" className="dark:bg-neutral-dark">Todas las Sedes</option>
           {sedes.map(sede => (
-            <option key={sede.id} value={sede.id}>
+            <option key={sede.id} value={sede.id} className="dark:bg-neutral-dark">
               {sede.nombre}
             </option>
           ))}
@@ -438,9 +438,9 @@ export default function GestionEdificios() {
 
       {/* Aviso si no hay sedes */}
       {sedes.length === 0 && (
-        <div className="text-center py-12 bg-yellow-50 rounded-lg border border-yellow-200">
-          <p className="text-yellow-800 mb-2">⚠️ No hay sedes creadas</p>
-          <p className="text-yellow-700 text-sm">
+        <div className="text-center py-12 bg-warning/10 dark:bg-warning/20 rounded-lg border border-warning/30 dark:border-warning/40">
+          <p className="text-warning dark:text-warning mb-2">⚠️ No hay sedes creadas</p>
+          <p className="text-warning/80 dark:text-warning/90 text-sm">
             Primero debes crear al menos una sede antes de crear edificios
           </p>
         </div>
@@ -449,12 +449,12 @@ export default function GestionEdificios() {
       {/* Lista de Edificios */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando edificios...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-text-dark-secondary">Cargando edificios...</p>
         </div>
       ) : edificios.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600">
+        <div className="text-center py-12 bg-neutral-light/30 dark:bg-neutral-dark/30 rounded-lg">
+          <p className="text-gray-600 dark:text-text-dark-secondary">
             {sedeSeleccionada === 'todas'
               ? 'No hay edificios creados aún'
               : 'No hay edificios en esta sede'
@@ -463,7 +463,7 @@ export default function GestionEdificios() {
           {sedes.length > 0 && (
             <button
               onClick={abrirFormularioCrear}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
             >
               Crear Primer Edificio
             </button>
@@ -473,7 +473,7 @@ export default function GestionEdificios() {
         <div className="space-y-6">
           {Object.entries(edificiosPorSede).map(([sedeNombre, edificiosSede]) => (
             <div key={sedeNombre}>
-              <h3 className="text-lg font-bold text-gray-700 mb-3">
+              <h3 className="text-lg font-bold text-neutral-dark dark:text-text-dark-primary mb-3">
                 📍 {sedeNombre}
               </h3>
               <div className="grid gap-4">
@@ -485,7 +485,9 @@ export default function GestionEdificios() {
                     <div
                       key={edificio.id}
                       className={`border rounded-lg ${
-                        edificio.activo ? 'bg-white border-gray-200' : 'bg-gray-50 border-gray-300'
+                        edificio.activo
+                          ? 'bg-white dark:bg-card-bg-dark border-neutral-light dark:border-border-dark'
+                          : 'bg-neutral-light/50 dark:bg-neutral-dark/50 border-neutral-light dark:border-border-dark'
                       }`}
                     >
                       {/* Header del Edificio */}
@@ -493,28 +495,28 @@ export default function GestionEdificios() {
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <div className="flex items-center gap-3">
-                              <h4 className="text-lg font-bold text-gray-800">{edificio.nombre}</h4>
+                              <h4 className="text-lg font-bold text-neutral-dark dark:text-text-dark-primary">{edificio.nombre}</h4>
                               <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                                 edificio.activo
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-gray-200 text-gray-700'
+                                  ? 'bg-success/10 text-success dark:bg-success/20'
+                                  : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
                               }`}>
                                 {edificio.activo ? 'Activo' : 'Inactivo'}
                               </span>
                             </div>
                             <div className="mt-2 space-y-1">
-                              <p className="text-gray-600">
+                              <p className="text-gray-600 dark:text-text-dark-secondary">
                                 <span className="font-semibold">Código:</span> {edificio.codigo}
                               </p>
-                              <p className="text-gray-600">
+                              <p className="text-gray-600 dark:text-text-dark-secondary">
                                 <span className="font-semibold">Sede:</span> {edificio.sedeNombre}
                               </p>
                               {edificio.descripcion && (
-                                <p className="text-gray-600">
+                                <p className="text-gray-600 dark:text-text-dark-secondary">
                                   <span className="font-semibold">Descripción:</span> {edificio.descripcion}
                                 </p>
                               )}
-                              <p className="text-gray-500 text-sm">
+                              <p className="text-gray-500 dark:text-text-dark-secondary text-sm">
                                 Creado: {edificio.fechaCreacion?.toDate().toLocaleDateString('es-CL')}
                               </p>
                             </div>
@@ -524,7 +526,7 @@ export default function GestionEdificios() {
                           <div className="flex gap-2">
                             <button
                               onClick={() => toggleEdificio(edificio.id)}
-                              className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 text-sm font-medium"
+                              className="px-3 py-1 bg-secondary/10 text-secondary rounded-lg hover:bg-secondary/20 text-sm font-medium"
                               title={expandido ? 'Ocultar pisos' : 'Ver pisos'}
                             >
                               {expandido ? '▼' : '▶'} Pisos
@@ -533,8 +535,8 @@ export default function GestionEdificios() {
                               onClick={() => toggleActivo(edificio)}
                               className={`px-3 py-1 rounded-lg text-sm font-medium ${
                                 edificio.activo
-                                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                  : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                  ? 'bg-gray-100 dark:bg-neutral-dark text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover'
+                                  : 'bg-success/10 text-success hover:bg-success/20'
                               }`}
                               title={edificio.activo ? 'Desactivar' : 'Activar'}
                             >
@@ -542,13 +544,13 @@ export default function GestionEdificios() {
                             </button>
                             <button
                               onClick={() => abrirFormularioEditar(edificio)}
-                              className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm font-medium"
+                              className="px-3 py-1 bg-warning/10 text-warning rounded-lg hover:bg-warning/20 text-sm font-medium"
                             >
                               ✏️ Editar
                             </button>
                             <button
                               onClick={() => handleEliminar(edificio)}
-                              className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 text-sm font-medium"
+                              className="px-3 py-1 bg-danger/10 text-danger rounded-lg hover:bg-danger/20 text-sm font-medium"
                             >
                               🗑️ Eliminar
                             </button>
@@ -558,23 +560,23 @@ export default function GestionEdificios() {
 
                       {/* Sección de Pisos (Expandible) */}
                       {expandido && (
-                        <div className="border-t border-gray-200 bg-gray-50 p-4">
+                        <div className="border-t border-neutral-light dark:border-border-dark bg-neutral-light/30 dark:bg-neutral-dark/30 p-4">
                           <div className="flex justify-between items-center mb-3">
-                            <h5 className="font-semibold text-gray-700">🏗️ Pisos de este edificio</h5>
+                            <h5 className="font-semibold text-neutral-dark dark:text-text-dark-primary">🏗️ Pisos de este edificio</h5>
                             <button
                               onClick={() => abrirFormularioCrearPiso(edificio)}
-                              className="px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                              className="px-3 py-1 bg-success text-white text-sm rounded-lg hover:bg-success/90"
                             >
                               + Agregar Piso
                             </button>
                           </div>
 
                           {pisos.length === 0 ? (
-                            <div className="text-center py-8 bg-white rounded-lg border border-gray-200">
-                              <p className="text-gray-500 mb-2">No hay pisos en este edificio</p>
+                            <div className="text-center py-8 bg-white dark:bg-card-bg-dark rounded-lg border border-neutral-light dark:border-border-dark">
+                              <p className="text-gray-500 dark:text-text-dark-secondary mb-2">No hay pisos en este edificio</p>
                               <button
                                 onClick={() => abrirFormularioCrearPiso(edificio)}
-                                className="text-sm text-blue-600 hover:underline"
+                                className="text-sm text-primary hover:underline"
                               >
                                 Crear primer piso
                               </button>
@@ -585,7 +587,9 @@ export default function GestionEdificios() {
                                 <div
                                   key={piso.id}
                                   className={`p-3 rounded-lg flex gap-3 ${
-                                    piso.activo ? 'bg-white border border-gray-200' : 'bg-gray-100 border border-gray-300'
+                                    piso.activo
+                                      ? 'bg-white dark:bg-card-bg-dark border border-neutral-light dark:border-border-dark'
+                                      : 'bg-neutral-light/50 dark:bg-neutral-dark/50 border border-neutral-light dark:border-border-dark'
                                   }`}
                                 >
                                   {/* Preview de imagen */}
@@ -594,11 +598,11 @@ export default function GestionEdificios() {
                                       <img
                                         src={piso.imagenURL}
                                         alt={`Plano Piso ${piso.numero}`}
-                                        className="w-20 h-16 object-cover rounded border border-gray-200"
+                                        className="w-20 h-16 object-cover rounded border border-neutral-light dark:border-border-dark"
                                       />
                                     ) : (
-                                      <div className="w-20 h-16 bg-gray-200 rounded flex items-center justify-center">
-                                        <span className="text-gray-400 text-xs">Sin imagen</span>
+                                      <div className="w-20 h-16 bg-gray-200 dark:bg-neutral-dark rounded flex items-center justify-center border border-neutral-light dark:border-border-dark">
+                                        <span className="text-gray-400 dark:text-gray-500 text-xs">Sin imagen</span>
                                       </div>
                                     )}
                                   </div>
@@ -606,16 +610,16 @@ export default function GestionEdificios() {
                                   {/* Información del piso */}
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2">
-                                      <span className="font-semibold text-gray-800">Piso {piso.numero}</span>
+                                      <span className="font-semibold text-neutral-dark dark:text-text-dark-primary">Piso {piso.numero}</span>
                                       <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
                                         piso.activo
-                                          ? 'bg-green-100 text-green-800'
-                                          : 'bg-gray-200 text-gray-700'
+                                          ? 'bg-success/10 text-success dark:bg-success/20'
+                                          : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
                                       }`}>
                                         {piso.activo ? 'Activo' : 'Inactivo'}
                                       </span>
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-1">
+                                    <p className="text-xs text-gray-500 dark:text-text-dark-secondary mt-1">
                                       Creado: {piso.fechaCreacion?.toDate().toLocaleDateString('es-CL')}
                                     </p>
                                   </div>
@@ -626,8 +630,8 @@ export default function GestionEdificios() {
                                       onClick={() => toggleActivoPiso(piso)}
                                       className={`px-2 py-1 rounded text-xs font-medium ${
                                         piso.activo
-                                          ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                          : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                          ? 'bg-gray-100 dark:bg-neutral-dark text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover'
+                                          : 'bg-success/10 text-success hover:bg-success/20'
                                       }`}
                                       title={piso.activo ? 'Desactivar' : 'Activar'}
                                     >
@@ -635,13 +639,13 @@ export default function GestionEdificios() {
                                     </button>
                                     <button
                                       onClick={() => abrirFormularioEditarPiso(piso, edificio)}
-                                      className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs font-medium"
+                                      className="px-2 py-1 bg-warning/10 text-warning rounded hover:bg-warning/20 text-xs font-medium"
                                     >
                                       ✏️
                                     </button>
                                     <button
                                       onClick={() => handleEliminarPiso(piso)}
-                                      className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs font-medium"
+                                      className="px-2 py-1 bg-danger/10 text-danger rounded hover:bg-danger/20 text-xs font-medium"
                                     >
                                       🗑️
                                     </button>
@@ -663,16 +667,16 @@ export default function GestionEdificios() {
 
       {/* Modal de Formulario Edificio */}
       {modoEdicion && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-card-bg-dark rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-neutral-light dark:border-border-dark">
             <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">
+              <h3 className="text-xl font-bold text-neutral-dark dark:text-text-dark-primary mb-4">
                 {edificioEditar ? 'Editar Edificio' : 'Crear Nuevo Edificio'}
               </h3>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">
                     Sede *
                   </label>
                   <select
@@ -680,11 +684,11 @@ export default function GestionEdificios() {
                     value={formData.sedeId}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                   >
-                    <option value="">Seleccionar sede...</option>
+                    <option value="" className="dark:bg-neutral-dark">Seleccionar sede...</option>
                     {sedes.map(sede => (
-                      <option key={sede.id} value={sede.id}>
+                      <option key={sede.id} value={sede.id} className="dark:bg-neutral-dark">
                         {sede.nombre}
                       </option>
                     ))}
@@ -692,7 +696,7 @@ export default function GestionEdificios() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">
                     Nombre del Edificio *
                   </label>
                   <input
@@ -702,12 +706,12 @@ export default function GestionEdificios() {
                     onChange={handleInputChange}
                     placeholder="Ej: Edificio Principal"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">
                     Código del Edificio *
                   </label>
                   <input
@@ -717,15 +721,15 @@ export default function GestionEdificios() {
                     onChange={handleInputChange}
                     placeholder="Ej: PRINCIPAL o A"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 uppercase"
+                    className="w-full px-3 py-2 border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary uppercase"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-text-dark-secondary mt-1">
                     Se convertirá automáticamente a mayúsculas
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">
                     Descripción
                   </label>
                   <textarea
@@ -734,7 +738,7 @@ export default function GestionEdificios() {
                     onChange={handleInputChange}
                     placeholder="Ej: Edificio de aulas teóricas"
                     rows="2"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary"
                   />
                 </div>
 
@@ -745,9 +749,9 @@ export default function GestionEdificios() {
                     id="activo"
                     checked={formData.activo}
                     onChange={handleInputChange}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-primary border-gray-300 dark:border-border-dark rounded focus:ring-primary"
                   />
-                  <label htmlFor="activo" className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="activo" className="ml-2 text-sm text-gray-700 dark:text-text-dark-secondary">
                     Edificio activo
                   </label>
                 </div>
@@ -756,13 +760,13 @@ export default function GestionEdificios() {
                   <button
                     type="button"
                     onClick={cerrarFormulario}
-                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+                    className="flex-1 px-4 py-2 bg-gray-200 dark:bg-neutral-dark text-gray-700 dark:text-text-dark-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-card-bg-dark-hover font-medium transition-colors"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                    className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark font-medium transition-colors"
                   >
                     {edificioEditar ? 'Actualizar' : 'Crear'}
                   </button>
@@ -775,16 +779,16 @@ export default function GestionEdificios() {
 
       {/* Modal de Formulario Piso */}
       {modoEdicionPiso && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-card-bg-dark rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-neutral-light dark:border-border-dark">
             <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">
+              <h3 className="text-xl font-bold text-neutral-dark dark:text-text-dark-primary mb-4">
                 {pisoEditar ? 'Editar Piso' : `Crear Nuevo Piso - ${edificioParaPiso?.nombre}`}
               </h3>
 
               <form onSubmit={handleSubmitPiso} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">
                     Número de Piso *
                   </label>
                   <input
@@ -795,21 +799,21 @@ export default function GestionEdificios() {
                     placeholder="Ej: 1, 2, 3, 4"
                     min="1"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">
                     Imagen del Plano {!pisoEditar && '*'}
                   </label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImagenChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-primary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-text-dark-secondary mt-1">
                     Formatos: JPG, PNG, WebP. Tamaño máximo: 5MB
                   </p>
                 </div>
@@ -817,13 +821,13 @@ export default function GestionEdificios() {
                 {/* Preview de imagen */}
                 {imagenPreview && (
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-text-dark-secondary mb-1">
                       Vista Previa
                     </label>
                     <img
                       src={imagenPreview}
                       alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                      className="w-full h-48 object-cover rounded-lg border border-neutral-light dark:border-border-dark"
                     />
                   </div>
                 )}
@@ -835,9 +839,9 @@ export default function GestionEdificios() {
                     id="activoPiso"
                     checked={formDataPiso.activo}
                     onChange={handleInputChangePiso}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-primary border-gray-300 dark:border-border-dark rounded focus:ring-primary"
                   />
-                  <label htmlFor="activoPiso" className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="activoPiso" className="ml-2 text-sm text-gray-700 dark:text-text-dark-secondary">
                     Piso activo
                   </label>
                 </div>
@@ -846,13 +850,13 @@ export default function GestionEdificios() {
                   <button
                     type="button"
                     onClick={cerrarFormularioPiso}
-                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+                    className="flex-1 px-4 py-2 bg-gray-200 dark:bg-neutral-dark text-gray-700 dark:text-text-dark-secondary rounded-lg hover:bg-gray-300 dark:hover:bg-card-bg-dark-hover font-medium transition-colors"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                    className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark font-medium transition-colors"
                   >
                     {pisoEditar ? 'Actualizar' : 'Crear'}
                   </button>

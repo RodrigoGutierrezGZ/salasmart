@@ -86,7 +86,7 @@ function MobileSidebar({ user, role, activeTab, onTabChange, isOpen, onClose }) 
       />
       
       {/* Mobile Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-56 bg-white dark:bg-gray-800 border-r border-neutral-light dark:border-gray-700 z-50 lg:hidden transform transition-transform duration-300 ease-in-out">
+      <aside className="fixed left-0 top-0 h-full w-56 bg-white dark:bg-neutral-dark border-r border-neutral-light dark:border-border-dark z-50 lg:hidden transform transition-transform duration-300 ease-in-out">
         <div className="flex h-full flex-col p-3">
           {/* Header con botón cerrar */}
           <div className="flex items-center justify-between mb-3">
@@ -99,23 +99,23 @@ function MobileSidebar({ user, role, activeTab, onTabChange, isOpen, onClose }) 
                 <path d="M2 17l10 5 10-5"></path>
                 <path d="M2 12l10 5 10-5"></path>
               </svg>
-              <h2 className="text-lg font-bold text-neutral-dark dark:text-white">SalaSmart</h2>
+              <h2 className="text-lg font-bold text-neutral-dark dark:text-text-dark-primary">SalaSmart</h2>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover rounded-lg transition-colors"
             >
-              <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">close</span>
+              <span className="material-symbols-outlined text-gray-700 dark:text-text-dark-secondary">close</span>
             </button>
           </div>
 
           {/* User Info */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
               <span className="material-symbols-outlined text-primary">person</span>
             </div>
             <div className="flex flex-col flex-1">
-              <h2 className="text-sm font-semibold leading-normal text-neutral-dark">
+              <h2 className="text-sm font-semibold leading-normal text-neutral-dark dark:text-text-dark-primary">
                 {user?.email?.split('@')[0] || 'Usuario'}
               </h2>
               <p className={`text-xs font-normal leading-normal ${roleInfo.color}`}>
@@ -142,8 +142,8 @@ function MobileSidebar({ user, role, activeTab, onTabChange, isOpen, onClose }) 
                     onClick={handleClick}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                       isTabActive(item.tab) && location.pathname === '/dashboard'
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-neutral-light dark:hover:bg-gray-700'
+                        ? 'bg-primary/10 dark:bg-primary/20 text-primary'
+                        : 'text-gray-600 dark:text-text-dark-secondary hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
                     }`}
                   >
                     <span className="material-symbols-outlined">{item.icon}</span>
@@ -161,8 +161,8 @@ function MobileSidebar({ user, role, activeTab, onTabChange, isOpen, onClose }) 
                   onClick={onClose}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
                     isActive(item.path)
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-gray-600 hover:bg-neutral-light'
+                      ? 'bg-primary/10 dark:bg-primary/20 text-primary'
+                      : 'text-gray-600 dark:text-text-dark-secondary hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
                   }`}
                 >
                   <span className="material-symbols-outlined">{item.icon}</span>
@@ -179,15 +179,15 @@ function MobileSidebar({ user, role, activeTab, onTabChange, isOpen, onClose }) 
             <Link
               to="/configuracion"
               onClick={onClose}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 hover:bg-neutral-light"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 dark:text-text-dark-secondary hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover transition-colors"
             >
               <span className="material-symbols-outlined">settings</span>
               <p className="text-sm font-medium leading-normal">Ajustes</p>
             </Link>
-            
+
             <button
               onClick={() => { handleLogout(); onClose(); }}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 hover:bg-neutral-light"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-gray-600 dark:text-text-dark-secondary hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover transition-colors"
             >
               <span className="material-symbols-outlined">logout</span>
               <p className="text-sm font-medium leading-normal">Cerrar Sesión</p>

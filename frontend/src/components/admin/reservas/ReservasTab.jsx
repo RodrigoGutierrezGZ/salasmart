@@ -64,9 +64,9 @@ function ReservasTab({
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       {/* Resumen */}
-      <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
-        <h3 className="text-lg font-bold text-neutral-dark">Gestión de Reservas</h3>
-        <p className="mt-2 text-sm text-gray-500">
+      <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-soft">
+        <h3 className="text-lg font-bold text-neutral-dark dark:text-text-dark-primary">Gestión de Reservas</h3>
+        <p className="mt-2 text-sm text-gray-500 dark:text-text-dark-secondary">
           Total de reservas: <strong>{reservas.length}</strong> |
           Activas: <strong>{reservas.filter(r => {
             if (r.estado !== 'activa') return false;
@@ -87,28 +87,28 @@ function ReservasTab({
       </div>
 
       {/* Filtros de Reservas */}
-      <div className="rounded-lg border border-neutral-light bg-white p-6 shadow-soft">
-        <h4 className="mb-4 font-semibold text-neutral-dark flex items-center gap-2">
+      <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-soft">
+        <h4 className="mb-4 font-semibold text-neutral-dark dark:text-text-dark-primary flex items-center gap-2">
           <span className="material-symbols-outlined text-primary">filter_list</span>
           Filtrar Reservas
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Filtro por Estado */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-secondary mb-2">Estado</label>
             <div className="relative">
               <select
                 value={filtroEstadoReserva}
                 onChange={(e) => setFiltroEstadoReserva(e.target.value)}
-                className="w-full appearance-none rounded-lg border border-neutral-light bg-white px-4 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-4 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
               >
-                <option value="activas">Solo Activas</option>
-                <option value="todas">Todas</option>
-                <option value="canceladas">Canceladas</option>
-                <option value="completadas">Completadas</option>
+                <option value="activas" className="dark:bg-neutral-dark">Solo Activas</option>
+                <option value="todas" className="dark:bg-neutral-dark">Todas</option>
+                <option value="canceladas" className="dark:bg-neutral-dark">Canceladas</option>
+                <option value="completadas" className="dark:bg-neutral-dark">Completadas</option>
               </select>
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
                 expand_more
               </span>
             </div>
@@ -116,24 +116,24 @@ function ReservasTab({
 
           {/* Filtro por Sala */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Sala</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-secondary mb-2">Sala</label>
             <div className="relative">
               <select
                 value={filtroSalaReserva}
                 onChange={(e) => setFiltroSalaReserva(e.target.value)}
-                className="w-full appearance-none rounded-lg border border-neutral-light bg-white px-4 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-4 py-2.5 pr-10 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
               >
-                <option value="todas">Todas las Salas</option>
+                <option value="todas" className="dark:bg-neutral-dark">Todas las Salas</option>
                 {salas
                   .filter(sala => sala.nombre)
                   .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''))
                   .map(sala => (
-                    <option key={sala.id} value={sala.id}>{sala.nombre}</option>
+                    <option key={sala.id} value={sala.id} className="dark:bg-neutral-dark">{sala.nombre}</option>
                   ))
                 }
               </select>
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
                 expand_more
               </span>
             </div>
@@ -141,16 +141,16 @@ function ReservasTab({
 
           {/* Búsqueda */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Buscar</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-secondary mb-2">Buscar</label>
             <div className="relative">
               <input
                 type="text"
                 value={buscarReserva}
                 onChange={(e) => setBuscarReserva(e.target.value)}
                 placeholder="Docente o asignatura..."
-                className="w-full rounded-lg border border-neutral-light bg-white px-4 py-2.5 pl-10 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-4 py-2.5 pl-10 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary"
               />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
                 search
               </span>
             </div>
@@ -165,7 +165,7 @@ function ReservasTab({
               setFiltroSalaReserva('todas');
               setBuscarReserva('');
             }}
-            className="mt-4 flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+            className="mt-4 flex items-center gap-2 rounded-lg bg-gray-100 dark:bg-neutral-dark px-4 py-2 text-sm font-medium text-gray-700 dark:text-text-dark-secondary transition-colors hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover"
           >
             <span className="material-symbols-outlined text-lg">filter_alt_off</span>
             Limpiar Filtros
@@ -175,8 +175,8 @@ function ReservasTab({
 
       {/* Tabla de Reservas */}
       {reservasFiltradas.length > 0 ? (
-        <div className="rounded-lg border border-neutral-light bg-white shadow-soft overflow-hidden">
-          <div className="border-b border-neutral-light bg-gradient-to-r from-primary to-primary/80 px-6 py-4">
+        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark shadow-soft overflow-hidden">
+          <div className="border-b border-neutral-light dark:border-border-dark bg-gradient-to-r from-primary to-primary/80 px-6 py-4">
             <h4 className="font-bold text-white flex items-center gap-2">
               <span className="material-symbols-outlined">event_available</span>
               Reservas ({reservasFiltradas.length})
@@ -185,18 +185,18 @@ function ReservasTab({
 
           <div className="max-h-[600px] overflow-y-auto">
             <table className="min-w-full">
-              <thead className="sticky top-0 bg-white border-b-2 border-neutral-light">
+              <thead className="sticky top-0 bg-white dark:bg-neutral-dark border-b-2 border-neutral-light dark:border-border-dark">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600">Sala</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600">Docente</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600">Asignatura</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600">Fecha</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600">Horario</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600">Estado</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600">Acciones</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Sala</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Docente</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Asignatura</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Fecha</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Horario</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Estado</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-light">
+              <tbody className="divide-y divide-neutral-light dark:divide-border-dark">
                 {reservasFiltradas.map((reserva) => {
                   // Convertir Timestamp de Firebase a Date
                   let inicio, fin;
@@ -241,19 +241,19 @@ function ReservasTab({
                   }
 
                   return (
-                    <tr key={reserva.id} className="hover:bg-neutral-light/30">
+                    <tr key={reserva.id} className="hover:bg-neutral-light/30 dark:hover:bg-card-bg-dark-hover">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-primary">meeting_room</span>
-                          <span className="font-semibold text-neutral-dark">{reserva.salaNombre || reserva.salaId}</span>
+                          <span className="font-semibold text-neutral-dark dark:text-text-dark-primary">{reserva.salaNombre || reserva.salaId}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="font-medium text-neutral-dark">{reserva.nombreDocente || 'Sin nombre'}</p>
-                        <p className="text-sm text-gray-500">{reserva.usuarioId || 'N/A'}</p>
+                        <p className="font-medium text-neutral-dark dark:text-text-dark-primary">{reserva.nombreDocente || 'Sin nombre'}</p>
+                        <p className="text-sm text-gray-500 dark:text-text-dark-secondary">{reserva.usuarioId || 'N/A'}</p>
                       </td>
-                      <td className="px-6 py-4 text-neutral-dark">{reserva.asignatura || 'No especificada'}</td>
-                      <td className="px-6 py-4 text-neutral-dark">
+                      <td className="px-6 py-4 text-neutral-dark dark:text-text-dark-primary">{reserva.asignatura || 'No especificada'}</td>
+                      <td className="px-6 py-4 text-neutral-dark dark:text-text-dark-primary">
                         {inicio.toLocaleDateString('es-ES', {
                           day: '2-digit',
                           month: 'short',
@@ -261,7 +261,7 @@ function ReservasTab({
                         })}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-1 text-sm text-neutral-dark">
+                        <div className="flex items-center gap-1 text-sm text-neutral-dark dark:text-text-dark-primary">
                           <span className="material-symbols-outlined text-base">schedule</span>
                           {inicio.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                           {' - '}
@@ -292,10 +292,10 @@ function ReservasTab({
           </div>
         </div>
       ) : (
-        <div className="rounded-lg border border-neutral-light bg-white p-12 text-center shadow-soft">
-          <span className="material-symbols-outlined text-6xl text-gray-300">event_busy</span>
-          <h3 className="mt-4 text-lg font-semibold text-gray-700">No hay reservas</h3>
-          <p className="mt-2 text-sm text-gray-500">
+        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-12 text-center shadow-soft">
+          <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">event_busy</span>
+          <h3 className="mt-4 text-lg font-semibold text-gray-700 dark:text-text-dark-primary">No hay reservas</h3>
+          <p className="mt-2 text-sm text-gray-500 dark:text-text-dark-secondary">
             No se encontraron reservas con los filtros seleccionados.
           </p>
         </div>
