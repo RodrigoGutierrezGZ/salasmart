@@ -167,15 +167,23 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
 
   const getColorTextoEstado = (estado) => {
     // Devuelve color de texto que sea legible sobre el fondo del estado
-    switch (estado) {
+    // Normalizar el estado a minúsculas para ser más robusto
+    const estadoNormalizado = estado?.toLowerCase().trim() || '';
+    
+    switch (estadoNormalizado) {
       case 'disponible':
         return '#FFFFFF'; // Blanco sobre verde
       case 'proximamente':
-        return '#333333'; // Gris oscuro sobre amarillo (mejor contraste)
+        return '#1a1a1a'; // Casi negro sobre amarillo (mejor contraste)
       case 'ocupado':
         return '#FFFFFF'; // Blanco sobre rojo
       default:
-        return '#FFFFFF'; // Blanco sobre gris
+        // Por defecto: detectar por luminancia del background
+        const bgColor = getColorEstado(estado);
+        // Si es amarillo (proximamente), usar texto oscuro
+        if (bgColor === '#FFC107') return '#1a1a1a';
+        // Si es verde o rojo o gris, usar texto blanco
+        return '#FFFFFF';
     }
   };
 
@@ -347,17 +355,40 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
               >
                 {/* Badge de la Sala */}
                 <div
-                  className="px-2 py-1 rounded shadow-lg text-xs font-semibold flex items-center gap-1 transition-all"
                   style={{
                     backgroundColor: getColorEstado(sala.estado),
                     color: getColorTextoEstado(sala.estado),
-                    transform: salaHover === sala.id ? 'scale(1.15)' : 'scale(1)'
+                    transform: salaHover === sala.id ? 'scale(1.15)' : 'scale(1)',
+                    textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                    position: 'relative',
+                    zIndex: 100,
+                    fontSize: '14px',
+                    fontWeight: '900',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    lineHeight: '1.4',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    WebkitTextFillColor: getColorTextoEstado(sala.estado),
+                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
+                    cursor: 'default',
+                    userSelect: 'none'
                   }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>
+                  <span className="material-symbols-outlined" style={{ 
+                    fontSize: '14px', 
+                    color: 'inherit',
+                    display: 'flex',
+                    alignItems: 'center',
+                    lineHeight: '1',
+                    WebkitTextFillColor: getColorTextoEstado(sala.estado)
+                  }}>
                     {getIconoTipo(sala.tipo)}
                   </span>
-                  {sala.nombre}
+                  <span style={{ display: 'inline-block' }}>{sala.nombre}</span>
                 </div>
 
                 {/* Tooltip Mejorado y Compacto */}
