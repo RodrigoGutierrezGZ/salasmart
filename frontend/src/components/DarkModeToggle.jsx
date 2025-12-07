@@ -66,7 +66,7 @@ function DarkModeToggle() {
 
       {/* Menú desplegable */}
       {mostrarMenu && (
-        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden animate-fadeIn">
+        <div className="fixed sm:absolute left-2 sm:left-auto sm:right-0 right-2 top-14 sm:top-full sm:mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden animate-fadeIn" style={{ maxWidth: 'calc(100vw - 16px)' }}>
           {/* Header */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white">

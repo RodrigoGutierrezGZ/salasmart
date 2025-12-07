@@ -94,41 +94,41 @@ export default function AsignarSedesModal({ usuario, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 z-10">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-xl font-bold text-gray-800">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white dark:bg-card-bg-dark rounded-lg shadow-xl max-w-md w-full max-h-[90vh] sm:max-h-[80vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white dark:bg-card-bg-dark border-b border-gray-200 dark:border-border-dark p-3 sm:p-6 z-10">
+          <div className="flex justify-between items-start gap-2">
+            <div className="min-w-0">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-text-dark-primary truncate">
                 Asignar Sedes
               </h3>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-text-dark-secondary mt-1 truncate">
                 {usuario?.nombre || usuario?.email}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 dark:text-text-dark-secondary hover:text-gray-600 dark:hover:text-text-dark-primary flex-shrink-0"
             >
-              <span className="material-symbols-outlined">close</span>
+              <span className="material-symbols-outlined text-lg">close</span>
             </button>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto"></div>
-              <p className="text-gray-500 mt-3">Cargando sedes...</p>
+              <p className="text-gray-500 dark:text-text-dark-secondary mt-3 text-sm">Cargando sedes...</p>
             </div>
           ) : sedes.length === 0 ? (
             <div className="text-center py-8">
-              <span className="material-symbols-outlined text-6xl text-gray-300">school</span>
-              <p className="text-gray-500 mt-3">No hay sedes disponibles</p>
+              <span className="material-symbols-outlined text-4xl sm:text-6xl text-gray-300 dark:text-text-dark-secondary">school</span>
+              <p className="text-gray-500 dark:text-text-dark-secondary mt-3 text-sm">No hay sedes disponibles</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              <p className="text-sm text-gray-600 mb-4">
+            <div className="space-y-2 sm:space-y-3">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-text-dark-secondary mb-3 sm:mb-4">
                 Selecciona las sedes a las que este usuario tendrá acceso:
               </p>
 
@@ -165,10 +165,10 @@ export default function AsignarSedesModal({ usuario, onClose, onSuccess }) {
                 </label>
               ))}
 
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="mt-4 sm:mt-6 p-2 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <div className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-blue-600 text-lg">info</span>
-                  <p className="text-xs text-blue-700">
+                  <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-base sm:text-lg flex-shrink-0">info</span>
+                  <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300">
                     {sedesSeleccionadas.length === 0 && (
                       <span>El usuario no tendrá acceso a ninguna sede específica.</span>
                     )}
@@ -185,28 +185,28 @@ export default function AsignarSedesModal({ usuario, onClose, onSuccess }) {
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 p-6 flex gap-3">
+        <div className="sticky bottom-0 bg-gray-50 dark:bg-neutral-dark border-t border-gray-200 dark:border-border-dark p-3 sm:p-6 flex gap-2 sm:gap-3">
           <button
             onClick={onClose}
             disabled={guardando}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-3 sm:px-4 py-2 text-xs sm:text-sm border border-gray-300 dark:border-border-dark rounded-lg font-semibold text-gray-700 dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancelar
           </button>
           <button
             onClick={handleGuardar}
             disabled={guardando || loading}
-            className="flex-1 px-4 py-2 bg-primary rounded-lg font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 px-3 sm:px-4 py-2 text-xs sm:text-sm bg-primary rounded-lg font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-2"
           >
             {guardando ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Guardando...
+                <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div>
+                <span className="hidden sm:inline">Guardando...</span>
               </>
             ) : (
               <>
-                <span className="material-symbols-outlined text-base">save</span>
-                Guardar
+                <span className="material-symbols-outlined text-sm">save</span>
+                <span className="hidden sm:inline">Guardar</span>
               </>
             )}
           </button>
