@@ -240,6 +240,7 @@ function TeacherDashboard() {
               Gestiona tus reservas de salas y consulta disponibilidad en tiempo real.
             </p>
           </header>
+          
           <div className="flex flex-col lg:flex-row gap-2 lg:gap-4">
             <button
               onClick={() => setShowListaSalas(true)}
@@ -248,7 +249,7 @@ function TeacherDashboard() {
               <span className="material-symbols-outlined text-lg lg:text-xl">add_circle</span>
               <span className="lg:inline">Nueva Reserva</span>
             </button>
-          </header>
+          </div>
 
           {/* Error Alert */}
           {error && (
