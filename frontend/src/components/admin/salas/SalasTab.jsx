@@ -211,6 +211,8 @@ function SalasTab({
                         <p className="text-sm text-gray-500 dark:text-text-dark-primary">
                           {sala.sedeNombre && sala.edificioNombre && sala.pisoNumero ? (
                             `${sala.sedeNombre} → ${sala.edificioNombre} → Piso ${sala.pisoNumero}`
+                          ) : sala.pisoNumero ? (
+                            `Piso ${sala.pisoNumero}`
                           ) : (
                             `Piso ${sala.piso || 'N/A'}`
                           )}
