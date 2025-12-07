@@ -487,6 +487,23 @@ export async function actualizarImagenPiso(pisoId, imagenFile, onProgress) {
       throw new Error('Edificio no encontrado');
     }
 
+    // Guardar imagen anterior en historial (si existe)
+    let historialImagenes = pisoActual.historialImagenes || [];
+    if (pisoActual.imagenURL) {
+      historialImagenes.unshift({
+        imagenURL: pisoActual.imagenURL,
+        imagenPath: pisoActual.imagenPath,
+        imagenMetadata: pisoActual.imagenMetadata,
+        fechaReemplazo: Timestamp.now(),
+        activa: false
+      });
+      
+      // Mantener solo las últimas 5 versiones
+      if (historialImagenes.length > 5) {
+        historialImagenes = historialImagenes.slice(0, 5);
+      }
+    }
+
     // Subir nueva imagen a Cloudinary con callback de progreso
     const { imagenURL, imagenPath, imagenMetadata } = await subirImagenCloudinary(
       imagenFile,
@@ -495,11 +512,12 @@ export async function actualizarImagenPiso(pisoId, imagenFile, onProgress) {
       onProgress
     );
 
-    // Actualizar documento
+    // Actualizar documento con nueva imagen e historial
     await updateDoc(doc(db, 'pisos', pisoId), {
       imagenURL,
       imagenPath,
       imagenMetadata,
+      historialImagenes,
       fechaActualizacion: Timestamp.now()
     });
 
@@ -516,6 +534,68 @@ export async function actualizarImagenPiso(pisoId, imagenFile, onProgress) {
     );
   } catch (error) {
     console.error('❌ [pisosService] Error al actualizar imagen:', error);
+    throw error;
+  }
+}
+
+/**
+ * Restaurar una imagen del historial
+ * @param {string} pisoId - ID del piso
+ * @param {number} indiceHistorial - Índice en el array historialImagenes
+ * @returns {Promise<void>}
+ */
+export async function restaurarImagenHistorial(pisoId, indiceHistorial) {
+  try {
+    console.log('📝 [pisosService] Restaurando imagen del historial:', pisoId, indiceHistorial);
+
+    const pisoActual = await obtenerPisoPorId(pisoId);
+    if (!pisoActual) {
+      throw new Error('Piso no encontrado');
+    }
+
+    const historialImagenes = pisoActual.historialImagenes || [];
+    if (indiceHistorial < 0 || indiceHistorial >= historialImagenes.length) {
+      throw new Error('Índice de historial inválido');
+    }
+
+    const imagenRestaurar = historialImagenes[indiceHistorial];
+    
+    // Guardar imagen actual en historial
+    const nuevoHistorial = [...historialImagenes];
+    if (pisoActual.imagenURL) {
+      nuevoHistorial.splice(indiceHistorial, 1); // Remover la que vamos a restaurar
+      nuevoHistorial.unshift({
+        imagenURL: pisoActual.imagenURL,
+        imagenPath: pisoActual.imagenPath,
+        imagenMetadata: pisoActual.imagenMetadata,
+        fechaReemplazo: Timestamp.now(),
+        activa: false
+      });
+    }
+
+    // Mantener solo 5 versiones
+    const historialFinal = nuevoHistorial.slice(0, 5);
+
+    // Actualizar con imagen restaurada
+    await updateDoc(doc(db, 'pisos', pisoId), {
+      imagenURL: imagenRestaurar.imagenURL,
+      imagenPath: imagenRestaurar.imagenPath,
+      imagenMetadata: imagenRestaurar.imagenMetadata,
+      historialImagenes: historialFinal,
+      fechaActualizacion: Timestamp.now()
+    });
+
+    console.log('✅ [pisosService] Imagen restaurada del historial');
+
+    await registrarLog(
+      'PISOS',
+      'restaurar_imagen',
+      pisoActual?.nombreCompleto || `Piso ${pisoActual?.numero}`,
+      pisoId,
+      { indice: indiceHistorial }
+    );
+  } catch (error) {
+    console.error('❌ [pisosService] Error al restaurar imagen:', error);
     throw error;
   }
 }

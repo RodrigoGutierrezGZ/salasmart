@@ -95,7 +95,7 @@ function ReservasTab({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Filtro por Estado */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-secondary mb-2">Estado</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-primary mb-2">Estado</label>
             <div className="relative">
               <select
                 value={filtroEstadoReserva}
@@ -108,7 +108,7 @@ function ReservasTab({
                 <option value="canceladas" className="dark:bg-neutral-dark">Canceladas</option>
                 <option value="completadas" className="dark:bg-neutral-dark">Completadas</option>
               </select>
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-primary text-xl">
                 expand_more
               </span>
             </div>
@@ -116,7 +116,7 @@ function ReservasTab({
 
           {/* Filtro por Sala */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-secondary mb-2">Sala</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-primary mb-2">Sala</label>
             <div className="relative">
               <select
                 value={filtroSalaReserva}
@@ -133,7 +133,7 @@ function ReservasTab({
                   ))
                 }
               </select>
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-primary text-xl">
                 expand_more
               </span>
             </div>
@@ -141,7 +141,7 @@ function ReservasTab({
 
           {/* Búsqueda */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-secondary mb-2">Buscar</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-text-dark-primary mb-2">Buscar</label>
             <div className="relative">
               <input
                 type="text"
@@ -150,7 +150,7 @@ function ReservasTab({
                 placeholder="Docente o asignatura..."
                 className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-4 py-2.5 pl-10 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary"
               />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-primary text-xl">
                 search
               </span>
             </div>
@@ -165,7 +165,7 @@ function ReservasTab({
               setFiltroSalaReserva('todas');
               setBuscarReserva('');
             }}
-            className="mt-4 flex items-center gap-2 rounded-lg bg-gray-100 dark:bg-neutral-dark px-4 py-2 text-sm font-medium text-gray-700 dark:text-text-dark-secondary transition-colors hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover"
+            className="mt-4 flex items-center gap-2 rounded-lg bg-gray-100 dark:bg-neutral-dark px-4 py-2 text-sm font-medium text-gray-700 dark:text-text-dark-primary transition-colors hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover"
           >
             <span className="material-symbols-outlined text-lg">filter_alt_off</span>
             Limpiar Filtros
@@ -187,13 +187,13 @@ function ReservasTab({
             <table className="min-w-full">
               <thead className="sticky top-0 bg-white dark:bg-neutral-dark border-b-2 border-neutral-light dark:border-border-dark">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Sala</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Docente</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Asignatura</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Fecha</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Horario</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Estado</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-secondary">Acciones</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-primary">Sala</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-primary">Docente</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-primary">Asignatura</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-primary">Fecha</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-primary">Horario</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-primary">Estado</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-text-dark-primary">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-light dark:divide-border-dark">
@@ -250,7 +250,7 @@ function ReservasTab({
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-medium text-neutral-dark dark:text-text-dark-primary">{reserva.nombreDocente || 'Sin nombre'}</p>
-                        <p className="text-sm text-gray-500 dark:text-text-dark-secondary">{reserva.usuarioId || 'N/A'}</p>
+                        <p className="text-sm text-gray-500 dark:text-text-dark-primary">{reserva.usuarioId || 'N/A'}</p>
                       </td>
                       <td className="px-6 py-4 text-neutral-dark dark:text-text-dark-primary">{reserva.asignatura || 'No especificada'}</td>
                       <td className="px-6 py-4 text-neutral-dark dark:text-text-dark-primary">
@@ -295,7 +295,7 @@ function ReservasTab({
         <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-12 text-center shadow-soft">
           <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">event_busy</span>
           <h3 className="mt-4 text-lg font-semibold text-gray-700 dark:text-text-dark-primary">No hay reservas</h3>
-          <p className="mt-2 text-sm text-gray-500 dark:text-text-dark-secondary">
+          <p className="mt-2 text-sm text-gray-500 dark:text-text-dark-primary">
             No se encontraron reservas con los filtros seleccionados.
           </p>
         </div>

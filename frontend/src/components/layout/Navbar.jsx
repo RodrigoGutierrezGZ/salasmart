@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/config';
+import DarkModeToggle from '../DarkModeToggle';
 
 function Navbar({ user, role }) {
   const handleLogout = async () => {
@@ -48,6 +49,7 @@ function Navbar({ user, role }) {
               >
                 Iniciar Sesión
               </Link>
+              <DarkModeToggle />
               <Link 
                 to="/registro" 
                 className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-all"
@@ -84,6 +86,7 @@ function Navbar({ user, role }) {
                 {getRoleBadge()}
               </span>
             </div>
+            <DarkModeToggle />
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-border-dark px-4 py-2 text-sm font-medium text-slate-700 dark:text-text-dark-secondary hover:bg-slate-50 dark:hover:bg-card-bg-dark-hover transition-all"

@@ -61,7 +61,7 @@ function UsuariosTab({
           className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
             usuariosSubTab === 'activos'
               ? 'bg-primary text-white shadow-md'
-              : 'text-gray-600 dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover'
+              : 'text-gray-600 dark:text-text-dark-primary hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover'
           }`}
         >
           <span className="material-symbols-outlined text-base">check_circle</span>
@@ -72,7 +72,7 @@ function UsuariosTab({
           className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
             usuariosSubTab === 'pendientes'
               ? 'bg-primary text-white shadow-md'
-              : 'text-gray-600 dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover'
+              : 'text-gray-600 dark:text-text-dark-primary hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover'
           }`}
         >
           <span className="material-symbols-outlined text-base">pending</span>
@@ -136,7 +136,7 @@ function UsuariosTab({
           <div className="flex flex-wrap gap-4">
             <div className="flex-1">
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-text-dark-secondary">search</span>
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-text-dark-primary">search</span>
                 <input
                   type="text"
                   value={searchUser}
@@ -166,11 +166,11 @@ function UsuariosTab({
           <table className="w-full">
             <thead className="bg-gray-100 dark:bg-neutral-dark sticky top-0 z-20 shadow-sm">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Rol</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Sedes</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Estado</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-secondary bg-gray-100 dark:bg-neutral-dark">Acciones</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Usuario</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Rol</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Sedes</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Estado</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-light dark:divide-border-dark">
@@ -183,7 +183,7 @@ function UsuariosTab({
                     <td className="px-6 py-4">
                       <div>
                         <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{u.nombre || 'Sin nombre'}</p>
-                        <p className="text-sm text-gray-500 dark:text-text-dark-secondary">{u.email}</p>
+                        <p className="text-sm text-gray-600 dark:text-text-dark-primary">{u.email}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -212,7 +212,7 @@ function UsuariosTab({
                             {u.sedesAfiliadas.length} sede{u.sedesAfiliadas.length > 1 ? 's' : ''}
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-400 dark:text-text-dark-secondary">Sin sedes</span>
+                          <span className="text-xs text-gray-400 dark:text-text-dark-primary">Sin sedes</span>
                         )}
                         <button
                           onClick={() => handleAbrirModalSedes(u)}
@@ -225,7 +225,7 @@ function UsuariosTab({
                     </td>
                     <td className="px-6 py-4">
                       <span className={`rounded-full px-3 py-1 text-xs font-bold ${
-                        u.activo ? 'bg-success/10 dark:bg-success/20 text-success' : 'bg-gray-100 dark:bg-neutral-dark text-gray-600 dark:text-text-dark-secondary'
+                        u.activo ? 'bg-success/10 dark:bg-success/20 text-success' : 'bg-gray-100 dark:bg-neutral-dark text-gray-600 dark:text-text-dark-primary'
                       }`}>
                         {u.activo ? 'Activo' : 'Inactivo'}
                       </span>
@@ -278,7 +278,7 @@ function UsuariosTab({
           </table>
 
           {filteredUsers.length === 0 && (
-            <div className="px-6 py-12 text-center text-gray-500 dark:text-text-dark-secondary">
+            <div className="px-6 py-12 text-center text-gray-600 dark:text-text-dark-primary">
               <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">person_off</span>
               <p className="text-lg font-semibold dark:text-text-dark-primary">No hay usuarios que mostrar</p>
               <p className="text-sm mt-2">

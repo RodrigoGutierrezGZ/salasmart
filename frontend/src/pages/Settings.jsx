@@ -10,22 +10,23 @@ import { useTheme } from '../context/ThemeContext';
 import Sidebar from '../components/layout/Sidebar';
 import MobileHeader from '../components/layout/MobileHeader';
 import MobileSidebar from '../components/layout/MobileSidebar';
+import DarkModeToggle from '../components/DarkModeToggle';
 import ChatBot from '../components/chatbot/ChatBot';
 
 export default function Settings() {
   const { user, role, userData } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { themeMode, setTheme } = useTheme();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const features = [
     {
-      icon: 'dark_mode',
-      title: 'Modo Oscuro',
-      description: 'Cambia entre tema claro y oscuro',
-      status: isDarkMode ? 'Activado' : 'Desactivado',
+      icon: 'brightness_auto',
+      title: 'Preferencia de Tema',
+      description: 'Selecciona entre modo claro, oscuro o automático según tu sistema',
+      status: themeMode === 'auto' ? 'Automático' : (themeMode === 'dark' ? 'Oscuro' : 'Claro'),
       color: 'purple',
       isActive: true,
-      action: toggleDarkMode
+      custom: true // Indica que usa componente personalizado
     },
     {
       icon: 'notifications',
@@ -112,10 +113,9 @@ export default function Settings() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                onClick={feature.isActive ? feature.action : undefined}
                 className={`bg-white dark:bg-card-bg-dark rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-6 ${
                   feature.isActive
-                    ? 'cursor-pointer hover:shadow-md hover:border-primary dark:hover:border-primary transition-all'
+                    ? 'hover:shadow-md hover:border-primary dark:hover:border-primary transition-all'
                     : 'opacity-60'
                 }`}
               >
@@ -129,20 +129,17 @@ export default function Settings() {
                     <h3 className="font-semibold text-gray-900 dark:text-text-dark-primary">{feature.title}</h3>
                     <p className="text-sm text-gray-600 dark:text-text-dark-secondary mt-0.5">{feature.description}</p>
                   </div>
-                  {feature.isActive ? (
+                  
+                  {feature.custom ? (
+                    // Componente personalizado para tema
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className={`text-xs font-medium ${
-                        isDarkMode ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'
-                      }`}>
+                      <DarkModeToggle />
+                    </div>
+                  ) : feature.isActive ? (
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                         {feature.status}
                       </span>
-                      <div className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        isDarkMode ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
-                      }`}>
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          isDarkMode ? 'translate-x-6' : 'translate-x-1'
-                        }`} />
-                      </div>
                     </div>
                   ) : (
                     <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full flex-shrink-0">

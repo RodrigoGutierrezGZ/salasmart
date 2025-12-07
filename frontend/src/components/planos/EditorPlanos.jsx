@@ -11,6 +11,8 @@ import { obtenerSedes } from '../../services/sedesService';
 import { obtenerEdificiosPorSede } from '../../services/edificiosService';
 import { obtenerPisosPorEdificio, actualizarImagenPiso } from '../../services/pisosService';
 import { crearSala, eliminarSala, actualizarCoordenadasSala } from '../../services/salasService';
+import GaleriaImagenes from './GaleriaImagenes';
+import EditorImagen from './EditorImagen';
 
 function EditorPlanos() {
   // Estados de jerarquía
@@ -38,6 +40,11 @@ function EditorPlanos() {
   // Estados para subida de imagen
   const [subiendoImagen, setSubiendoImagen] = useState(false);
   const [progresoSubida, setProgresoSubida] = useState(0);
+  
+  // Nuevos estados para galería y editor
+  const [mostrarGaleria, setMostrarGaleria] = useState(false);
+  const [editandoImagen, setEditandoImagen] = useState(false);
+  const [imagenParaEditar, setImagenParaEditar] = useState(null);
 
   const imagenRef = useRef(null);
   const contenedorPlanoRef = useRef(null);
@@ -371,20 +378,32 @@ function EditorPlanos() {
       return;
     }
 
+    // Abrir editor de imagen
+    setImagenParaEditar(file);
+    setEditandoImagen(true);
+  };
+
+  const handleGuardarImagenEditada = async (imagenEditada) => {
     try {
+      setEditandoImagen(false);
+      setImagenParaEditar(null);
       setSubiendoImagen(true);
       setProgresoSubida(0);
 
-      await actualizarImagenPiso(pisoSeleccionado, file);
+      await actualizarImagenPiso(pisoSeleccionado, imagenEditada, (progreso) => {
+        setProgresoSubida(progreso);
+      });
 
       mostrarMensaje('success', '¡Imagen del plano actualizada exitosamente!');
-      setProgresoSubida(100);
+      
+      // Recargar pisos para actualizar galería
+      const pisosActualizados = await obtenerPisosPorEdificio(edificioSeleccionado);
+      setPisosDisponibles(pisosActualizados);
 
       // Recargar la imagen después de un delay para que Cloudinary la procese
       setTimeout(() => {
         if (imagenRef.current) {
-          // Agregar timestamp para forzar recarga
-          const pisoActual = pisosDisponibles.find(p => p.id === pisoSeleccionado);
+          const pisoActual = pisosActualizados.find(p => p.id === pisoSeleccionado);
           if (pisoActual?.imagenURL) {
             imagenRef.current.src = pisoActual.imagenURL + '?t=' + Date.now();
           }
@@ -401,6 +420,30 @@ function EditorPlanos() {
         inputImagenRef.current.value = '';
       }
     }
+  };
+
+  const handleCancelarEdicion = () => {
+    setEditandoImagen(false);
+    setImagenParaEditar(null);
+    if (inputImagenRef.current) {
+      inputImagenRef.current.value = '';
+    }
+  };
+
+  const handleImagenRestaurada = async () => {
+    // Recargar pisos para actualizar la imagen mostrada
+    const pisosActualizados = await obtenerPisosPorEdificio(edificioSeleccionado);
+    setPisosDisponibles(pisosActualizados);
+    
+    // Recargar imagen
+    setTimeout(() => {
+      if (imagenRef.current) {
+        const pisoActual = pisosActualizados.find(p => p.id === pisoSeleccionado);
+        if (pisoActual?.imagenURL) {
+          imagenRef.current.src = pisoActual.imagenURL + '?t=' + Date.now();
+        }
+      }
+    }, 500);
   };
 
   const tiposSala = [
@@ -623,6 +666,17 @@ function EditorPlanos() {
                   <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
                     {salasDelPiso.length} salas
                   </span>
+                  {/* Botón para ver galería */}
+                  <button
+                    onClick={() => setMostrarGaleria(!mostrarGaleria)}
+                    className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm font-medium transition-colors"
+                    title="Ver historial de imágenes"
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      photo_library
+                    </span>
+                    Historial
+                  </button>
                   {/* Botón para cambiar imagen del plano */}
                   <button
                     onClick={() => inputImagenRef.current?.click()}
@@ -1009,6 +1063,39 @@ function EditorPlanos() {
           </div>
         )}
       </div>
+
+      {/* Modal de Editor de Imagen */}
+      {editandoImagen && imagenParaEditar && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <EditorImagen
+              imagenFile={imagenParaEditar}
+              onGuardar={handleGuardarImagenEditada}
+              onCancelar={handleCancelarEdicion}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Galería */}
+      {mostrarGaleria && pisoSeleccionado && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative">
+              <button
+                onClick={() => setMostrarGaleria(false)}
+                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-10"
+              >
+                <span className="material-symbols-outlined text-3xl">close</span>
+              </button>
+              <GaleriaImagenes
+                pisoActual={pisosDisponibles.find(p => p.id === pisoSeleccionado)}
+                onImagenRestaurada={handleImagenRestaurada}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes pulse {

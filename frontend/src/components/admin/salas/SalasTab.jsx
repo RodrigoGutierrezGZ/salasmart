@@ -45,7 +45,7 @@ function SalasTab({
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             salasSubTab === 'lista'
               ? 'bg-primary text-white'
-              : 'bg-white dark:bg-neutral-dark text-gray-700 dark:text-text-dark-secondary border border-neutral-light dark:border-border-dark hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
+              : 'bg-white dark:bg-neutral-dark text-gray-700 dark:text-text-dark-primary border border-neutral-light dark:border-border-dark hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
           }`}
         >
           <span className="material-symbols-outlined">list</span>
@@ -56,7 +56,7 @@ function SalasTab({
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             salasSubTab === 'planos'
               ? 'bg-primary text-white'
-              : 'bg-white dark:bg-neutral-dark text-gray-700 dark:text-text-dark-secondary border border-neutral-light dark:border-border-dark hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
+              : 'bg-white dark:bg-neutral-dark text-gray-700 dark:text-text-dark-primary border border-neutral-light dark:border-border-dark hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover'
           }`}
         >
           <span className="material-symbols-outlined">map</span>
@@ -94,7 +94,7 @@ function SalasTab({
             <div className="grid grid-cols-3 gap-4">
               {/* Filtro Sede */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                   Filtrar por Sede
                 </label>
                 <select
@@ -113,7 +113,7 @@ function SalasTab({
 
               {/* Filtro Edificio */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                   Filtrar por Edificio
                 </label>
                 <select
@@ -135,7 +135,7 @@ function SalasTab({
 
               {/* Filtro Piso */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-secondary">
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                   Filtrar por Piso
                 </label>
                 <select
@@ -161,7 +161,7 @@ function SalasTab({
               <div className="mt-4 text-center">
                 <button
                   onClick={limpiarFiltrosLista}
-                  className="rounded-lg bg-gray-100 dark:bg-neutral-dark px-4 py-2 text-sm text-gray-700 dark:text-text-dark-secondary transition hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover"
+                  className="rounded-lg bg-gray-100 dark:bg-neutral-dark px-4 py-2 text-sm text-gray-700 dark:text-text-dark-primary transition hover:bg-gray-200 dark:hover:bg-card-bg-dark-hover"
                 >
                   Limpiar filtros
                 </button>
@@ -208,7 +208,7 @@ function SalasTab({
                       </div>
                       <div>
                         <p className="font-bold text-neutral-dark dark:text-text-dark-primary">{sala.nombre}</p>
-                        <p className="text-sm text-gray-500 dark:text-text-dark-secondary">
+                        <p className="text-sm text-gray-500 dark:text-text-dark-primary">
                           {sala.sedeNombre && sala.edificioNombre && sala.pisoNumero ? (
                             `${sala.sedeNombre} → ${sala.edificioNombre} → Piso ${sala.pisoNumero}`
                           ) : (
@@ -272,7 +272,7 @@ function SalasTab({
                     </div>
                   </div>
                 )) : (
-                  <div className="px-6 py-12 text-center text-gray-500 dark:text-text-dark-secondary">
+                  <div className="px-6 py-12 text-center text-gray-500 dark:text-text-dark-primary">
                     <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-3">inbox</span>
                     <p className="text-lg font-semibold dark:text-text-dark-primary">No hay salas que coincidan con los filtros</p>
                     <p className="text-sm mt-2">Prueba ajustando los filtros o crea nuevas salas en el Editor de Planos</p>

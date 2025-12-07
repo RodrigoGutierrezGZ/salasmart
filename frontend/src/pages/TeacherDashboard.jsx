@@ -180,7 +180,7 @@ function TeacherDashboard() {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-text-dark-secondary">Cargando...</p>
+            <p className="mt-4 text-gray-600 dark:text-text-dark-primary">Cargando...</p>
           </div>
         </main>
       </div>
@@ -237,7 +237,7 @@ function TeacherDashboard() {
                 <span className="material-symbols-outlined text-3xl lg:text-4xl text-primary">school</span>
                 <span>Panel del Docente</span>
               </h1>
-              <p className="text-sm lg:text-base font-normal leading-normal text-gray-500 dark:text-text-dark-secondary">
+              <p className="text-sm lg:text-base font-normal leading-normal text-gray-600 dark:text-text-dark-primary">
                 Gestiona tus reservas de salas y consulta disponibilidad en tiempo real.
               </p>
             </div>
@@ -267,7 +267,7 @@ function TeacherDashboard() {
                 <button
                   onClick={() => setTipoVista('cards')}
                   className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm font-semibold transition-all ${
-                    tipoVista === 'cards' ? 'bg-white dark:bg-primary/20 text-primary shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary'
+                    tipoVista === 'cards' ? 'bg-white dark:bg-primary/20 text-primary shadow-sm' : 'text-gray-600 dark:text-text-dark-primary'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xl">grid_view</span>
@@ -276,7 +276,7 @@ function TeacherDashboard() {
                 <button
                   onClick={() => setTipoVista('plano')}
                   className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm transition-all ${
-                    tipoVista === 'plano' ? 'bg-white dark:bg-primary/20 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary font-medium'
+                    tipoVista === 'plano' ? 'bg-white dark:bg-primary/20 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xl">map</span>
@@ -289,7 +289,7 @@ function TeacherDashboard() {
                 <button
                   onClick={() => setVistaActual('disponibles')}
                   className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm font-semibold transition-all ${
-                    vistaActual === 'disponibles' ? 'bg-white dark:bg-primary/20 text-primary shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary'
+                    vistaActual === 'disponibles' ? 'bg-white dark:bg-primary/20 text-primary shadow-sm' : 'text-gray-600 dark:text-text-dark-primary'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xl">check_circle</span>
@@ -298,7 +298,7 @@ function TeacherDashboard() {
                 <button
                   onClick={() => setVistaActual('todas')}
                   className={`flex items-center gap-2 rounded px-4 py-1.5 text-sm transition-all ${
-                    vistaActual === 'todas' ? 'bg-white dark:bg-primary/20 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary font-medium'
+                    vistaActual === 'todas' ? 'bg-white dark:bg-primary/20 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xl">list</span>
@@ -482,12 +482,12 @@ function TeacherDashboard() {
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-neutral-dark dark:text-text-dark-primary">{sala.nombre}</h3>
-                        <p className="text-sm text-gray-500 dark:text-text-dark-secondary">Piso {sala.piso}</p>
+                        <p className="text-sm text-gray-600 dark:text-text-dark-primary">Piso {sala.piso}</p>
                       </div>
                     </div>
 
                     {/* Detalles */}
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-text-dark-secondary">
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-text-dark-primary">
                       <div className="flex items-center gap-1">
                         <span className="material-symbols-outlined text-base">chair</span>
                         <span>{sala.capacidad} personas</span>
@@ -502,7 +502,7 @@ function TeacherDashboard() {
 
                     {/* Info adicional si está ocupada */}
                     {!isDisponible && sala.textoSecundario && (
-                      <p className="text-xs text-gray-500 dark:text-text-dark-secondary">{sala.textoSecundario}</p>
+                      <p className="text-xs text-gray-600 dark:text-text-dark-primary">{sala.textoSecundario}</p>
                     )}
 
                     {/* Botón de reservar */}
@@ -531,7 +531,7 @@ function TeacherDashboard() {
               <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-12">
                 <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">search_off</span>
                 <p className="mt-4 text-lg font-semibold text-gray-600 dark:text-text-dark-primary">No hay salas disponibles</p>
-                <p className="text-sm text-gray-500 dark:text-text-dark-secondary">Intenta cambiar los filtros o vuelve más tarde</p>
+                <p className="text-sm text-gray-600 dark:text-text-dark-primary">Intenta cambiar los filtros o vuelve más tarde</p>
               </div>
             )}
           </section>
@@ -605,7 +605,7 @@ function TeacherDashboard() {
                           {sala.nombre}
                         </h3>
 
-                        <div className="space-y-3 text-sm text-gray-600 dark:text-text-dark-secondary">
+                        <div className="space-y-3 text-sm text-gray-700 dark:text-text-dark-primary">
                           <div className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-lg text-primary">chair</span>
                             <span className="font-medium">{sala.capacidad} personas</span>
@@ -638,7 +638,7 @@ function TeacherDashboard() {
               {salasMostrar.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                   <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">search_off</span>
-                  <p className="text-lg text-gray-500 dark:text-text-dark-secondary">No hay salas disponibles con los filtros seleccionados</p>
+                  <p className="text-lg text-gray-600 dark:text-text-dark-primary">No hay salas disponibles con los filtros seleccionados</p>
                 </div>
               )}
             </div>

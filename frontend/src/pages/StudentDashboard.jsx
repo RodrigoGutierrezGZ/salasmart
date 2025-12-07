@@ -215,7 +215,7 @@ function StudentDashboard() {
                 <span className="hidden sm:inline">Consulta de Salas</span>
                 <span className="sm:hidden">Salas</span>
               </h1>
-              <p className="text-xs lg:text-base font-normal leading-normal text-gray-500 dark:text-text-dark-secondary hidden sm:block">
+              <p className="text-xs lg:text-base font-normal leading-normal text-gray-600 dark:text-text-dark-primary hidden sm:block">
                 Visualiza la disponibilidad de salas en tiempo real.
               </p>
             </div>
@@ -345,7 +345,7 @@ function StudentDashboard() {
                     <button
                       onClick={() => setTipoVista('cards')}
                       className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
-                        tipoVista === 'cards' ? 'bg-white dark:bg-card-bg-dark-hover text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-secondary font-medium'
+                        tipoVista === 'cards' ? 'bg-white dark:bg-card-bg-dark-hover text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
                       }`}
                     >
                       <span className="material-symbols-outlined text-lg lg:text-xl">grid_view</span>
@@ -434,7 +434,7 @@ function StudentDashboard() {
                               {sala.nombre}
                             </h3>
                             
-                            <div className="space-y-2 sm:space-y-3 text-sm text-gray-600 dark:text-text-dark-secondary">
+                            <div className="space-y-2 sm:space-y-3 text-sm text-gray-700 dark:text-text-dark-primary">
                               <div className="flex items-center gap-2">
                                 <span className="material-symbols-outlined text-lg text-primary">chair</span>
                                 <span className="font-medium">{sala.capacidad} personas</span>
@@ -476,7 +476,7 @@ function StudentDashboard() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold text-neutral-dark text-sm sm:text-base truncate">{sala.nombre}</p>
-                          <p className="text-xs sm:text-sm text-gray-500 dark:text-text-dark-secondary truncate">Piso {sala.pisoNumero || sala.piso} • Capacidad: {sala.capacidad}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 dark:text-text-dark-primary truncate">Piso {sala.pisoNumero || sala.piso} • Capacidad: {sala.capacidad}</p>
                         </div>
                       </div>
                       <span className={`rounded-full px-2 sm:px-3 py-1 text-xs font-medium flex-shrink-0 ${
