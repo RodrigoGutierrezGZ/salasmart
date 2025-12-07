@@ -118,14 +118,14 @@ export default function Perfil() {
 
       <div className="flex-1 overflow-y-auto pt-16 lg:pt-0">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 lg:px-8 py-4 lg:py-6">
-          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Mi Perfil</h1>
-          <p className="text-gray-600 mt-1 text-sm lg:text-base">Información de tu cuenta y estadísticas</p>
+        <div className="bg-white dark:bg-card-bg-dark border-b border-gray-200 dark:border-border-dark px-4 lg:px-8 py-4 lg:py-6">
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-text-dark-primary">Mi Perfil</h1>
+          <p className="text-gray-600 dark:text-text-dark-secondary mt-1 text-sm lg:text-base">Información de tu cuenta y estadísticas</p>
         </div>
 
-        <div className="p-4 lg:p-8 max-w-5xl mx-auto">
+        <div className="p-4 lg:p-8 max-w-5xl mx-auto bg-white dark:bg-neutral-dark rounded-lg">
           {/* Card de información personal */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+          <div className="bg-white dark:bg-card-bg-dark rounded-xl shadow-sm border border-gray-200 dark:border-border-dark overflow-hidden mb-6">
             {/* Banner superior */}
             <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
 
@@ -138,10 +138,10 @@ export default function Perfil() {
                   </span>
                 </div>
                 <div className="mt-16 flex-1">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-text-dark-primary">
                     {userData?.nombre || user?.displayName || 'Usuario'}
                   </h2>
-                  <p className="text-gray-600 mt-1">{user?.email}</p>
+                  <p className="text-gray-600 dark:text-text-dark-secondary mt-1">{user?.email}</p>
                   <div className="mt-3">
                     <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${roleBadge.color}`}>
                       <span className="material-symbols-outlined text-[18px]">{roleBadge.icon}</span>
@@ -159,8 +159,8 @@ export default function Perfil() {
                     <span className="material-symbols-outlined text-gray-600">email</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Email Institucional</p>
-                    <p className="text-base text-gray-900 mt-0.5">{user?.email}</p>
+                    <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Email Institucional</p>
+                    <p className="text-base text-gray-900 dark:text-text-dark-primary mt-0.5">{user?.email}</p>
                   </div>
                 </div>
 
@@ -170,8 +170,8 @@ export default function Perfil() {
                     <span className="material-symbols-outlined text-gray-600">badge</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Rol en el Sistema</p>
-                    <p className="text-base text-gray-900 mt-0.5">{roleBadge.label}</p>
+                    <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Rol en el Sistema</p>
+                    <p className="text-base text-gray-900 dark:text-text-dark-primary mt-0.5">{roleBadge.label}</p>
                   </div>
                 </div>
 
@@ -183,8 +183,8 @@ export default function Perfil() {
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Estado de Cuenta</p>
-                    <p className="text-base text-gray-900 mt-0.5">
+                    <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Estado de Cuenta</p>
+                    <p className="text-base text-gray-900 dark:text-text-dark-primary mt-0.5">
                       {userData?.activo ? 'Activa' : 'Inactiva'}
                     </p>
                   </div>
@@ -197,8 +197,8 @@ export default function Perfil() {
                       <span className="material-symbols-outlined text-gray-600">location_on</span>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-500">Sedes Afiliadas</p>
-                      <p className="text-base text-gray-900 mt-0.5">{sedes.join(', ')}</p>
+                      <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Sedes Afiliadas</p>
+                      <p className="text-base text-gray-900 dark:text-text-dark-primary mt-0.5">{sedes.join(', ')}</p>
                     </div>
                   </div>
                 )}
@@ -218,8 +218,8 @@ export default function Perfil() {
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Total de Reservas</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                    <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Total de Reservas</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-text-dark-primary mt-1">
                       {loading ? '...' : stats.totalReservas}
                     </p>
                   </div>
@@ -235,8 +235,8 @@ export default function Perfil() {
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Reservas Activas</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                    <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Reservas Activas</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-text-dark-primary mt-1">
                       {loading ? '...' : stats.reservasActivas}
                     </p>
                   </div>
@@ -252,8 +252,8 @@ export default function Perfil() {
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Completadas</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                    <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Completadas</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-text-dark-primary mt-1">
                       {loading ? '...' : stats.reservasCompletadas}
                     </p>
                   </div>

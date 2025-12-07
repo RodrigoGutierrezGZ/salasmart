@@ -430,7 +430,7 @@ function StudentDashboard() {
 
                           {/* Contenido */}
                           <div className="mt-6 sm:mt-8">
-                            <h3 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-neutral-dark">
+                            <h3 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-neutral-dark dark:text-text-dark-primary">
                               {sala.nombre}
                             </h3>
                             

@@ -330,7 +330,12 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
               src={imagenPlanoURL || `/planos/piso${pisoSeleccionado}.jpg`}
               alt={`Plano Piso ${pisoSeleccionado}`}
               className="max-w-full max-h-full object-contain"
-              style={{ width: '100%', height: '100%' }}
+              style={{ 
+                position: 'absolute',
+                width: '100%', 
+                height: '100%',
+                zIndex: 1
+              }}
               onError={(e) => {
                 // Fallback en caso de error al cargar la imagen
                 e.target.src = `/planos/piso${pisoSeleccionado}.jpg`;
@@ -347,7 +352,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                   top: `${sala.coordenadas.y}%`,
                   transform: 'translate(-50%, -50%)',
                   cursor: onSalaClick ? 'pointer' : 'default',
-                  zIndex: salaHover === sala.id ? 1000 : 10
+                  zIndex: salaHover === sala.id ? 1000 : 100
                 }}
                 onMouseEnter={() => setSalaHover(sala.id)}
                 onMouseLeave={() => setSalaHover(null)}
@@ -359,36 +364,45 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                     backgroundColor: getColorEstado(sala.estado),
                     color: getColorTextoEstado(sala.estado),
                     transform: salaHover === sala.id ? 'scale(1.15)' : 'scale(1)',
-                    textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.7)',
                     position: 'relative',
                     zIndex: 100,
-                    fontSize: '14px',
+                    fontSize: '16px',
                     fontWeight: '900',
-                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    fontFamily: '"Courier New", monospace',
                     lineHeight: '1.4',
-                    padding: '4px 8px',
+                    padding: '6px 10px',
                     borderRadius: '4px',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                    boxShadow: '0 3px 8px rgba(0,0,0,0.5)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '4px',
+                    gap: '6px',
                     WebkitTextFillColor: getColorTextoEstado(sala.estado),
-                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
+                    filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.6))',
                     cursor: 'default',
-                    userSelect: 'none'
+                    userSelect: 'none',
+                    border: `2px solid ${getColorEstado(sala.estado)}`,
+                    opacity: 1,
+                    visibility: 'visible'
                   }}
                 >
-                  <span className="material-symbols-outlined" style={{ 
-                    fontSize: '14px', 
-                    color: 'inherit',
+                  <span style={{ 
+                    fontSize: '16px', 
+                    color: getColorTextoEstado(sala.estado),
                     display: 'flex',
                     alignItems: 'center',
                     lineHeight: '1',
-                    WebkitTextFillColor: getColorTextoEstado(sala.estado)
+                    fontWeight: '900'
                   }}>
-                    {getIconoTipo(sala.tipo)}
+                    {getColorTextoEstado(sala.estado) === '#1a1a1a' ? '◆' : '■'}
                   </span>
-                  <span style={{ display: 'inline-block' }}>{sala.nombre}</span>
+                  <span style={{ 
+                    fontSize: '16px',
+                    color: getColorTextoEstado(sala.estado),
+                    fontWeight: '900'
+                  }}>
+                    {sala.nombre}
+                  </span>
                 </div>
 
                 {/* Tooltip Mejorado y Compacto */}
