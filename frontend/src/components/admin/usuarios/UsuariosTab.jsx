@@ -163,14 +163,14 @@ function UsuariosTab({
       {/* Users Table */}
       <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark shadow-soft overflow-hidden">
         <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-full text-xs sm:text-sm">
             <thead className="bg-gray-100 dark:bg-neutral-dark sticky top-0 z-20 shadow-sm">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Rol</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Sedes</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Estado</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Acciones</th>
+                <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Usuario</th>
+                <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark hidden sm:table-cell">Rol</th>
+                <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark hidden md:table-cell">Sedes</th>
+                <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark hidden lg:table-cell">Estado</th>
+                <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-text-dark-primary bg-gray-100 dark:bg-neutral-dark">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-light dark:divide-border-dark">
@@ -180,23 +180,23 @@ function UsuariosTab({
 
                 return (
                   <tr key={u.id} className="hover:bg-neutral-light/30 dark:hover:bg-card-bg-dark-hover">
-                    <td className="px-6 py-4">
+                    <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
                       <div>
-                        <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{u.nombre || 'Sin nombre'}</p>
-                        <p className="text-sm text-gray-600 dark:text-text-dark-primary">{u.email}</p>
+                        <p className="font-semibold text-neutral-dark dark:text-text-dark-primary text-xs sm:text-sm truncate">{u.nombre || 'Sin nombre'}</p>
+                        <p className="text-xs text-gray-600 dark:text-text-dark-primary truncate">{u.email}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4 hidden sm:table-cell">
                       {/* No permitir cambiar nuestro propio rol */}
                       {u.id === auth.currentUser?.uid ? (
-                        <span className="rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary">
-                          {u.role === 'admin' ? 'Administrador' : u.role === 'docente' ? 'Docente' : 'Estudiante'}
+                        <span className="rounded-lg bg-primary/10 px-2 lg:px-3 py-1 lg:py-1.5 text-xs font-semibold text-primary">
+                          {u.role === 'admin' ? 'Admin' : u.role === 'docente' ? 'Docente' : 'Est.'}
                         </span>
                       ) : (
                         <select
                           value={u.role}
                           onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                          className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-3 py-1.5 text-sm font-semibold focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                          className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark text-gray-900 dark:text-text-dark-primary px-2 lg:px-3 py-1 lg:py-1.5 text-xs lg:text-sm font-semibold focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                           title="Cambiar rol del usuario"
                         >
                           <option value="estudiante" className="dark:bg-neutral-dark">Estudiante</option>
@@ -205,49 +205,51 @@ function UsuariosTab({
                         </select>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4 hidden md:table-cell">
+                      <div className="flex items-center gap-1 lg:gap-2">
                         {u.sedesAfiliadas && u.sedesAfiliadas.length > 0 ? (
                           <span className="text-xs font-semibold text-gray-700 dark:text-text-dark-primary">
                             {u.sedesAfiliadas.length} sede{u.sedesAfiliadas.length > 1 ? 's' : ''}
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-400 dark:text-text-dark-primary">Sin sedes</span>
+                          <span className="text-xs text-gray-400 dark:text-text-dark-primary">-</span>
                         )}
                         <button
                           onClick={() => handleAbrirModalSedes(u)}
-                          className="text-primary hover:text-primary/80"
+                          className="text-primary hover:text-primary/80 text-xs"
                           title="Asignar sedes"
                         >
                           <span className="material-symbols-outlined text-lg">edit_location</span>
                         </button>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`rounded-full px-3 py-1 text-xs font-bold ${
+                    <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4 hidden lg:table-cell">
+                      <span className={`rounded-full px-2 lg:px-3 py-1 text-xs font-bold ${
                         u.activo ? 'bg-success/10 dark:bg-success/20 text-success' : 'bg-gray-100 dark:bg-neutral-dark text-gray-600 dark:text-text-dark-primary'
                       }`}>
                         {u.activo ? 'Activo' : 'Inactivo'}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
+                    <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
+                      <div className="flex gap-1 sm:gap-2">
                         {usuariosSubTab === 'pendientes' ? (
                           // Vista PENDIENTES: Aprobar o Rechazar
                           <>
                             <button
                               onClick={() => handleToggleUserStatus(u.id, u.activo)}
-                              className="flex items-center gap-1 rounded-lg bg-success/10 px-3 py-1.5 text-sm font-semibold text-success transition-colors hover:bg-success/20"
+                              className="flex items-center gap-0.5 sm:gap-1 rounded-lg bg-success/10 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-success transition-colors hover:bg-success/20 whitespace-nowrap"
+                              title="Aprobar usuario"
                             >
-                              <span className="material-symbols-outlined text-base">check_circle</span>
-                              Aprobar
+                              <span className="material-symbols-outlined text-sm lg:text-base">check_circle</span>
+                              <span className="hidden sm:inline">Aprobar</span>
                             </button>
                             <button
                               onClick={() => handleDeleteUser(u.id, u.email)}
-                              className="flex items-center gap-1 rounded-lg bg-danger/10 px-3 py-1.5 text-sm font-semibold text-danger transition-colors hover:bg-danger/20"
+                              className="flex items-center gap-0.5 sm:gap-1 rounded-lg bg-danger/10 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-danger transition-colors hover:bg-danger/20 whitespace-nowrap"
+                              title="Rechazar usuario"
                             >
-                              <span className="material-symbols-outlined text-base">delete</span>
-                              Rechazar
+                              <span className="material-symbols-outlined text-sm lg:text-base">delete</span>
+                              <span className="hidden sm:inline">Rechazar</span>
                             </button>
                           </>
                         ) : (
@@ -255,17 +257,19 @@ function UsuariosTab({
                           <>
                             <button
                               onClick={() => handleToggleUserStatus(u.id, u.activo)}
-                              className="flex items-center gap-1 rounded-lg bg-warning/10 px-3 py-1.5 text-sm font-semibold text-warning transition-colors hover:bg-warning/20"
+                              className="flex items-center gap-0.5 sm:gap-1 rounded-lg bg-warning/10 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-warning transition-colors hover:bg-warning/20 whitespace-nowrap"
+                              title="Desactivar usuario"
                             >
-                              <span className="material-symbols-outlined text-base">block</span>
-                              Desactivar
+                              <span className="material-symbols-outlined text-sm lg:text-base">block</span>
+                              <span className="hidden sm:inline">Desactivar</span>
                             </button>
                             <button
                               onClick={() => handleDeleteUser(u.id, u.email)}
-                              className="flex items-center gap-1 rounded-lg bg-danger/10 px-3 py-1.5 text-sm font-semibold text-danger transition-colors hover:bg-danger/20"
+                              className="flex items-center gap-0.5 sm:gap-1 rounded-lg bg-danger/10 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-danger transition-colors hover:bg-danger/20 whitespace-nowrap"
+                              title="Eliminar usuario"
                             >
-                              <span className="material-symbols-outlined text-base">delete</span>
-                              Eliminar
+                              <span className="material-symbols-outlined text-sm lg:text-base">delete</span>
+                              <span className="hidden sm:inline">Eliminar</span>
                             </button>
                           </>
                         )}

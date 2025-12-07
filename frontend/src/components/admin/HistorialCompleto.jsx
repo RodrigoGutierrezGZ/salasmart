@@ -246,20 +246,20 @@ export default function HistorialCompleto() {
         ) : (
           <>
             {/* Tabla de logs */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto rounded-lg border border-neutral-light dark:border-border-dark">
+              <table className="w-full min-w-full text-xs sm:text-sm">
                 <thead className="border-b border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-neutral-dark">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
+                    <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
                       Acción
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
+                    <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary hidden sm:table-cell">
                       Tipo
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
+                    <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
                       Usuario
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary">
+                    <th className="px-2 sm:px-4 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-text-dark-secondary hidden md:table-cell">
                       Fecha
                     </th>
                   </tr>
@@ -274,18 +274,18 @@ export default function HistorialCompleto() {
 
             {/* Footer con paginación */}
             {!mostrandoTodos && logs.length >= limite && (
-              <div className="border-t border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-neutral-dark px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600 dark:text-text-dark-secondary">
-                    Mostrando {logs.length} registros
+              <div className="border-t border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-neutral-dark px-2 sm:px-4 lg:px-6 py-3 sm:py-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-text-dark-secondary">
+                    Mostrando {logs.length} de registros
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-full sm:w-auto">
                     <button
                       onClick={cargarMas}
                       disabled={cargando}
-                      className="rounded-lg bg-white dark:bg-card-bg-dark px-4 py-2 text-sm font-medium text-gray-700 dark:text-text-dark-secondary transition hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover disabled:opacity-50"
+                      className="flex-1 sm:flex-initial rounded-lg bg-white dark:bg-card-bg-dark px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-text-dark-secondary transition hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover disabled:opacity-50 whitespace-nowrap"
                     >
-                      Cargar 50 más
+                      Cargar más
                     </button>
                     <button
                       onClick={mostrarTodos}
@@ -323,39 +323,39 @@ function LogRow({ log }) {
 
   return (
     <>
-      <tr className="transition hover:bg-gray-50 dark:hover:bg-card-bg-dark-hover">
-        <td className="px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${colorClasses}`}>
-              <span className="material-symbols-outlined text-base">{icono}</span>
+      <tr className="transition hover:bg-gray-50 dark:hover:bg-card-bg-dark-hover text-xs sm:text-sm">
+        <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className={`flex h-6 sm:h-8 w-6 sm:w-8 flex-shrink-0 items-center justify-center rounded-full text-xs sm:text-base ${colorClasses}`}>
+              <span className="material-symbols-outlined">{icono}</span>
             </div>
             <div className="min-w-0">
-              <p className="font-medium text-gray-900 dark:text-text-dark-primary">{texto}</p>
+              <p className="font-medium text-gray-900 dark:text-text-dark-primary truncate text-xs sm:text-sm">{texto}</p>
               {tieneDetalles && (
                 <button
                   onClick={() => setExpandido(!expandido)}
-                  className="mt-1 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300"
+                  className="mt-0.5 sm:mt-1 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 whitespace-nowrap"
                 >
-                  {expandido ? 'Ocultar detalles' : 'Ver detalles'}
+                  {expandido ? 'Ocultar' : 'Ver detalles'}
                 </button>
               )}
             </div>
           </div>
         </td>
-        <td className="px-6 py-4">
-          <span className="inline-flex rounded-full bg-gray-100 dark:bg-neutral-dark px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-text-dark-primary">
+        <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4 hidden sm:table-cell">
+          <span className="inline-flex rounded-full bg-gray-100 dark:bg-neutral-dark px-2 py-1 text-xs font-medium text-gray-700 dark:text-text-dark-primary whitespace-nowrap">
             {log.tipo}
           </span>
         </td>
-        <td className="px-6 py-4">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-sm text-gray-400 dark:text-text-dark-secondary">person</span>
-            <span className="text-sm text-gray-900 dark:text-text-dark-primary">{log.usuarioEmail || 'Sistema'}</span>
+        <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+            <span className="material-symbols-outlined text-xs sm:text-sm text-gray-400 dark:text-text-dark-secondary flex-shrink-0">person</span>
+            <span className="text-xs sm:text-sm text-gray-900 dark:text-text-dark-primary truncate">{log.usuarioEmail || 'Sistema'}</span>
           </div>
         </td>
-        <td className="px-6 py-4">
+        <td className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4 hidden md:table-cell">
           <span
-            className="cursor-help text-sm text-gray-500 dark:text-text-dark-secondary"
+            className="cursor-help text-xs sm:text-sm text-gray-500 dark:text-text-dark-secondary"
             title={formatearTimestampAbsoluto(log.timestamp)}
           >
             {tiempoRelativo}

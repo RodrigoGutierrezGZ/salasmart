@@ -65,7 +65,7 @@ function Navbar({ user, role }) {
 
   // Navbar para usuarios AUTENTICADOS
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200 dark:border-border-dark bg-white/80 dark:bg-neutral-dark/80 backdrop-blur-sm">
+    <nav className="sticky top-0 z-50 border-b border-slate-200 dark:border-border-dark bg-white/80 dark:bg-neutral-dark/80 backdrop-blur-sm hidden lg:block">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-3">
@@ -74,25 +74,25 @@ function Navbar({ user, role }) {
               <path d="M2 17l10 5 10-5"></path>
               <path d="M2 12l10 5 10-5"></path>
             </svg>
-            <Link to="/dashboard" className="text-xl font-bold text-slate-800 dark:text-text-dark-primary">
+            <Link to="/dashboard" className="text-lg lg:text-xl font-bold text-slate-800 dark:text-text-dark-primary truncate">
               SalaSmart
             </Link>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-slate-600 dark:text-text-dark-secondary">{user.email}</span>
-              <span className={`rounded-full px-3 py-1 text-xs font-medium ${getRoleBadgeColor()}`}>
+          <div className="flex items-center gap-3 lg:gap-4">
+            <div className="flex items-center gap-2 lg:gap-3">
+              <span className="text-xs lg:text-sm text-slate-600 dark:text-text-dark-secondary truncate">{user.email}</span>
+              <span className={`rounded-full px-2 lg:px-3 py-1 text-xs font-medium whitespace-nowrap ${getRoleBadgeColor()}`}>
                 {getRoleBadge()}
               </span>
             </div>
             <DarkModeToggle />
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-border-dark px-4 py-2 text-sm font-medium text-slate-700 dark:text-text-dark-secondary hover:bg-slate-50 dark:hover:bg-card-bg-dark-hover transition-all"
+              className="flex items-center gap-1 lg:gap-2 rounded-lg border border-slate-300 dark:border-border-dark px-2 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium text-slate-700 dark:text-text-dark-secondary hover:bg-slate-50 dark:hover:bg-card-bg-dark-hover transition-all"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>logout</span>
-              Cerrar Sesión
+              <span className="material-symbols-outlined text-lg lg:text-xl">logout</span>
+              <span className="hidden lg:inline">Cerrar Sesión</span>
             </button>
           </div>
         </div>
