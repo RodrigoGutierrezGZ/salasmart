@@ -102,10 +102,12 @@ const VoiceControls = ({
       )}
 
       {isSpeaking && !transcript && (
-        <div className="flex items-center gap-2 text-sm">
-          <span className="material-symbols-outlined text-lg" style={{animation: 'pulse 1s infinite'}}>
-            volume_2
-          </span>
+        <div className="flex items-center justify-center gap-2 py-2 text-sm">
+          <div className="flex gap-1">
+            <div className={`w-1 h-3 rounded-full animate-pulse ${isDark ? 'bg-blue-400' : 'bg-blue-600'}`} style={{ animationDelay: '0ms' }}></div>
+            <div className={`w-1 h-3 rounded-full animate-pulse ${isDark ? 'bg-blue-400' : 'bg-blue-600'}`} style={{ animationDelay: '150ms' }}></div>
+            <div className={`w-1 h-3 rounded-full animate-pulse ${isDark ? 'bg-blue-400' : 'bg-blue-600'}`} style={{ animationDelay: '300ms' }}></div>
+          </div>
           <span className={isDark ? 'text-text-dark-secondary' : 'text-gray-600'}>
             Reproduciendo respuesta...
           </span>
