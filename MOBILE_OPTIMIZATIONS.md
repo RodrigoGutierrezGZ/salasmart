@@ -3,6 +3,22 @@
 ## Resumen
 Se implementaron optimizaciones completas de responsive design para mobile (375-430px viewport) en toda la aplicación, eliminando overflow, mejorando espaciado y adaptando componentes para pantallas pequeñas.
 
+**Última actualización**: Fixed dropdowns y modales fuera de pantalla en mobile (0800c76)
+
+---
+
+## 🔧 Fixes Recientes (Session Actual)
+
+### Issue: Dropdown de notificaciones salía de pantalla
+**Solución aplicada**:
+- NotificacionesPanel: Cambió de `absolute left-0` a `fixed left-2 right-2 top-14` en mobile
+- DarkModeToggle: Mismo patrón de fix
+- AsignarSedesModal: Mejora de padding y dark mode
+- **Resultado**: Todos los dropdowns y modales ahora 100% dentro del viewport
+
+**Commits relacionados**:
+- `0800c76` - fix: arreglar dropdowns y modales que salían de pantalla en mobile
+
 ---
 
 ## Cambios Implementados
@@ -58,10 +74,10 @@ Se implementaron optimizaciones completas de responsive design para mobile (375-
 - **Button**: `p-1.5 sm:p-2` con `flex-shrink-0` (era p-2)
 - **Icon**: `text-base sm:text-lg md:text-xl` (era text-[24px])
 - **Badge**: `w-4 h-4 sm:w-5 sm:h-5` (era w-5 h-5)
-- **Dropdown**: 
-  - Mobile: `w-[calc(100vw-16px)]` (fixed width con margen)
-  - Tablet+: `sm:w-96`
-  - Position: `left-0 sm:left-auto sm:right-0`
+- **Dropdown (FIXED v2)**: 
+  - Mobile: `fixed left-2 right-2 top-14 sm:top-full sm:mt-2` con `style={{ maxWidth: 'calc(100vw - 16px)' }}`
+  - Desktop: `absolute sm:left-auto sm:right-0`
+  - Position vertical: `top-14` en mobile (debajo del MobileHeader h-14)
   - Max-height: `max-h-[70vh] sm:max-h-full`
 - **Dark mode**: Colores coherentes con tema
 - **Font responsive**: `text-xs sm:text-sm` en todo el dropdown
@@ -242,6 +258,38 @@ sm:hidden             /* Ocultar en tablet+ */
 
 ---
 
-**Commit**: `bf39031` (Tablas responsivas) + `6c39c62` (Layouts principales)
+**Commits**: 
+- `bf39031` (Tablas responsivas)
+- `6c39c62` (Layouts principales)
+- `0800c76` (Dropdowns y modales - fixes overflow en mobile)
+
 **Fecha**: Session actual
 **Status**: ✅ Completado y testeado en real device
+
+## Archivos Modificados en Session Actual
+
+### NotificacionesPanel.jsx
+- **Cambio**: Dropdown de notificaciones pasó de `absolute left-0` a `fixed left-2 right-2 top-14` en mobile
+- **Por qué**: El dropdown se salía de pantalla en mobile (375px), solo se veía parcialmente
+- **Solución**: 
+  - Mobile: Fixed positioning con márgenes de seguridad (left-2, right-2 = 8px cada lado)
+  - Desktop: Vuelve a absolute right-0 (alineado a la derecha)
+  - MaxWidth: `calc(100vw - 16px)` asegura no exceder viewport
+  - Top-14: Posicionado debajo del MobileHeader (h-14 = 56px)
+- **Resultado**: Dropdown 100% visible en mobile sin overflow
+
+### DarkModeToggle.jsx
+- **Cambio**: Menu de tema aplicó el mismo patrón de dropdown fix
+- **Por qué**: Potencial overflow similar al NotificacionesPanel
+- **Solución**: Identical pattern - fixed en mobile, absolute en desktop
+- **Resultado**: Menu de tema responsivo y dentro del viewport
+
+### AsignarSedesModal.jsx
+- **Cambios**:
+  - Padding responsive: `p-3 sm:p-6` (en lugar de hardcoded p-6)
+  - Font sizes: `text-lg sm:text-xl` en headers, `text-xs sm:text-sm` en contenido
+  - Dark mode: Agregados todos los dark: prefixes (bg-card-bg-dark, text-dark-primary, etc.)
+  - Max-height: `max-h-[90vh] sm:max-h-[80vh]` (más espacio en pantallas pequeñas)
+  - Footer buttons: Gap responsive `gap-2 sm:gap-3`, flexbox con `flex-1` para distribuir ancho
+  - Contenido scrollable: `max-h-[60vh] sm:max-h-[65vh] overflow-y-auto` (permite scroll sin overflow modal)
+- **Resultado**: Modal totalmente responsive y usable en mobile
