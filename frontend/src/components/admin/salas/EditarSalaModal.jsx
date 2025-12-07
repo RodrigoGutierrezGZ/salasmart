@@ -71,9 +71,9 @@ function EditarSalaModal({ sala, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white shadow-xl">
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white dark:bg-card-bg-dark shadow-xl">
         {/* Header */}
-        <div className="sticky top-0 z-10 border-b border-neutral-light bg-gradient-to-r from-primary to-primary/80 px-6 py-4">
+        <div className="sticky top-0 z-10 border-b border-neutral-light dark:border-border-dark bg-gradient-to-r from-primary to-primary/80 px-6 py-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <span className="material-symbols-outlined">edit</span>
@@ -91,20 +91,20 @@ function EditarSalaModal({ sala, onClose, onSave }) {
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Mensaje informativo */}
-          <div className="rounded-lg border-2 border-blue-300 bg-blue-50 p-4">
-            <p className="text-sm text-blue-800">
+          <div className="rounded-lg border-2 border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 p-4">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
               <strong>Nota:</strong> Solo puedes editar el nombre, capacidad, tipo y equipamiento.
               Para cambiar la <strong>ubicación</strong> (Sede/Edificio/Piso), usa el <strong>Editor de Planos</strong>.
             </p>
           </div>
 
           {/* Ubicación actual (solo lectura) */}
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+          <div className="rounded-lg border border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-neutral-800 p-4">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-text-dark-primary mb-2 flex items-center gap-2">
               <span className="material-symbols-outlined text-base">location_on</span>
               Ubicación Actual (no editable)
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-text-dark-secondary">
               {sala?.sedeNombre} → {sala?.edificioNombre} → Piso {sala?.pisoNumero}
             </p>
           </div>
@@ -113,14 +113,14 @@ function EditarSalaModal({ sala, onClose, onSave }) {
           <div className="space-y-4">
             {/* Nombre */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                 Nombre de la Sala *
               </label>
               <input
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-900 px-4 py-2 text-gray-900 dark:text-text-dark-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 required
               />
             </div>
@@ -128,7 +128,7 @@ function EditarSalaModal({ sala, onClose, onSave }) {
             {/* Capacidad y Tipo */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                   Capacidad *
                 </label>
                 <input
@@ -137,19 +137,19 @@ function EditarSalaModal({ sala, onClose, onSave }) {
                   onChange={(e) => setCapacidad(e.target.value)}
                   min="1"
                   max="200"
-                  className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-900 px-4 py-2 text-gray-900 dark:text-text-dark-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   required
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                   Tipo de Sala *
                 </label>
                 <select
                   value={tipo}
                   onChange={(e) => setTipo(e.target.value)}
-                  className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-900 px-4 py-2 text-gray-900 dark:text-text-dark-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="aula_teorica">Aula Teórica</option>
                   <option value="laboratorio">Laboratorio</option>
@@ -162,15 +162,15 @@ function EditarSalaModal({ sala, onClose, onSave }) {
             </div>
 
             {/* Equipamiento */}
-            <div className="border-t border-neutral-light pt-4">
-              <h4 className="mb-3 text-sm font-semibold text-neutral-dark flex items-center gap-2">
+            <div className="border-t border-neutral-light dark:border-border-dark pt-4">
+              <h4 className="mb-3 text-sm font-semibold text-neutral-dark dark:text-text-dark-primary flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">settings</span>
                 Equipamiento
               </h4>
 
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                     Computadores
                   </label>
                   <input
@@ -179,12 +179,12 @@ function EditarSalaModal({ sala, onClose, onSave }) {
                     onChange={(e) => setComputadores(e.target.value)}
                     min="0"
                     max="100"
-                    className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-900 px-4 py-2 text-gray-900 dark:text-text-dark-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                     Enchufes
                   </label>
                   <input
@@ -193,18 +193,18 @@ function EditarSalaModal({ sala, onClose, onSave }) {
                     onChange={(e) => setEnchufes(e.target.value)}
                     min="0"
                     max="100"
-                    className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-900 px-4 py-2 text-gray-900 dark:text-text-dark-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-text-dark-primary">
                     Tipo de Pizarra
                   </label>
                   <select
                     value={pizarra}
                     onChange={(e) => setPizarra(e.target.value)}
-                    className="w-full rounded-lg border border-neutral-light px-4 py-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-900 px-4 py-2 text-gray-900 dark:text-text-dark-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   >
                     <option value="ninguna">Ninguna</option>
                     <option value="tradicional">Tradicional</option>
@@ -220,9 +220,9 @@ function EditarSalaModal({ sala, onClose, onSave }) {
                     type="checkbox"
                     checked={proyector}
                     onChange={(e) => setProyector(e.target.checked)}
-                    className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                    className="w-4 h-4 text-primary border-neutral-light dark:border-border-dark rounded focus:ring-2 focus:ring-primary/20"
                   />
-                  <span className="text-sm text-gray-700">Proyector</span>
+                  <span className="text-sm text-gray-700 dark:text-text-dark-primary">Proyector</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -230,9 +230,9 @@ function EditarSalaModal({ sala, onClose, onSave }) {
                     type="checkbox"
                     checked={aireAcondicionado}
                     onChange={(e) => setAireAcondicionado(e.target.checked)}
-                    className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                    className="w-4 h-4 text-primary border-neutral-light dark:border-border-dark rounded focus:ring-2 focus:ring-primary/20"
                   />
-                  <span className="text-sm text-gray-700">A/C</span>
+                  <span className="text-sm text-gray-700 dark:text-text-dark-primary">A/C</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -240,9 +240,9 @@ function EditarSalaModal({ sala, onClose, onSave }) {
                     type="checkbox"
                     checked={parlantes}
                     onChange={(e) => setParlantes(e.target.checked)}
-                    className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                    className="w-4 h-4 text-primary border-neutral-light dark:border-border-dark rounded focus:ring-2 focus:ring-primary/20"
                   />
-                  <span className="text-sm text-gray-700">Parlantes</span>
+                  <span className="text-sm text-gray-700 dark:text-text-dark-primary">Parlantes</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -250,9 +250,9 @@ function EditarSalaModal({ sala, onClose, onSave }) {
                     type="checkbox"
                     checked={microfono}
                     onChange={(e) => setMicrofono(e.target.checked)}
-                    className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                    className="w-4 h-4 text-primary border-neutral-light dark:border-border-dark rounded focus:ring-2 focus:ring-primary/20"
                   />
-                  <span className="text-sm text-gray-700">Micrófono</span>
+                  <span className="text-sm text-gray-700 dark:text-text-dark-primary">Micrófono</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -260,16 +260,16 @@ function EditarSalaModal({ sala, onClose, onSave }) {
                     type="checkbox"
                     checked={camara}
                     onChange={(e) => setCamara(e.target.checked)}
-                    className="w-4 h-4 text-primary border-neutral-light rounded focus:ring-2 focus:ring-primary/20"
+                    className="w-4 h-4 text-primary border-neutral-light dark:border-border-dark rounded focus:ring-2 focus:ring-primary/20"
                   />
-                  <span className="text-sm text-gray-700">Cámara</span>
+                  <span className="text-sm text-gray-700 dark:text-text-dark-primary">Cámara</span>
                 </label>
               </div>
             </div>
           </div>
 
           {/* Botones */}
-          <div className="flex gap-3 border-t border-neutral-light pt-4">
+          <div className="flex gap-3 border-t border-neutral-light dark:border-border-dark pt-4">
             <button
               type="submit"
               disabled={saving}
@@ -291,7 +291,7 @@ function EditarSalaModal({ sala, onClose, onSave }) {
               type="button"
               onClick={onClose}
               disabled={saving}
-              className="flex items-center gap-2 rounded-lg border border-neutral-light px-6 py-2 font-semibold text-gray-700 transition-colors hover:bg-neutral-light disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-800 px-6 py-2 font-semibold text-gray-700 dark:text-text-dark-primary transition-colors hover:bg-neutral-light dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="material-symbols-outlined text-lg">close</span>
               Cancelar
