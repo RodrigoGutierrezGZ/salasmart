@@ -277,16 +277,16 @@ function MisReservas() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-neutral-dark">Mis Reservas</h2>
+        <h2 className="text-2xl font-bold text-neutral-dark dark:text-text-dark-primary">Mis Reservas</h2>
         
         {/* Toggle: Solo Activas vs Todas */}
-        <div className="flex rounded-lg bg-neutral-light p-1">
+        <div className="flex rounded-lg bg-neutral-light dark:bg-neutral-800 p-1">
           <button
             onClick={() => setSoloActivas(true)}
             className={`px-4 py-2 text-sm font-semibold rounded transition-all ${
               soloActivas
-                ? 'bg-white text-primary shadow-sm'
-                : 'text-gray-600'
+                ? 'bg-white dark:bg-card-bg-dark text-primary shadow-sm'
+                : 'text-gray-600 dark:text-text-dark-secondary'
             }`}
           >
             Solo Activas
@@ -295,8 +295,8 @@ function MisReservas() {
             onClick={() => setSoloActivas(false)}
             className={`px-4 py-2 text-sm font-semibold rounded transition-all ${
               !soloActivas
-                ? 'bg-white text-primary shadow-sm'
-                : 'text-gray-600'
+                ? 'bg-white dark:bg-card-bg-dark text-primary shadow-sm'
+                : 'text-gray-600 dark:text-text-dark-secondary'
             }`}
           >
             Todas
@@ -339,17 +339,17 @@ function MisReservas() {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <p className="mt-4 text-gray-600 font-medium">Cargando reservas...</p>
+          <p className="mt-4 text-gray-600 dark:text-text-dark-secondary font-medium">Cargando reservas...</p>
         </div>
       ) : reservas.length === 0 ? (
-        <div className="rounded-lg border border-primary/30 bg-primary/10 text-primary px-6 py-8 text-center">
+        <div className="rounded-lg border border-primary/30 bg-primary/10 dark:bg-primary/20 text-primary px-6 py-8 text-center">
           <span className="material-symbols-outlined text-6xl mb-4 block">event_busy</span>
           <p className="text-lg font-medium">
             No tienes reservas {soloActivas ? 'activas' : ''} en este momento.
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-neutral-light bg-white shadow-soft">
+        <div className="overflow-x-auto rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark shadow-soft">
           <table className="w-full">
             <thead className="bg-gradient-to-r from-primary to-primary/80 text-white">
               <tr>
@@ -361,29 +361,29 @@ function MisReservas() {
                 <th className="px-6 py-4 text-left text-sm font-semibold">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-light">
+            <tbody className="divide-y divide-neutral-light dark:divide-border-dark">
               {reservas.map((reserva) => {
                 const estadoReal = obtenerEstadoReal(reserva);
                 const jornada = obtenerJornada(reserva);
                 
                 return (
-                  <tr key={reserva.id} className="hover:bg-neutral-light/50 transition-colors">
+                  <tr key={reserva.id} className="hover:bg-neutral-light/50 dark:hover:bg-neutral-800/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary">meeting_room</span>
-                        <strong className="text-neutral-dark">{reserva.salaNombre || reserva.salaId}</strong>
+                        <strong className="text-neutral-dark dark:text-text-dark-primary">{reserva.salaNombre || reserva.salaId}</strong>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-700">{reserva.asignatura}</td>
+                    <td className="px-6 py-4 text-gray-700 dark:text-text-dark-primary">{reserva.asignatura}</td>
                     <td className="px-6 py-4">
                       <div className="space-y-1 text-sm">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-500 font-medium">Inicio:</span>
-                          <span className="text-gray-700">{formatearFechaHora(reserva.horaInicio)}</span>
+                          <span className="text-gray-500 dark:text-text-dark-secondary font-medium">Inicio:</span>
+                          <span className="text-gray-700 dark:text-text-dark-primary">{formatearFechaHora(reserva.horaInicio)}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-500 font-medium">Fin:</span>
-                          <span className="text-gray-700">{formatearFechaHora(reserva.horaFin)}</span>
+                          <span className="text-gray-500 dark:text-text-dark-secondary font-medium">Fin:</span>
+                          <span className="text-gray-700 dark:text-text-dark-primary">{formatearFechaHora(reserva.horaFin)}</span>
                         </div>
                       </div>
                     </td>
@@ -455,13 +455,13 @@ function MisReservas() {
       {/* Modal de confirmación de cancelación */}
       {reservaACancelar && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl animate-slideUp">
+          <div className="relative w-full max-w-md rounded-2xl bg-white dark:bg-card-bg-dark shadow-2xl animate-slideUp">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-neutral-light px-6 py-4">
-              <h3 className="text-xl font-bold text-neutral-dark">Confirmar Cancelación</h3>
+            <div className="flex items-center justify-between border-b border-neutral-light dark:border-border-dark px-6 py-4">
+              <h3 className="text-xl font-bold text-neutral-dark dark:text-text-dark-primary">Confirmar Cancelación</h3>
               <button
                 onClick={() => setReservaACancelar(null)}
-                className="rounded-full p-1 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-full p-1 text-gray-400 dark:text-text-dark-secondary transition-all hover:bg-gray-100 dark:hover:bg-neutral-800 hover:text-gray-600 dark:hover:text-text-dark-primary"
               >
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
@@ -469,33 +469,33 @@ function MisReservas() {
 
             {/* Body */}
             <div className="p-6 space-y-4">
-              <p className="text-gray-700">¿Estás seguro que deseas cancelar esta reserva?</p>
+              <p className="text-gray-700 dark:text-text-dark-primary">¿Estás seguro que deseas cancelar esta reserva?</p>
               
-              <div className="rounded-lg bg-neutral-light border border-neutral-light p-4 space-y-2">
+              <div className="rounded-lg bg-neutral-light dark:bg-neutral-800 border border-neutral-light dark:border-border-dark p-4 space-y-2">
                 <div className="flex items-start gap-2">
                   <span className="material-symbols-outlined text-primary">meeting_room</span>
                   <div>
-                    <span className="text-gray-600 text-sm">Sala:</span>
-                    <p className="font-semibold text-neutral-dark">{reservaACancelar.salaNombre || reservaACancelar.salaId}</p>
+                    <span className="text-gray-600 dark:text-text-dark-secondary text-sm">Sala:</span>
+                    <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{reservaACancelar.salaNombre || reservaACancelar.salaId}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="material-symbols-outlined text-primary">book</span>
                   <div>
-                    <span className="text-gray-600 text-sm">Asignatura:</span>
-                    <p className="font-semibold text-neutral-dark">{reservaACancelar.asignatura}</p>
+                    <span className="text-gray-600 dark:text-text-dark-secondary text-sm">Asignatura:</span>
+                    <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{reservaACancelar.asignatura}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="material-symbols-outlined text-primary">schedule</span>
                   <div>
-                    <span className="text-gray-600 text-sm">Inicio:</span>
-                    <p className="font-semibold text-neutral-dark">{formatearFechaHora(reservaACancelar.horaInicio)}</p>
+                    <span className="text-gray-600 dark:text-text-dark-secondary text-sm">Inicio:</span>
+                    <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{formatearFechaHora(reservaACancelar.horaInicio)}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-lg border border-warning/30 bg-warning/10 text-warning px-4 py-3">
+              <div className="rounded-lg border border-warning/30 bg-warning/10 dark:bg-warning/20 text-warning px-4 py-3">
                 <div className="flex items-start gap-2">
                   <span className="material-symbols-outlined text-lg">warning</span>
                   <p className="text-sm font-medium">Esta acción no se puede deshacer.</p>
@@ -504,10 +504,10 @@ function MisReservas() {
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 border-t border-neutral-light px-6 py-4">
+            <div className="flex gap-3 border-t border-neutral-light dark:border-border-dark px-6 py-4">
               <button
                 onClick={() => setReservaACancelar(null)}
-                className="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 font-semibold text-gray-700 transition-all hover:bg-gray-200"
+                className="flex-1 rounded-lg bg-gray-100 dark:bg-neutral-800 px-4 py-2.5 font-semibold text-gray-700 dark:text-text-dark-primary transition-all hover:bg-gray-200 dark:hover:bg-neutral-700"
               >
                 No, Mantener
               </button>
@@ -525,13 +525,13 @@ function MisReservas() {
       {/* Modal de confirmación de eliminación */}
       {reservaAEliminar && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl animate-slideUp">
+          <div className="relative w-full max-w-md rounded-2xl bg-white dark:bg-card-bg-dark shadow-2xl animate-slideUp">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-neutral-light px-6 py-4">
-              <h3 className="text-xl font-bold text-neutral-dark">Confirmar Eliminación</h3>
+            <div className="flex items-center justify-between border-b border-neutral-light dark:border-border-dark px-6 py-4">
+              <h3 className="text-xl font-bold text-neutral-dark dark:text-text-dark-primary">Confirmar Eliminación</h3>
               <button
                 onClick={() => setReservaAEliminar(null)}
-                className="rounded-full p-1 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-full p-1 text-gray-400 dark:text-text-dark-secondary transition-all hover:bg-gray-100 dark:hover:bg-neutral-800 hover:text-gray-600 dark:hover:text-text-dark-primary"
               >
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
@@ -539,26 +539,26 @@ function MisReservas() {
 
             {/* Body */}
             <div className="p-6 space-y-4">
-              <p className="text-gray-700">¿Estás seguro que deseas eliminar esta reserva del historial?</p>
+              <p className="text-gray-700 dark:text-text-dark-primary">¿Estás seguro que deseas eliminar esta reserva del historial?</p>
               
-              <div className="rounded-lg bg-neutral-light border border-neutral-light p-4 space-y-2">
+              <div className="rounded-lg bg-neutral-light dark:bg-neutral-800 border border-neutral-light dark:border-border-dark p-4 space-y-2">
                 <div className="flex items-start gap-2">
                   <span className="material-symbols-outlined text-primary">meeting_room</span>
                   <div>
-                    <span className="text-gray-600 text-sm">Sala:</span>
-                    <p className="font-semibold text-neutral-dark">{reservaAEliminar.salaNombre || reservaAEliminar.salaId}</p>
+                    <span className="text-gray-600 dark:text-text-dark-secondary text-sm">Sala:</span>
+                    <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{reservaAEliminar.salaNombre || reservaAEliminar.salaId}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="material-symbols-outlined text-primary">book</span>
                   <div>
-                    <span className="text-gray-600 text-sm">Asignatura:</span>
-                    <p className="font-semibold text-neutral-dark">{reservaAEliminar.asignatura}</p>
+                    <span className="text-gray-600 dark:text-text-dark-secondary text-sm">Asignatura:</span>
+                    <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{reservaAEliminar.asignatura}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-lg border border-danger/30 bg-danger/10 text-danger px-4 py-3">
+              <div className="rounded-lg border border-danger/30 bg-danger/10 dark:bg-danger/20 text-danger px-4 py-3">
                 <div className="flex items-start gap-2">
                   <span className="material-symbols-outlined text-lg">warning</span>
                   <p className="text-sm font-medium">Esta acción eliminará permanentemente el registro.</p>
@@ -567,10 +567,10 @@ function MisReservas() {
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 border-t border-neutral-light px-6 py-4">
+            <div className="flex gap-3 border-t border-neutral-light dark:border-border-dark px-6 py-4">
               <button
                 onClick={() => setReservaAEliminar(null)}
-                className="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 font-semibold text-gray-700 transition-all hover:bg-gray-200"
+                className="flex-1 rounded-lg bg-gray-100 dark:bg-neutral-800 px-4 py-2.5 font-semibold text-gray-700 dark:text-text-dark-primary transition-all hover:bg-gray-200 dark:hover:bg-neutral-700"
               >
                 Cancelar
               </button>

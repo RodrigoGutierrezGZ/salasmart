@@ -11,7 +11,7 @@ function MisReservasPage() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-background-light">
+    <div className="flex h-screen bg-background-light dark:bg-neutral-dark">
       {/* Sidebar Desktop */}
       <Sidebar user={user} role={role} />
       
@@ -31,7 +31,7 @@ function MisReservasPage() {
         onClose={() => setMobileSidebarOpen(false)}
       />
       
-      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 p-4 lg:p-8">
+      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 p-4 lg:p-8 bg-background-light dark:bg-neutral-dark">
         <div className="mx-auto max-w-7xl">
           <MisReservas />
         </div>
