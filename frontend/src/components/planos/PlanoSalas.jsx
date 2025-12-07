@@ -9,14 +9,20 @@ import { ESTADOS_SALA } from '../../utils/constants';
 const planoImgPath = '/plano_inacap.jpg';
 
 // --- COORDENADAS DE LAS SALAS EN EL PLANO (en porcentajes para responsive) ---
+// Basadas en las posiciones reales del plano arquitectónico
 const salasCoordenadas = [
-  { id: 'S101', nombre: 'S101', topPercent: 45, leftPercent: 15 },
-  { id: 'S102', nombre: 'S102', topPercent: 45, leftPercent: 28 },
-  { id: 'S103', nombre: 'S103', topPercent: 45, leftPercent: 42 },
-  { id: 'R104', nombre: 'Sala Reunión', topPercent: 45, leftPercent: 56 },
-  { id: 'A105', nombre: 'Auditorio', topPercent: 45, leftPercent: 70 },
-  { id: 'S106', nombre: 'S106', topPercent: 45, leftPercent: 83 },
-  { id: 'S107', nombre: 'S107', topPercent: 45, leftPercent: 95 },
+  { id: 'A103', nombre: 'A103', topPercent: 30, leftPercent: 68 },
+  { id: 'A120', nombre: 'A120', topPercent: 40, leftPercent: 40 },
+  { id: 'A140', nombre: 'A140', topPercent: 40, leftPercent: 58 },
+  { id: 'A150', nombre: 'A150', topPercent: 50, leftPercent: 38 },
+  { id: 'A115', nombre: 'A115', topPercent: 52, leftPercent: 58 },
+  { id: 'GYM A102', nombre: 'GYM A102', topPercent: 55, leftPercent: 48 },
+  { id: 'A130', nombre: 'A130', topPercent: 60, leftPercent: 58 },
+  { id: 'A138', nombre: 'A138', topPercent: 32, leftPercent: 20 },
+  { id: 'A107', nombre: 'A107', topPercent: 70, leftPercent: 25 },
+  { id: 'A105', nombre: 'A105', topPercent: 70, leftPercent: 35 },
+  { id: 'A108', nombre: 'A108', topPercent: 70, leftPercent: 53 },
+  { id: 'A110', nombre: 'A110', topPercent: 70, leftPercent: 65 },
 ];
 
 const SalaPunto = ({ sala, estado, texto, textoSecundario, color, onClick, showReservarText = true }) => {
