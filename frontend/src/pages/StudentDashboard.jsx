@@ -374,6 +374,7 @@ function StudentDashboard() {
                     onClick={() => setVistaActual('lista')}
                     className={`flex items-center gap-1 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
                       vistaActual === 'lista' ? 'bg-white dark:bg-card-bg-dark-hover text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
+                    }`}
                   >
                     <span className="material-symbols-outlined text-lg lg:text-xl">list</span>
                     <span className="hidden sm:inline">Todas las Salas</span>

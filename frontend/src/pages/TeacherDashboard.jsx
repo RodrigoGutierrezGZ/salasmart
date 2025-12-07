@@ -237,10 +237,10 @@ function TeacherDashboard() {
               <span className="truncate">Panel del Docente</span>
             </h1>
             <p className="text-xs sm:text-sm lg:text-base font-normal leading-tight text-gray-600 dark:text-text-dark-primary">
-              Gestiona tus reservas en tiempo real>
-                Gestiona tus reservas de salas y consulta disponibilidad en tiempo real.
-              </p>
-            </div>
+              Gestiona tus reservas de salas y consulta disponibilidad en tiempo real.
+            </p>
+          </header>
+          <div className="flex flex-col lg:flex-row gap-2 lg:gap-4">
             <button
               onClick={() => setShowListaSalas(true)}
               className="flex items-center gap-2 rounded-lg bg-primary px-4 lg:px-6 py-2 lg:py-3 text-white font-semibold shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl text-sm lg:text-base w-full lg:w-auto justify-center lg:justify-start"
