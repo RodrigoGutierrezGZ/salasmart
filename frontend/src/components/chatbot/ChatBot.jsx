@@ -268,7 +268,7 @@ function ChatBot() {
 
       {/* Ventana del chat */}
       {isOpen && (
-        <div className="fixed inset-x-2 bottom-16 top-20 lg:bottom-24 lg:right-6 lg:top-auto lg:left-auto lg:h-[600px] lg:w-[400px] z-50 flex flex-col overflow-hidden rounded-2xl lg:rounded-2xl bg-white shadow-2xl animate-slideUp">
+        <div className="fixed inset-x-2 bottom-16 top-20 lg:bottom-24 lg:right-6 lg:top-auto lg:left-auto lg:h-[600px] lg:w-[400px] z-50 flex flex-col overflow-hidden rounded-2xl lg:rounded-2xl bg-white dark:bg-neutral-dark shadow-2xl animate-slideUp">
           {/* Header */}
           <div className="flex items-center justify-between bg-gradient-to-r from-primary to-primary/80 px-4 py-3 lg:px-6 lg:py-4">
             <div className="flex items-center gap-2 lg:gap-3">
@@ -290,7 +290,7 @@ function ChatBot() {
           </div>
 
           {/* Mensajes */}
-          <div className="flex-1 overflow-y-auto bg-background-light p-3 lg:p-4 space-y-3 lg:space-y-4">
+          <div className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-3 lg:p-4 space-y-3 lg:space-y-4">
             {conversacion.map((msg) => (
               <div
                 key={msg.id}
@@ -306,7 +306,7 @@ function ChatBot() {
                       ? 'bg-warning/10 text-warning border border-warning/20'
                       : msg.tipoMensaje === 'success'
                       ? 'bg-success/10 text-success border border-success/20'
-                      : 'bg-white text-gray-800 border border-neutral-light'
+                      : 'bg-white dark:bg-card-bg-dark text-gray-800 dark:text-text-dark-primary border border-neutral-light dark:border-border-dark'
                   }`}
                 >
                   {/* Icono para mensajes del bot */}
@@ -371,14 +371,14 @@ function ChatBot() {
             {/* Indicador de "escribiendo..." */}
             {enviando && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-2xl bg-white px-4 py-3 shadow-sm border border-neutral-light">
+                <div className="max-w-[85%] rounded-2xl bg-white dark:bg-card-bg-dark px-4 py-3 shadow-sm border border-neutral-light dark:border-border-dark">
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
                       <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }}></div>
                       <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }}></div>
                       <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }}></div>
                     </div>
-                    <span className="text-xs text-gray-500">Escribiendo...</span>
+                    <span className="text-xs text-gray-500 dark:text-text-dark-secondary">Escribiendo...</span>
                   </div>
                 </div>
               </div>
@@ -390,14 +390,14 @@ function ChatBot() {
 
           {/* Sugerencias rápidas */}
           {conversacion.length <= 1 && !enviando && (
-            <div className="border-t border-neutral-light bg-white px-3 py-2 lg:px-4 lg:py-3">
-              <p className="mb-2 text-xs font-semibold text-gray-500">Sugerencias rápidas:</p>
+            <div className="border-t border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark px-3 py-2 lg:px-4 lg:py-3">
+              <p className="mb-2 text-xs font-semibold text-gray-500 dark:text-text-dark-secondary">Sugerencias rápidas:</p>
               <div className="flex flex-wrap gap-1.5 lg:gap-2">
                 {sugerencias.map((sug, index) => (
                   <button
                     key={index}
                     onClick={() => handleSugerencia(sug.texto)}
-                    className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary transition-all hover:bg-primary/10 hover:border-primary/50"
+                    className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 dark:bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-all hover:bg-primary/10 dark:hover:bg-primary/20 hover:border-primary/50"
                   >
                     <span className="material-symbols-outlined text-sm">{sug.icono}</span>
                     {sug.texto}
@@ -408,7 +408,7 @@ function ChatBot() {
           )}
 
           {/* Input de mensaje */}
-          <form onSubmit={handleEnviar} className="border-t border-neutral-light bg-white p-3 lg:p-4">
+          <form onSubmit={handleEnviar} className="border-t border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-3 lg:p-4">
             <div className="flex items-end gap-2">
               <input
                 ref={inputRef}
@@ -417,7 +417,7 @@ function ChatBot() {
                 onChange={(e) => setMensaje(e.target.value)}
                 placeholder="Escribe tu mensaje..."
                 disabled={enviando}
-                className="flex-1 rounded-lg border border-neutral-light px-3 py-2 lg:px-4 lg:py-3 text-sm transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="flex-1 rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-900 px-3 py-2 lg:px-4 lg:py-3 text-sm text-gray-900 dark:text-text-dark-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-gray-50 dark:disabled:bg-neutral-800 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"

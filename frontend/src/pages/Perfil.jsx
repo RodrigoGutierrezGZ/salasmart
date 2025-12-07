@@ -96,7 +96,7 @@ export default function Perfil() {
   const roleBadge = getRoleBadge();
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-neutral-dark">
       {/* Sidebar Desktop */}
       <Sidebar user={user} role={role} />
       
@@ -116,14 +116,14 @@ export default function Perfil() {
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <div className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+      <div className="flex-1 overflow-y-auto pt-16 lg:pt-0 bg-gray-50 dark:bg-neutral-dark">
         {/* Header */}
         <div className="bg-white dark:bg-card-bg-dark border-b border-gray-200 dark:border-border-dark px-4 lg:px-8 py-4 lg:py-6">
           <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-text-dark-primary">Mi Perfil</h1>
           <p className="text-gray-600 dark:text-text-dark-secondary mt-1 text-sm lg:text-base">Información de tu cuenta y estadísticas</p>
         </div>
 
-        <div className="p-4 lg:p-8 max-w-5xl mx-auto bg-white dark:bg-neutral-dark rounded-lg">
+        <div className="p-4 lg:p-8 max-w-5xl mx-auto bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-200 dark:border-border-dark">
           {/* Card de información personal */}
           <div className="bg-white dark:bg-card-bg-dark rounded-xl shadow-sm border border-gray-200 dark:border-border-dark overflow-hidden mb-6">
             {/* Banner superior */}
@@ -132,7 +132,7 @@ export default function Perfil() {
             <div className="px-8 pb-8">
               {/* Avatar y nombre */}
               <div className="flex items-start gap-6 -mt-16 mb-6">
-                <div className="w-32 h-32 rounded-full bg-white border-4 border-white shadow-lg flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full bg-white dark:bg-neutral-900 border-4 border-white dark:border-card-bg-dark shadow-lg flex items-center justify-center">
                   <span className="material-symbols-outlined text-primary text-[64px]">
                     account_circle
                   </span>
@@ -143,7 +143,7 @@ export default function Perfil() {
                   </h2>
                   <p className="text-gray-600 dark:text-text-dark-secondary mt-1">{user?.email}</p>
                   <div className="mt-3">
-                    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${roleBadge.color}`}>
+                    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${roleBadge.color} dark:bg-primary/20 dark:text-text-dark-primary` }>
                       <span className="material-symbols-outlined text-[18px]">{roleBadge.icon}</span>
                       {roleBadge.label}
                     </span>
@@ -155,8 +155,8 @@ export default function Perfil() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Email */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <span className="material-symbols-outlined text-gray-600">email</span>
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-gray-600 dark:text-text-dark-secondary">email</span>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Email Institucional</p>
@@ -166,8 +166,8 @@ export default function Perfil() {
 
                 {/* Rol */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <span className="material-symbols-outlined text-gray-600">badge</span>
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-gray-600 dark:text-text-dark-secondary">badge</span>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Rol en el Sistema</p>
@@ -177,8 +177,8 @@ export default function Perfil() {
 
                 {/* Estado de cuenta */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <span className="material-symbols-outlined text-gray-600">
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-gray-600 dark:text-text-dark-secondary">
                       {userData?.activo ? 'check_circle' : 'cancel'}
                     </span>
                   </div>
@@ -193,8 +193,8 @@ export default function Perfil() {
                 {/* Sedes afiliadas */}
                 {sedes.length > 0 && (
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                      <span className="material-symbols-outlined text-gray-600">location_on</span>
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                      <span className="material-symbols-outlined text-gray-600 dark:text-text-dark-secondary">location_on</span>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500 dark:text-text-dark-secondary">Sedes Afiliadas</p>
@@ -210,10 +210,10 @@ export default function Perfil() {
           {(role === 'docente' || role === 'admin') && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Total de reservas */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white dark:bg-card-bg-dark rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-blue-600 text-[28px]">
+                  <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-200 text-[28px]">
                       event
                     </span>
                   </div>
@@ -227,10 +227,10 @@ export default function Perfil() {
               </div>
 
               {/* Reservas activas */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white dark:bg-card-bg-dark rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-green-600 text-[28px]">
+                  <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-green-600 dark:text-green-200 text-[28px]">
                       event_available
                     </span>
                   </div>
@@ -244,10 +244,10 @@ export default function Perfil() {
               </div>
 
               {/* Reservas completadas */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white dark:bg-card-bg-dark rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-purple-600 text-[28px]">
+                  <div className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-purple-600 dark:text-purple-200 text-[28px]">
                       check_circle
                     </span>
                   </div>
@@ -264,12 +264,12 @@ export default function Perfil() {
 
           {/* Info adicional para estudiantes */}
           {role === 'estudiante' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-6">
               <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-blue-600 text-[24px]">info</span>
+                <span className="material-symbols-outlined text-blue-600 dark:text-blue-200 text-[24px]">info</span>
                 <div>
-                  <h3 className="font-semibold text-blue-900">Información</h3>
-                  <p className="text-sm text-blue-800 mt-1">
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100">Información</h3>
+                  <p className="text-sm text-blue-800 dark:text-blue-100 mt-1">
                     Como estudiante, puedes consultar la disponibilidad de salas y ver los planos
                     de los edificios. Para reservar salas, contacta a tu docente.
                   </p>
