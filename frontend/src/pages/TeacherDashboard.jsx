@@ -227,17 +227,17 @@ function TeacherDashboard() {
       />
       
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 px-4 lg:px-8 pb-4 lg:pb-8">
-        <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8 pt-4 lg:pt-8">
+      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 px-2 sm:px-3 md:px-4 lg:px-8 pb-4 lg:pb-8">
+        <div className="mx-auto max-w-7xl space-y-3 sm:space-y-4 lg:space-y-8 pt-2 sm:pt-4 lg:pt-8">
           
           {/* Page Heading */}
-          <header className="flex flex-col lg:flex-row lg:flex-wrap items-start justify-between gap-4">
-            <div className="flex flex-col gap-2">
-              <h1 className="flex items-center gap-2 lg:gap-3 text-2xl lg:text-3xl font-bold tracking-tight text-neutral-dark dark:text-text-dark-primary">
-                <span className="material-symbols-outlined text-3xl lg:text-4xl text-primary">school</span>
-                <span>Panel del Docente</span>
-              </h1>
-              <p className="text-sm lg:text-base font-normal leading-normal text-gray-600 dark:text-text-dark-primary">
+          <header className="flex flex-col gap-2 lg:gap-3">
+            <h1 className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 text-base sm:text-lg lg:text-3xl font-bold tracking-tight text-neutral-dark dark:text-text-dark-primary truncate">
+              <span className="material-symbols-outlined text-lg sm:text-2xl lg:text-4xl text-primary flex-shrink-0">school</span>
+              <span className="truncate">Panel del Docente</span>
+            </h1>
+            <p className="text-xs sm:text-sm lg:text-base font-normal leading-tight text-gray-600 dark:text-text-dark-primary">
+              Gestiona tus reservas en tiempo real>
                 Gestiona tus reservas de salas y consulta disponibilidad en tiempo real.
               </p>
             </div>
@@ -542,26 +542,26 @@ function TeacherDashboard() {
       {/* Modal Lista de Salas */}
       {showListaSalas && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl bg-white dark:bg-neutral-dark shadow-2xl animate-slideUp">
+          <div className="relative w-full h-[90vh] max-w-6xl overflow-hidden rounded-2xl bg-white dark:bg-neutral-dark shadow-2xl animate-slideUp">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 px-8 py-6">
-              <div className="flex items-center justify-between">
-                <h2 className="flex items-center gap-3 text-2xl font-bold text-white">
-                  <span className="material-symbols-outlined text-4xl">meeting_room</span>
-                  Selecciona una Sala
+            <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 px-3 sm:px-4 md:px-8 py-3 sm:py-4 md:py-6">
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="flex items-center gap-1.5 sm:gap-2 md:gap-3 text-base sm:text-lg md:text-2xl font-bold text-white truncate">
+                  <span className="material-symbols-outlined text-lg sm:text-2xl md:text-4xl flex-shrink-0">meeting_room</span>
+                  <span className="truncate">Selecciona Sala</span>
                 </h2>
                 <button
                   onClick={() => setShowListaSalas(false)}
-                  className="rounded-full p-2 text-white/80 transition-all hover:bg-white/20 hover:text-white"
+                  className="rounded-full p-1.5 sm:p-2 text-white/80 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
                 >
-                  <span className="material-symbols-outlined text-3xl">close</span>
+                  <span className="material-symbols-outlined text-xl sm:text-2xl md:text-3xl">close</span>
                 </button>
               </div>
             </div>
 
             {/* Grid de salas */}
-            <div className="overflow-y-auto p-8" style={{ maxHeight: 'calc(90vh - 140px)' }}>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="overflow-y-auto p-2 sm:p-3 md:p-4 lg:p-8" style={{ maxHeight: 'calc(90vh - 100px)' }}>
+              <div className="grid grid-cols-1 gap-2 sm:gap-3 md:gap-4 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {salasMostrar.map((sala) => {
                   const isDisponible = sala.estado === ESTADOS_SALA.DISPONIBLE;
                   const isOcupado = sala.estado === ESTADOS_SALA.OCUPADO;

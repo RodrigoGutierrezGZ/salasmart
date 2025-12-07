@@ -10,9 +10,9 @@ import ActividadReciente from '../../dashboard/ActividadReciente';
  */
 function DashboardTab({ stats, chartDataBar, chartDataDoughnut }) {
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6 md:space-y-8">
+      {/* Stats Cards - Mobile optimized */}
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:grid-cols-4">
         <StatsCard
           icon="inventory_2"
           iconColor="text-secondary"
@@ -40,32 +40,32 @@ function DashboardTab({ stats, chartDataBar, chartDataDoughnut }) {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-2">
         {/* Bar Chart */}
-        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-soft">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-neutral-dark dark:text-text-dark-primary">
-            <span className="material-symbols-outlined text-primary">bar_chart</span>
-            Reservas por Día (Última Semana)
+        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-3 sm:p-4 md:p-6 shadow-soft overflow-hidden">
+          <h3 className="mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base md:text-lg font-bold text-neutral-dark dark:text-text-dark-primary truncate">
+            <span className="material-symbols-outlined text-primary flex-shrink-0">bar_chart</span>
+            <span className="truncate">Reservas por Día</span>
           </h3>
-          <div className="h-64">
+          <div className="h-40 sm:h-52 md:h-64 w-full overflow-x-auto">
             <Bar data={chartDataBar} options={{ maintainAspectRatio: false, responsive: true }} />
           </div>
         </div>
 
         {/* Doughnut Chart */}
-        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-6 shadow-soft">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-neutral-dark dark:text-text-dark-primary">
-            <span className="material-symbols-outlined text-primary">pie_chart</span>
-            Disponibilidad de Salas
+        <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-3 sm:p-4 md:p-6 shadow-soft overflow-hidden">
+          <h3 className="mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base md:text-lg font-bold text-neutral-dark dark:text-text-dark-primary truncate">
+            <span className="material-symbols-outlined text-primary flex-shrink-0">pie_chart</span>
+            <span className="truncate">Disponibilidad</span>
           </h3>
-          <div className="h-64 flex items-center justify-center">
+          <div className="h-40 sm:h-52 md:h-64 flex items-center justify-center w-full overflow-hidden">
             <Doughnut data={chartDataDoughnut} options={{ maintainAspectRatio: false, responsive: true }} />
           </div>
         </div>
       </div>
 
       {/* Actividad Reciente */}
-      <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark px-6 py-5 shadow-soft">
+      <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5 shadow-soft overflow-hidden">
         <ActividadReciente limite={15} />
       </div>
     </div>

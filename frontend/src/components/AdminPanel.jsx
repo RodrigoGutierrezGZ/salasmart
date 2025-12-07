@@ -846,18 +846,18 @@ function AdminPanel() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+      <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 pb-4">
         {/* Header */}
-        <div className="border-b border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark px-4 lg:px-8 py-4 lg:py-6">
-          <h1 className="flex items-center gap-2 lg:gap-3 text-xl lg:text-2xl font-bold text-neutral-dark dark:text-text-dark-primary">
-            <span className="material-symbols-outlined text-2xl lg:text-3xl text-danger">admin_panel_settings</span>
-            <span className="hidden sm:inline">Panel de Administración</span>
+        <div className="border-b border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-6">
+          <h1 className="flex items-center gap-2 lg:gap-3 text-base sm:text-lg lg:text-2xl font-bold text-neutral-dark dark:text-text-dark-primary truncate">
+            <span className="material-symbols-outlined text-lg sm:text-2xl lg:text-3xl text-danger flex-shrink-0">admin_panel_settings</span>
+            <span className="hidden sm:inline truncate">Panel de Administración</span>
             <span className="sm:hidden">Admin</span>
           </h1>
         </div>
 
         {/* Tab Content */}
-        <div className="p-4 lg:p-8">
+        <div className="p-2 sm:p-3 md:p-4 lg:p-8">
           {/* DASHBOARD TAB */}
           {activeTab === 'dashboard' && (
             <DashboardTab

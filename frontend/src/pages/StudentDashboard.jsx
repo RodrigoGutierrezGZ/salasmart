@@ -204,46 +204,44 @@ function StudentDashboard() {
         />
         
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto px-3 py-2 lg:p-8">
-          <div className="mx-auto max-w-7xl space-y-3 lg:space-y-8">
+        <main className="flex-1 overflow-y-auto px-2 sm:px-3 py-2 lg:p-8 pb-8">
+          <div className="mx-auto max-w-7xl space-y-2 sm:space-y-3 lg:space-y-8">
           
           {/* Page Heading */}
-          <header className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 lg:gap-4">
-            <div className="flex flex-col gap-1 lg:gap-2">
-              <h1 className="flex items-center gap-2 lg:gap-3 text-xl lg:text-3xl font-bold tracking-tight text-neutral-dark dark:text-text-dark-primary">
-                <span className="material-symbols-outlined text-2xl lg:text-4xl text-secondary">domain</span>
-                <span className="hidden sm:inline">Consulta de Salas</span>
-                <span className="sm:hidden">Salas</span>
-              </h1>
-              <p className="text-xs lg:text-base font-normal leading-normal text-gray-600 dark:text-text-dark-primary hidden sm:block">
-                Visualiza la disponibilidad de salas en tiempo real.
-              </p>
-            </div>
+          <header className="flex flex-col gap-2 lg:gap-3">
+            <h1 className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 text-base sm:text-lg lg:text-3xl font-bold tracking-tight text-neutral-dark dark:text-text-dark-primary truncate">
+              <span className="material-symbols-outlined text-lg sm:text-2xl lg:text-4xl text-secondary flex-shrink-0">domain</span>
+              <span className="hidden sm:inline">Consulta de Salas</span>
+              <span className="sm:hidden">Salas</span>
+            </h1>
+            <p className="text-xs sm:text-sm lg:text-base font-normal leading-tight text-gray-600 dark:text-text-dark-primary">
+              Visualiza la disponibilidad en tiempo real
+            </p>
           </header>
 
           {/* Filters and View Toggle */}
-          <section className="space-y-4 lg:space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 lg:gap-4">
+          <section className="space-y-2 sm:space-y-3 lg:space-y-6">
+            <div className="flex flex-col gap-2 sm:gap-3">
               
-              {/* Chips de filtro */}
-              <div className="flex flex-wrap gap-2 lg:gap-3">
+              {/* Chips de filtro - Grid responsivo */}
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 lg:gap-3">
                 {/* Filtro de Sede */}
                 {sedesUnicas.length > 1 && (
                   <div className="relative">
                     <select
                       value={filtroSede}
                       onChange={(e) => setFiltroSede(e.target.value)}
-                      className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      className="h-8 lg:h-10 w-full appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                       style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                     >
-                      <option value="todos">Todas las Sedes</option>
+                      <option value="todos">Sedes</option>
                       {sedesUnicas.map(sede => (
                         <option key={sede.id} value={sede.id}>
                           {sede.nombre}
                         </option>
                       ))}
                     </select>
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
+                    <span className="pointer-events-none absolute right-2 lg:right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-lg">
                       expand_more
                     </span>
                   </div>
@@ -255,17 +253,17 @@ function StudentDashboard() {
                     <select
                       value={filtroEdificio}
                       onChange={(e) => setFiltroEdificio(e.target.value)}
-                      className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                      className="h-8 lg:h-10 w-full appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                       style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                     >
-                      <option value="todos">Todos los Edificios</option>
+                      <option value="todos">Edificios</option>
                       {edificiosUnicos.map(edificio => (
                         <option key={edificio.id} value={edificio.id}>
                           {edificio.nombre}
                         </option>
                       ))}
                     </select>
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
+                    <span className="pointer-events-none absolute right-2 lg:right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-lg">
                       expand_more
                     </span>
                   </div>
@@ -276,17 +274,17 @@ function StudentDashboard() {
                   <select
                     value={filtroPiso}
                     onChange={(e) => setFiltroPiso(e.target.value)}
-                    className="h-8 lg:h-10 appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    className="h-8 lg:h-10 w-full appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                     style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
-                    <option value="todos">Todos los Pisos</option>
+                    <option value="todos">Pisos</option>
                     {pisosUnicos.map(piso => (
                       <option key={piso} value={piso}>
-                        Piso {piso}
+                        P{piso}
                       </option>
                     ))}
                   </select>
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
+                  <span className="pointer-events-none absolute right-2 lg:right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-lg">
                     expand_more
                   </span>
                 </div>
@@ -296,31 +294,28 @@ function StudentDashboard() {
                   <select
                     value={filtroCapacidad}
                     onChange={(e) => setFiltroCapacidad(e.target.value)}
-                    className="h-10 appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark pl-4 pr-10 text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    className="h-8 lg:h-10 w-full appearance-none rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark pl-2 lg:pl-4 pr-6 lg:pr-10 text-xs lg:text-sm font-medium text-gray-700 dark:text-text-dark-primary shadow-soft transition-all hover:bg-neutral-light dark:hover:bg-card-bg-dark-hover focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                     style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
-                    <option value="todos">Todas las Capacidades</option>
-                    <option value="pequena">Pequeña (≤15)</option>
-                    <option value="mediana">Mediana (16-30)</option>
-                    <option value="grande">Grande (&gt;30)</option>
+                    <option value="todos">Capacidades</option>
+                    <option value="pequena">Pequeña</option>
+                    <option value="mediana">Mediana</option>
+                    <option value="grande">Grande</option>
                   </select>
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-xl">
+                  <span className="pointer-events-none absolute right-2 lg:right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 dark:text-text-dark-secondary text-lg">
                     expand_more
                   </span>
                 </div>
 
-                {/* Botón para limpiar filtros - Solo si hay filtros aplicados manualmente */}
+                {/* Botón para limpiar filtros */}
                 {(() => {
-                  // Si solo hay 1 sede, no contar filtroSede (se auto-selecciona)
                   const sedeModificada = sedesUnicas.length > 1 && filtroSede !== 'todos';
-                  // Si solo hay 1 edificio, no contar filtroEdificio (se auto-selecciona)
                   const edificioModificado = edificiosUnicos.length > 1 && filtroEdificio !== 'todos';
                   const hayFiltrosAplicados = sedeModificada || edificioModificado || filtroPiso !== 'todos' || filtroCapacidad !== 'todos';
 
                   return hayFiltrosAplicados && (
                     <button
                       onClick={() => {
-                        // Solo resetear sede si hay múltiples sedes
                         if (sedesUnicas.length > 1) {
                           setFiltroSede('todos');
                         }
@@ -328,58 +323,57 @@ function StudentDashboard() {
                         setFiltroPiso('todos');
                         setFiltroCapacidad('todos');
                       }}
-                      className="flex h-10 items-center gap-2 rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-dark px-4 text-sm font-medium text-gray-700 dark:text-text-dark-secondary shadow-soft transition-all hover:bg-gray-100 dark:hover:bg-card-bg-dark-hover"
+                      className="flex h-8 lg:h-10 items-center justify-center gap-1 lg:gap-2 rounded-lg border border-danger/30 dark:border-danger/50 bg-danger/10 dark:bg-danger/20 px-2 lg:px-4 text-xs lg:text-sm font-medium text-danger dark:text-danger shadow-soft transition-all hover:bg-danger/20 dark:hover:bg-danger/30"
                     >
-                      <span className="material-symbols-outlined text-lg">close</span>
-                      Limpiar filtros
+                      <span className="material-symbols-outlined text-base lg:text-lg flex-shrink-0">close</span>
+                      <span className="hidden sm:inline">Limpiar</span>
                     </button>
                   );
                 })()}
               </div>
 
-              {/* View Toggle: Mapa vs Lista */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              {/* View Toggle */}
+              <div className="flex flex-wrap gap-2">
                 {/* Toggle Cards/Plano para vista mapa */}
                 {vistaActual === 'mapa' && (
                   <div className="flex rounded-lg bg-neutral-light dark:bg-neutral-dark p-1">
                     <button
                       onClick={() => setTipoVista('cards')}
-                      className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
+                      className={`flex items-center gap-1 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
                         tipoVista === 'cards' ? 'bg-white dark:bg-card-bg-dark-hover text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
                       }`}
                     >
-                      <span className="material-symbols-outlined text-lg lg:text-xl">grid_view</span>
+                      <span className="material-symbols-outlined text-lg flex-shrink-0">grid_view</span>
                       <span className="hidden sm:inline">Cards</span>
                     </button>
                     <button 
                       onClick={() => setTipoVista('plano')}
-                      className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
-                        tipoVista === 'plano' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
+                      className={`flex items-center gap-1 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
+                        tipoVista === 'plano' ? 'bg-white dark:bg-primary/20 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
                       }`}
                     >
-                      <span className="material-symbols-outlined text-lg lg:text-xl">map</span>
+                      <span className="material-symbols-outlined text-lg flex-shrink-0">map</span>
                       <span className="hidden sm:inline">Plano</span>
                     </button>
                   </div>
                 )}
 
                 {/* Toggle Mapa/Lista */}
-                <div className="flex rounded-lg bg-neutral-light p-1">
+                <div className="flex rounded-lg bg-neutral-light dark:bg-neutral-dark p-1">
                   <button 
                     onClick={() => setVistaActual('mapa')}
-                    className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm font-semibold transition-all ${
-                      vistaActual === 'mapa' ? 'bg-white text-primary shadow-sm' : 'text-gray-600'
+                    className={`flex items-center gap-1 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm font-semibold transition-all ${
+                      vistaActual === 'mapa' ? 'bg-white dark:bg-card-bg-dark-hover text-primary shadow-sm' : 'text-gray-600 dark:text-text-dark-primary'
                     }`}
                   >
-                    <span className="material-symbols-outlined text-lg lg:text-xl">check_circle</span>
+                    <span className="material-symbols-outlined text-lg flex-shrink-0">check_circle</span>
                     <span className="hidden sm:inline">Solo Disponibles</span>
                     <span className="sm:hidden">Disponibles</span>
                   </button>
                   <button 
                     onClick={() => setVistaActual('lista')}
-                    className={`flex items-center gap-1 lg:gap-2 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
-                      vistaActual === 'lista' ? 'bg-white text-primary font-semibold shadow-sm' : 'text-gray-600 font-medium'
-                    }`}
+                    className={`flex items-center gap-1 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
+                      vistaActual === 'lista' ? 'bg-white dark:bg-card-bg-dark-hover text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
                   >
                     <span className="material-symbols-outlined text-lg lg:text-xl">list</span>
                     <span className="hidden sm:inline">Todas las Salas</span>
