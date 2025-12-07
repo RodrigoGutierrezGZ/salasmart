@@ -8,15 +8,15 @@ import { ESTADOS_SALA } from '../../utils/constants';
 // que es nuestra carpeta "public".
 const planoImgPath = '/plano_inacap.jpg';
 
-// --- COORDENADAS DE LAS SALAS EN EL PLANO ---
+// --- COORDENADAS DE LAS SALAS EN EL PLANO (en porcentajes para responsive) ---
 const salasCoordenadas = [
-  { id: 'S101', nombre: 'S101', top: '250px', left: '100px' },
-  { id: 'S102', nombre: 'S102', top: '250px', left: '230px' },
-  { id: 'S103', nombre: 'S103', top: '250px', left: '360px' },
-  { id: 'R104', nombre: 'Sala Reunión', top: '250px', left: '490px' },
-  { id: 'A105', nombre: 'Auditorio', top: '250px', left: '600px' },
-  { id: 'S106', nombre: 'S106', top: '250px', left: '800px' },
-  { id: 'S107', nombre: 'S107', top: '250px', left: '930px' },
+  { id: 'S101', nombre: 'S101', topPercent: 45, leftPercent: 15 },
+  { id: 'S102', nombre: 'S102', topPercent: 45, leftPercent: 28 },
+  { id: 'S103', nombre: 'S103', topPercent: 45, leftPercent: 42 },
+  { id: 'R104', nombre: 'Sala Reunión', topPercent: 45, leftPercent: 56 },
+  { id: 'A105', nombre: 'Auditorio', topPercent: 45, leftPercent: 70 },
+  { id: 'S106', nombre: 'S106', topPercent: 45, leftPercent: 83 },
+  { id: 'S107', nombre: 'S107', topPercent: 45, leftPercent: 95 },
 ];
 
 const SalaPunto = ({ sala, estado, texto, textoSecundario, color, onClick, showReservarText = true }) => {
@@ -51,8 +51,8 @@ const SalaPunto = ({ sala, estado, texto, textoSecundario, color, onClick, showR
     <div
       className="absolute"
       style={{
-        top: sala.top,
-        left: sala.left,
+        top: `${sala.topPercent}%`,
+        left: `${sala.leftPercent}%`,
         transform: 'translate(-50%, -50%)',
         zIndex: 10
       }}
@@ -138,9 +138,9 @@ const SalaPunto = ({ sala, estado, texto, textoSecundario, color, onClick, showR
 
 const PlanoSalas = ({ salasData, onSalaClick, showReservarText = true }) => {
   return (
-    <div style={{ position: 'relative', maxWidth: '1200px', margin: 'auto', border: '1px solid #ddd' }}>
+    <div style={{ position: 'relative', width: '100%', maxWidth: '1200px', margin: '0 auto', border: '1px solid #ddd' }}>
       {/* ¡AQUÍ USAMOS LA NUEVA RUTA! */}
-      <img src={planoImgPath} alt="Plano del piso" style={{ width: '100%', display: 'block' }} />
+      <img src={planoImgPath} alt="Plano del piso" style={{ width: '100%', display: 'block', height: 'auto' }} />
 
       {salasCoordenadas.map(coord => {
         const salaInfo = salasData.find(s => s.id === coord.id);
