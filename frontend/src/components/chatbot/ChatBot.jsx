@@ -5,6 +5,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { procesarMensaje } from '../../services/chatbotService';
 import { useAuth } from '../../hooks/useAuth';
+import useVoiceChat from '../../hooks/useVoiceChat';
+import VoiceControls from './VoiceControls';
 
 function ChatBot() {
   const { user, userData } = useAuth();
@@ -12,8 +14,25 @@ function ChatBot() {
   const [mensaje, setMensaje] = useState('');
   const [conversacion, setConversacion] = useState([]);
   const [enviando, setEnviando] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Hook para voz
+  const {
+    isListening,
+    transcript,
+    isSpeaking,
+    isSupported: isVoiceSupported,
+    error: voiceError,
+    startListening,
+    stopListening,
+    speak,
+    pauseSpeech,
+    resumeSpeech,
+    cancelSpeech,
+    setTranscript: setVoiceTranscript,
+  } = useVoiceChat();
 
   // Scroll automático al último mensaje
   useEffect(() => {
@@ -21,6 +40,17 @@ function ChatBot() {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [conversacion]);
+
+  // Auto-enviar cuando se completa la transcripción de voz
+  useEffect(() => {
+    if (voiceMode && transcript && !isListening && transcript.trim()) {
+      // Pequeño delay para asegurar que la transcripción se completó
+      const timeout = setTimeout(() => {
+        setMensaje(transcript);
+      }, 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [isListening, transcript, voiceMode]);
 
   // Enfocar el input cuando se abre el chat
   useEffect(() => {
@@ -89,6 +119,7 @@ function ChatBot() {
     // Agregar mensaje del usuario
     setConversacion(prev => [...prev, nuevoMensajeUsuario]);
     setMensaje('');
+    setVoiceTranscript('');
     setEnviando(true);
 
     // Simular delay para mejor UX
@@ -129,6 +160,11 @@ function ChatBot() {
       };
 
       setConversacion(prev => [...prev, nuevoMensajeBot]);
+
+      // Reproducir respuesta en voz si está activado
+      if (voiceMode) {
+        speak(respuesta.texto.trim());
+      }
     } catch (error) {
       console.error('Error al procesar mensaje:', error);
 
@@ -145,7 +181,7 @@ function ChatBot() {
       setEnviando(false);
       // Mantener el foco en el input después de recibir respuesta
       setTimeout(() => {
-        if (inputRef.current) {
+        if (inputRef.current && !voiceMode) {
           inputRef.current.focus();
         }
       }, 100);
@@ -407,21 +443,57 @@ function ChatBot() {
             </div>
           )}
 
+          {/* Controles de voz (si está habilitado) */}
+          {voiceMode && (
+            <div className="border-t border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark px-3 py-2 lg:px-4 lg:py-3">
+              <VoiceControls
+                isListening={isListening}
+                isSpeaking={isSpeaking}
+                transcript={transcript}
+                error={voiceError}
+                onStartListening={startListening}
+                onStopListening={stopListening}
+                onPauseSpeech={pauseSpeech}
+                onCancelSpeech={cancelSpeech}
+                isSupported={isVoiceSupported}
+                isDark={document.documentElement.classList.contains('dark')}
+              />
+            </div>
+          )}
+
           {/* Input de mensaje */}
           <form onSubmit={handleEnviar} className="border-t border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-3 lg:p-4">
             <div className="flex items-end gap-2">
               <input
                 ref={inputRef}
                 type="text"
-                value={mensaje}
-                onChange={(e) => setMensaje(e.target.value)}
-                placeholder="Escribe tu mensaje..."
-                disabled={enviando}
+                value={voiceMode ? transcript : mensaje}
+                onChange={(e) => voiceMode ? setVoiceTranscript(e.target.value) : setMensaje(e.target.value)}
+                placeholder={voiceMode ? "Presiona 'Escuchar' para empezar..." : "Escribe tu mensaje..."}
+                disabled={enviando || (voiceMode && isListening)}
                 className="flex-1 rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-neutral-900 px-3 py-2 lg:px-4 lg:py-3 text-sm text-gray-900 dark:text-text-dark-primary placeholder:text-gray-400 dark:placeholder:text-text-dark-secondary transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-gray-50 dark:disabled:bg-neutral-800 disabled:cursor-not-allowed"
               />
+              
+              {/* Botón toggle de voz */}
+              <button
+                type="button"
+                onClick={() => setVoiceMode(!voiceMode)}
+                disabled={!isVoiceSupported || enviando}
+                className={`flex h-9 w-9 lg:h-11 lg:w-11 shrink-0 items-center justify-center rounded-lg text-white shadow-md transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
+                  voiceMode
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : 'bg-gray-400 hover:bg-gray-500'
+                }`}
+                title={voiceMode ? 'Desactivar voz' : 'Activar voz'}
+              >
+                <span className="material-symbols-outlined text-lg lg:text-xl">
+                  {voiceMode ? 'mic' : 'mic_none'}
+                </span>
+              </button>
+
               <button
                 type="submit"
-                disabled={!mensaje.trim() || enviando}
+                disabled={!(voiceMode ? transcript : mensaje).trim() || enviando}
                 className="flex h-9 w-9 lg:h-11 lg:w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-white shadow-md transition-all hover:bg-primary/90 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-primary disabled:hover:shadow-md"
               >
                 <span className="material-symbols-outlined text-lg lg:text-xl">send</span>
