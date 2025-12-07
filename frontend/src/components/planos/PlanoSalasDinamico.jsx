@@ -165,6 +165,20 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
     }
   };
 
+  const getColorTextoEstado = (estado) => {
+    // Devuelve color de texto que sea legible sobre el fondo del estado
+    switch (estado) {
+      case 'disponible':
+        return '#FFFFFF'; // Blanco sobre verde
+      case 'proximamente':
+        return '#333333'; // Gris oscuro sobre amarillo (mejor contraste)
+      case 'ocupado':
+        return '#FFFFFF'; // Blanco sobre rojo
+      default:
+        return '#FFFFFF'; // Blanco sobre gris
+    }
+  };
+
   const getIconoTipo = (tipo) => {
     switch (tipo) {
       case 'laboratorio':
@@ -336,7 +350,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                   className="px-2 py-1 rounded shadow-lg text-xs font-semibold flex items-center gap-1 transition-all"
                   style={{
                     backgroundColor: getColorEstado(sala.estado),
-                    color: 'white',
+                    color: getColorTextoEstado(sala.estado),
                     transform: salaHover === sala.id ? 'scale(1.15)' : 'scale(1)'
                   }}
                 >
