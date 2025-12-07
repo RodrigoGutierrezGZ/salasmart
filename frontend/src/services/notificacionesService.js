@@ -395,3 +395,60 @@ export const notificarNuevaReserva = async (adminIds, nombreDocente, nombreSala,
   return await Promise.all(promesas);
 };
 
+/**
+ * Obtiene todos los administradores del sistema
+ */
+export const obtenerAdministradores = async () => {
+  try {
+    const q = query(
+      collection(db, 'users'),
+      where('role', '==', 'admin')
+    );
+    
+    const snapshot = await getDocs(q);
+    const admins = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    return admins;
+  } catch (error) {
+    console.error('❌ Error al obtener administradores:', error);
+    return [];
+  }
+};
+
+/**
+ * Notifica a todos los administradores cuando se registra un nuevo usuario
+ */
+export const notificarNuevoUsuarioRegistrado = async (nombreUsuario, emailUsuario, userId) => {
+  try {
+    const admins = await obtenerAdministradores();
+    
+    if (admins.length === 0) {
+      console.warn('⚠️ No hay administradores registrados para notificar');
+      return;
+    }
+
+    const promesas = admins.map(admin =>
+      crearNotificacion(
+        admin.id,
+        TIPOS_NOTIFICACION.NUEVA_CUENTA_PENDIENTE,
+        'Nuevo usuario registrado',
+        `${nombreUsuario} (${emailUsuario}) se registró y está pendiente de aprobación`,
+        { 
+          nombreUsuario, 
+          emailUsuario, 
+          userId,
+          estado: 'Pendiente de aprobación'
+        }
+      )
+    );
+
+    await Promise.all(promesas);
+    console.log('✅ Notificación enviada a administradores sobre nuevo registro');
+  } catch (error) {
+    console.error('❌ Error al notificar a administradores:', error);
+  }
+};
+

@@ -6,6 +6,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import LoadingScreen from '../components/layout/LoadingScreen';
 import { registrarLog } from '../services/logsService';
+import { notificarNuevoUsuarioRegistrado } from '../services/notificacionesService';
 import { generarEmailInstitucional } from '../utils/emailGenerator';
 
 const Registro = () => {
@@ -86,6 +87,14 @@ const Registro = () => {
           estado: 'Pendiente de aprobación'
         }
       );
+
+      // Notificar a administradores sobre el nuevo usuario
+      try {
+        await notificarNuevoUsuarioRegistrado(nombreCompleto, emailGenerado, user.uid);
+      } catch (error) {
+        console.error('Error al notificar a administradores:', error);
+        // No bloqueamos el flujo si falla la notificación
+      }
 
       setTimeout(() => {
         navigate('/login?status=pending');
