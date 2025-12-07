@@ -5,6 +5,7 @@ import { useAuth } from './hooks/useAuth';
 import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ToastContainer from './components/shared/ToastContainer';
+import InstallPWA from './components/InstallPWA';
 
 import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
@@ -51,6 +52,9 @@ function App() {
 
           {/* Toast notifications container */}
           <ToastContainer />
+          
+          {/* PWA Install Prompt */}
+          <InstallPWA />
         </div>
       </Router>
       </ToastProvider>
