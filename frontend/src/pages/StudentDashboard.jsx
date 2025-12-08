@@ -16,6 +16,7 @@ function StudentDashboard() {
   const [vistaActual, setVistaActual] = useState('mapa'); // 'mapa' o 'lista'
   const [tipoVista, setTipoVista] = useState('cards'); // 'cards' o 'plano'
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [planoModalOpen, setPlanoModalOpen] = useState(false); // Modal fullscreen para plano
 
   // Obtener sedes únicas disponibles para el usuario (filtradas por sedes afiliadas)
   const sedesUnicas = React.useMemo(() => {
@@ -334,29 +335,14 @@ function StudentDashboard() {
 
               {/* View Toggle */}
               <div className="flex flex-wrap gap-2">
-                {/* Toggle Cards/Plano para vista mapa */}
-                {vistaActual === 'mapa' && (
-                  <div className="flex rounded-lg bg-neutral-light dark:bg-neutral-dark p-1">
-                    <button
-                      onClick={() => setTipoVista('cards')}
-                      className={`flex items-center gap-1 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
-                        tipoVista === 'cards' ? 'bg-white dark:bg-card-bg-dark-hover text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-lg flex-shrink-0">grid_view</span>
-                      <span className="hidden sm:inline">Cards</span>
-                    </button>
-                    <button 
-                      onClick={() => setTipoVista('plano')}
-                      className={`flex items-center gap-1 rounded px-2 lg:px-4 py-1.5 text-xs lg:text-sm transition-all ${
-                        tipoVista === 'plano' ? 'bg-white dark:bg-primary/20 text-primary font-semibold shadow-sm' : 'text-gray-600 dark:text-text-dark-primary font-medium'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-lg flex-shrink-0">map</span>
-                      <span className="hidden sm:inline">Plano</span>
-                    </button>
-                  </div>
-                )}
+                {/* Botón Ver Plano */}
+                <button 
+                  onClick={() => setPlanoModalOpen(true)}
+                  className="flex items-center gap-1 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm transition-all bg-primary hover:bg-primary/90 text-white font-semibold shadow-md"
+                >
+                  <span className="material-symbols-outlined text-lg sm:text-xl flex-shrink-0">map</span>
+                  <span>Ver Plano Interactivo</span>
+                </button>
 
                 {/* Toggle Mapa/Lista */}
                 <div className="flex rounded-lg bg-neutral-light dark:bg-neutral-dark p-1">
@@ -387,16 +373,8 @@ function StudentDashboard() {
             {/* Floor Plan View / Lista */}
             <div className="rounded-lg border border-neutral-light dark:border-border-dark bg-white dark:bg-card-bg-dark p-3 lg:p-6 shadow-soft">
               {vistaActual === 'mapa' ? (
-                tipoVista === 'plano' ? (
-                  /* Vista de Plano Dinámico */
-                  <PlanoSalasDinamico
-                    pisoInicial={filtroPiso === 'todos' ? 1 : parseInt(filtroPiso)}
-                    filtroSede={filtroSede}
-                    filtroEdificio={filtroEdificio}
-                  />
-                ) : (
-                  /* Vista de Cards (Grid) - Solo lectura */
-                  <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+                /* Vista de Cards (Grid) - Solo lectura */
+                <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {salasMostrar.map((sala) => {
                       const isDisponible = sala.estado === ESTADOS_SALA.DISPONIBLE;
                       
@@ -505,6 +483,40 @@ function StudentDashboard() {
         </div>
       </main>
       </div>
+
+      {/* Modal Fullscreen del Plano */}
+      {planoModalOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black/95 flex flex-col">
+          {/* Header del modal */}
+          <div className="flex items-center justify-between p-3 sm:p-4 bg-neutral-dark/80 backdrop-blur-sm border-b border-neutral-light/20">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-white text-2xl">map</span>
+              <h3 className="text-lg sm:text-xl font-bold text-white">Plano Interactivo</h3>
+            </div>
+            <button
+              onClick={() => setPlanoModalOpen(false)}
+              className="p-2 hover:bg-white/10 rounded-lg transition-all"
+              aria-label="Cerrar plano"
+            >
+              <span className="material-symbols-outlined text-white text-2xl">close</span>
+            </button>
+          </div>
+
+          {/* Contenido del plano */}
+          <div className="flex-1 overflow-auto p-2 sm:p-4">
+            <PlanoSalasDinamico
+              pisoInicial={filtroPiso === 'todos' ? 1 : parseInt(filtroPiso)}
+              filtroSede={filtroSede}
+              filtroEdificio={filtroEdificio}
+              onSalaClick={(sala) => {
+                // Cerrar modal al seleccionar sala
+                setPlanoModalOpen(false);
+                // Aquí puedes agregar lógica adicional si necesitas hacer algo con la sala seleccionada
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Chatbot flotante */}
       <ChatBot />

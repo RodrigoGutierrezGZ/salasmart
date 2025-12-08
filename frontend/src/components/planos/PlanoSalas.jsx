@@ -9,20 +9,20 @@ import { ESTADOS_SALA } from '../../utils/constants';
 const planoImgPath = '/plano_inacap.jpg';
 
 // --- COORDENADAS DE LAS SALAS EN EL PLANO (en porcentajes para responsive) ---
-// Basadas en las posiciones reales del plano arquitectónico
+// Distribuidas para evitar superposición completa
 const salasCoordenadas = [
-  { id: 'A103', nombre: 'A103', topPercent: 30, leftPercent: 68 },
-  { id: 'A120', nombre: 'A120', topPercent: 40, leftPercent: 40 },
-  { id: 'A140', nombre: 'A140', topPercent: 40, leftPercent: 58 },
-  { id: 'A150', nombre: 'A150', topPercent: 50, leftPercent: 38 },
-  { id: 'A115', nombre: 'A115', topPercent: 52, leftPercent: 58 },
-  { id: 'GYM A102', nombre: 'GYM A102', topPercent: 55, leftPercent: 48 },
-  { id: 'A130', nombre: 'A130', topPercent: 60, leftPercent: 58 },
-  { id: 'A138', nombre: 'A138', topPercent: 32, leftPercent: 20 },
-  { id: 'A107', nombre: 'A107', topPercent: 70, leftPercent: 25 },
-  { id: 'A105', nombre: 'A105', topPercent: 70, leftPercent: 35 },
-  { id: 'A108', nombre: 'A108', topPercent: 70, leftPercent: 53 },
-  { id: 'A110', nombre: 'A110', topPercent: 70, leftPercent: 65 },
+  { id: 'A138', nombre: 'A138', topPercent: 15, leftPercent: 10 },
+  { id: 'A103', nombre: 'A103', topPercent: 15, leftPercent: 80 },
+  { id: 'A120', nombre: 'A120', topPercent: 35, leftPercent: 25 },
+  { id: 'A140', nombre: 'A140', topPercent: 35, leftPercent: 70 },
+  { id: 'A150', nombre: 'A150', topPercent: 50, leftPercent: 20 },
+  { id: 'GYM A102', nombre: 'GYM A102', topPercent: 55, leftPercent: 50 },
+  { id: 'A115', nombre: 'A115', topPercent: 55, leftPercent: 75 },
+  { id: 'A130', nombre: 'A130', topPercent: 70, leftPercent: 75 },
+  { id: 'A107', nombre: 'A107', topPercent: 85, leftPercent: 15 },
+  { id: 'A105', nombre: 'A105', topPercent: 85, leftPercent: 35 },
+  { id: 'A108', nombre: 'A108', topPercent: 85, leftPercent: 55 },
+  { id: 'A110', nombre: 'A110', topPercent: 85, leftPercent: 78 },
 ];
 
 const SalaPunto = ({ sala, estado, texto, textoSecundario, color, onClick, showReservarText = true }) => {

@@ -96,7 +96,7 @@ const NotificacionesPanel = ({ usuarioId }) => {
 
       {/* Panel dropdown - Fixed positioning on mobile */}
       {isOpen && (
-        <div className="fixed sm:absolute left-2 sm:left-auto sm:right-0 right-2 top-14 sm:top-full sm:mt-2 w-auto sm:w-96 max-h-[70vh] sm:max-h-full bg-white dark:bg-card-bg-dark rounded-lg shadow-xl border border-neutral-light dark:border-border-dark z-[100] overflow-hidden" style={{ maxWidth: 'calc(100vw - 16px)' }}>
+        <div className="fixed sm:absolute left-2 sm:left-auto sm:right-0 right-2 top-14 sm:top-full sm:mt-2 w-auto sm:w-96 max-h-[70vh] sm:max-h-full bg-white dark:bg-card-bg-dark rounded-lg shadow-xl border border-neutral-light dark:border-border-dark z-[9999] overflow-hidden" style={{ maxWidth: 'calc(100vw - 16px)' }}>
           {/* Header */}
           <div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-neutral-light dark:border-border-dark bg-neutral-light dark:bg-neutral-dark">
             <div className="flex items-center justify-between gap-2">

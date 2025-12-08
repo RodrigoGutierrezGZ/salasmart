@@ -700,12 +700,13 @@ function EditorPlanos() {
               </div>
             </div>
 
-            {/* Contenedor con aspect ratio fijo 16:9 para consistencia entre vistas */}
+            {/* Contenedor con aspect ratio optimizado para móvil */}
             <div
               ref={contenedorPlanoRef}
               className="relative select-none bg-neutral-light/30 dark:bg-neutral-dark/30 rounded-lg overflow-hidden flex items-center justify-center"
               style={{
-                aspectRatio: '16 / 9',
+                aspectRatio: '4 / 3', // Cambiado de 16/9 a 4/3 para dar más altura
+                minHeight: '400px', // Mínimo 400px de altura
                 cursor: arrastrando ? 'crosshair' : (modoEdicion ? 'crosshair' : 'default')
               }}
               onMouseMove={handleMouseMovePlano}
@@ -749,8 +750,8 @@ function EditorPlanos() {
                       filter: esArrastrada ? 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.8))' : 'none'
                     }}
                   >
-                    <div className={`bg-green-500 text-white px-2 py-1 rounded shadow-lg text-xs font-semibold flex items-center gap-1 ${!esArrastrada && 'group-hover:scale-110'} transition-transform`}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
+                    <div className={`bg-green-500 text-white px-1.5 py-0.5 rounded shadow-lg text-[10px] sm:text-xs font-semibold flex items-center gap-0.5 ${!esArrastrada && 'group-hover:scale-110'} transition-transform whitespace-nowrap`}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>
                         meeting_room
                       </span>
                       {sala.nombre}
