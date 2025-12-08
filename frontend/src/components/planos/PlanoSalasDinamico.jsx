@@ -386,9 +386,22 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                 }}
                 onMouseEnter={() => setSalaHover(sala.id)}
                 onMouseLeave={() => setSalaHover(null)}
-                onTouchStart={() => setSalaHover(sala.id)}
-                onTouchEnd={() => setTimeout(() => setSalaHover(null), 3000)}
-                onClick={() => onSalaClick && onSalaClick(sala)}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  setSalaHover(sala.id);
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.innerWidth < 640) {
+                    // En móvil, mostrar modal
+                    setSalaHover(salaHover === sala.id ? null : sala.id);
+                  } else {
+                    // En desktop, ejecutar onSalaClick si existe
+                    if (onSalaClick) {
+                      onSalaClick(sala);
+                    }
+                  }
+                }}
               >
                 {/* Punto de Color (Solo móvil) */}
                 <div
@@ -456,19 +469,22 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                 {/* Tooltip Mejorado (aparece al tocar en móvil o hover en desktop) */}
                 {salaHover === sala.id && (
                   <div
-                    className="absolute bg-white rounded-lg shadow-2xl p-3 animate-fadeIn"
+                    className="absolute bg-white dark:bg-card-bg-dark rounded-lg shadow-2xl p-3 animate-fadeIn border border-neutral-light dark:border-border-dark"
+                    onClick={(e) => e.stopPropagation()}
                     style={{
-                      left: '50%',
-                      // Posicionar arriba si la sala está en la mitad inferior, abajo si está en la mitad superior
-                      bottom: sala.coordenadas.y > 50 ? '100%' : 'auto',
-                      top: sala.coordenadas.y <= 50 ? '100%' : 'auto',
+                      // Ajustar posición horizontal para evitar que se corte
+                      left: sala.coordenadas.x > 70 ? 'auto' : sala.coordenadas.x < 30 ? '50%' : '50%',
+                      right: sala.coordenadas.x > 70 ? '50%' : 'auto',
                       transform: 'translateX(-50%)',
-                      marginTop: sala.coordenadas.y <= 50 ? '8px' : '0',
-                      marginBottom: sala.coordenadas.y > 50 ? '8px' : '0',
-                      minWidth: '240px',
-                      maxWidth: '280px',
+                      // Posicionar arriba si está en la mitad inferior, abajo si está arriba
+                      bottom: sala.coordenadas.y > 50 ? 'calc(100% + 12px)' : 'auto',
+                      top: sala.coordenadas.y <= 50 ? 'calc(100% + 12px)' : 'auto',
+                      minWidth: '180px',
+                      maxWidth: '90vw',
+                      width: 'max-content',
                       zIndex: 1001,
-                      border: `2px solid ${getColorEstado(sala.estado)}`
+                      border: `2px solid ${getColorEstado(sala.estado)}`,
+                      pointerEvents: 'auto'
                     }}
                   >
                     {/* Header del Tooltip */}
@@ -481,7 +497,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                     </div>
 
                     {/* Información Compacta */}
-                    <div className="space-y-1.5 text-xs text-gray-700">
+                    <div className="space-y-1.5 text-xs text-gray-700 dark:text-text-dark-primary">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary" style={{ fontSize: '16px' }}>group</span>
                         <span><strong>Capacidad:</strong> {sala.capacidad} personas</span>
@@ -497,12 +513,12 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                       </div>
 
                       {sala.textoSecundario && (
-                        <div className="text-gray-500 text-xs pl-6">{sala.textoSecundario}</div>
+                        <div className="text-gray-500 dark:text-gray-400 text-xs pl-6">{sala.textoSecundario}</div>
                       )}
 
                       {/* Equipamiento Compacto */}
                       {sala.equipamiento && (
-                        <div className="pt-2 mt-2 border-t border-gray-200">
+                        <div className="pt-2 mt-2 border-t border-gray-200 dark:border-border-dark">
                           <strong className="block mb-1.5 text-xs">Equipamiento:</strong>
                           <div className="flex flex-wrap gap-1">
                             {sala.equipamiento.proyector && (
@@ -557,6 +573,135 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
         </div>
       </div>
 
+      {/* Modal Flotante para Detalles de Sala (Móvil) */}
+      {salaHover && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] sm:hidden p-4"
+          onClick={() => setSalaHover(null)}
+        >
+          <div 
+            className="bg-white dark:bg-card-bg-dark rounded-xl shadow-2xl max-w-md w-full animate-slideUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {(() => {
+              const sala = salasDelPiso.find(s => s.id === salaHover);
+              if (!sala) return null;
+              
+              return (
+                <>
+                  {/* Header */}
+                  <div 
+                    className="text-white px-4 py-3 rounded-t-xl flex items-center justify-between"
+                    style={{ backgroundColor: getColorEstado(sala.estado) }}
+                  >
+                    <div>
+                      <h3 className="font-bold text-lg">{sala.nombre}</h3>
+                      <p className="text-sm opacity-90">{getTipoLabel(sala.tipo)}</p>
+                    </div>
+                    <button 
+                      onClick={() => setSalaHover(null)}
+                      className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                    >
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
+                  </div>
+
+                  {/* Contenido */}
+                  <div className="p-4 space-y-3">
+                    {/* Capacidad */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-primary">group</span>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-text-dark-secondary">Capacidad</p>
+                        <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{sala.capacidad} personas</p>
+                      </div>
+                    </div>
+
+                    {/* Estado */}
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${getColorEstado(sala.estado)}20` }}
+                      >
+                        <span 
+                          className="material-symbols-outlined"
+                          style={{ color: getColorEstado(sala.estado) }}
+                        >
+                          {sala.estado === 'disponible' ? 'check_circle' :
+                           sala.estado === 'proximamente' ? 'schedule' : 'cancel'}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-text-dark-secondary">Estado</p>
+                        <p className="font-semibold text-neutral-dark dark:text-text-dark-primary">{sala.texto}</p>
+                        {sala.textoSecundario && (
+                          <p className="text-xs text-gray-500 dark:text-text-dark-secondary">{sala.textoSecundario}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Equipamiento */}
+                    {sala.equipamiento && (
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-text-dark-secondary mb-2 font-medium">Equipamiento</p>
+                        <div className="flex flex-wrap gap-2">
+                          {sala.equipamiento.proyector && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                              <span className="material-symbols-outlined text-base">video_settings</span>
+                              Proyector
+                            </span>
+                          )}
+                          {sala.equipamiento.computadores > 0 && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                              <span className="material-symbols-outlined text-base">computer</span>
+                              {sala.equipamiento.computadores} PCs
+                            </span>
+                          )}
+                          {sala.equipamiento.enchufes > 0 && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                              <span className="material-symbols-outlined text-base">power</span>
+                              {sala.equipamiento.enchufes}
+                            </span>
+                          )}
+                          {sala.equipamiento.pizarra && sala.equipamiento.pizarra !== 'ninguna' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                              <span className="material-symbols-outlined text-base">edit_square</span>
+                              {sala.equipamiento.pizarra}
+                            </span>
+                          )}
+                          {sala.equipamiento.aireAcondicionado && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                              <span className="material-symbols-outlined text-base">ac_unit</span>
+                              A/C
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Botón de acción */}
+                    {onSalaClick && sala.estado === 'disponible' && (
+                      <button
+                        onClick={() => {
+                          setSalaHover(null);
+                          onSalaClick(sala);
+                        }}
+                        className="w-full mt-2 bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <span className="material-symbols-outlined">event_available</span>
+                        Reservar Sala
+                      </button>
+                    )}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes fadeIn {
           from {
@@ -570,6 +715,19 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
         }
         .animate-fadeIn {
           animation: fadeIn 0.2s ease-out;
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-slideUp {
+          animation: slideUp 0.3s ease-out;
         }
       `}</style>
     </div>

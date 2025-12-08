@@ -225,8 +225,8 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
   if (!sala) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">meeting_room</span>
-        <p className="text-lg text-gray-600 font-medium">Por favor, selecciona una sala primero.</p>
+        <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">meeting_room</span>
+        <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">Por favor, selecciona una sala primero.</p>
       </div>
     );
   }
@@ -234,12 +234,12 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
   return (
     <div className="space-y-6">
       {/* Información de la sala */}
-      <div className="rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 p-6">
+      <div className="rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/20 dark:to-primary/30 border border-primary/20 dark:border-primary/40 p-6">
         <div className="flex items-center gap-4">
           <span className="material-symbols-outlined text-4xl text-primary">meeting_room</span>
           <div>
-            <h3 className="text-xl font-bold text-neutral-dark">{sala.nombre}</h3>
-            <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
+            <h3 className="text-xl font-bold text-neutral-dark dark:text-white">{sala.nombre}</h3>
+            <div className="flex items-center gap-4 mt-1 text-sm text-gray-600 dark:text-gray-300">
               <span className="flex items-center gap-1">
                 <span className="material-symbols-outlined text-base">chair</span>
                 {sala.capacidad} personas
@@ -257,7 +257,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Asignatura */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-dark">
+          <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-white">
             Asignatura *
           </label>
           <input
@@ -266,13 +266,13 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
             value={asignatura}
             onChange={(e) => setAsignatura(e.target.value.toUpperCase())}
             required
-            className="w-full rounded-lg border border-neutral-light px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            className="w-full rounded-lg border border-neutral-light dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
           />
         </div>
 
         {/* Fecha */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-dark">
+          <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-white">
             Fecha *
           </label>
           <input
@@ -284,7 +284,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
               setDisponibilidad(null);
             }}
             required
-            className="w-full rounded-lg border border-neutral-light px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            className="w-full rounded-lg border border-neutral-light dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
           />
         </div>
 
@@ -292,7 +292,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Hora de Inicio */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-neutral-dark">
+            <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-white">
               Hora de Inicio *
             </label>
             <input
@@ -305,14 +305,14 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
                 setDisponibilidad(null);
               }}
               required
-              className="w-full rounded-lg border border-neutral-light px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="w-full rounded-lg border border-neutral-light dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
             />
-            <p className="mt-1 text-xs text-gray-500">Horario: 8:00 - 22:00</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Horario: 8:00 - 22:00</p>
           </div>
 
           {/* Hora de Fin */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-neutral-dark">
+            <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-white">
               Hora de Fin *
             </label>
             <input
@@ -325,9 +325,9 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
                 setDisponibilidad(null);
               }}
               required
-              className="w-full rounded-lg border border-neutral-light px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="w-full rounded-lg border border-neutral-light dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
             />
-            <p className="mt-1 text-xs text-gray-500">Duración: 45 min - 4 horas</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Duración: 45 min - 4 horas</p>
           </div>
         </div>
 
@@ -403,7 +403,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
             <button
               type="button"
               onClick={onCancelar}
-              className="flex items-center justify-center gap-2 rounded-lg bg-gray-100 px-6 py-3 font-semibold text-gray-700 transition-all hover:bg-gray-200"
+              className="flex items-center justify-center gap-2 rounded-lg bg-gray-100 dark:bg-gray-700 px-6 py-3 font-semibold text-gray-700 dark:text-gray-200 transition-all hover:bg-gray-200 dark:hover:bg-gray-600"
             >
               <span className="material-symbols-outlined">close</span>
               Cancelar
