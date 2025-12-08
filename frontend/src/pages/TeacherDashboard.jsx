@@ -20,7 +20,7 @@ function TeacherDashboard() {
   const [vistaActual, setVistaActual] = useState('disponibles'); // 'disponibles' o 'todas'
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [planoModalOpen, setPlanoModalOpen] = useState(false);
-  const [planoModalOpen, setPlanoModalOpen] = useState(false);
+
 
   // Obtener sedes únicas disponibles para el usuario (filtradas por sedes afiliadas)
   const sedesUnicas = React.useMemo(() => {
@@ -502,7 +502,7 @@ function TeacherDashboard() {
                 );
               })}
               </div>
-            )}
+            )
 
             {/* Empty state */}
             {salasMostrar.length === 0 && (

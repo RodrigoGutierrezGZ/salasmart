@@ -428,7 +428,6 @@ function StudentDashboard() {
                       );
                     })}
                   </div>
-                )
               ) : (
                 /* Vista de Lista - Todas las salas - Solo lectura */
                 <div className="space-y-3">
