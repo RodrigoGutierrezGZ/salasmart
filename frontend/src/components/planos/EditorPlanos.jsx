@@ -96,7 +96,35 @@ function EditorPlanos() {
         const salasPiso = todasSalas.filter(s =>
           s.pisoId === pisoSeleccionado || s.piso === pisoSeleccionado
         );
-        setSalasDelPiso(salasPiso);
+
+        // Auto-distribuir salas sin coordenadas en cuadrícula
+        const salasConCoordenadas = salasPiso.map((sala, index) => {
+          if (sala.coordenadas && sala.coordenadas.x !== undefined && sala.coordenadas.y !== undefined) {
+            return sala;
+          } else {
+            // Cuadrícula 4x3
+            const columnas = 4;
+            const filas = Math.ceil(salasPiso.length / columnas);
+            
+            const col = index % columnas;
+            const fila = Math.floor(index / columnas);
+            
+            const margenX = 15;
+            const margenY = 20;
+            const espacioX = (85 - margenX) / (columnas - 1 || 1);
+            const espacioY = (80 - margenY) / (filas - 1 || 1);
+            
+            return {
+              ...sala,
+              coordenadas: {
+                x: margenX + (col * espacioX),
+                y: margenY + (fila * espacioY)
+              }
+            };
+          }
+        });
+
+        setSalasDelPiso(salasConCoordenadas);
       },
       (error) => {
         console.error('Error en listener de salas:', error);

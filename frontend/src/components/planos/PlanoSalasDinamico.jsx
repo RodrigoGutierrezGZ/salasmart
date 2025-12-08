@@ -146,9 +146,39 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
       // Filtrar por piso y coordenadas
       const salasPorPiso = salasFiltradas.filter(sala => {
         const pisoSala = sala.pisoNumero || sala.piso; // Compatibilidad
-        return pisoSala === pisoSeleccionado && sala.coordenadas;
+        return pisoSala === pisoSeleccionado;
       });
-      setSalasDelPiso(salasPorPiso);
+
+      // Auto-distribuir salas sin coordenadas en forma de cuadrícula
+      const salasConCoordenadas = salasPorPiso.map((sala, index) => {
+        if (sala.coordenadas && sala.coordenadas.x !== undefined && sala.coordenadas.y !== undefined) {
+          // Si tiene coordenadas válidas, usarlas
+          return sala;
+        } else {
+          // Auto-distribuir en cuadrícula 4x3 (4 columnas, 3 filas)
+          const columnas = 4;
+          const filas = Math.ceil(salasPorPiso.length / columnas);
+          
+          const col = index % columnas;
+          const fila = Math.floor(index / columnas);
+          
+          // Distribuir con márgenes: 15-85% horizontal, 20-80% vertical
+          const margenX = 15;
+          const margenY = 20;
+          const espacioX = (85 - margenX) / (columnas - 1 || 1);
+          const espacioY = (80 - margenY) / (filas - 1 || 1);
+          
+          return {
+            ...sala,
+            coordenadas: {
+              x: margenX + (col * espacioX),
+              y: margenY + (fila * espacioY)
+            }
+          };
+        }
+      });
+
+      setSalasDelPiso(salasConCoordenadas);
     }
   }, [salas, pisoSeleccionado, userData, filtroSede, filtroEdificio]);
 
@@ -280,7 +310,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
             <p className="text-2xl font-bold text-green-700 dark:text-green-400">
               {salasDelPiso.filter(s => s.estado === 'disponible').length}
             </p>
-            <p className="text-xs font-medium text-green-600 dark:text-green-500 truncate">Disponibles</p>
+            <p className="text-[10px] sm:text-xs font-medium text-green-600 dark:text-green-500">Disponibles</p>
           </div>
         </div>
 
@@ -292,7 +322,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
             <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">
               {salasDelPiso.filter(s => s.estado === 'proximamente').length}
             </p>
-            <p className="text-xs font-medium text-yellow-600 dark:text-yellow-500 truncate">Próximamente</p>
+            <p className="text-[10px] sm:text-xs font-medium text-yellow-600 dark:text-yellow-500">Próximas</p>
           </div>
         </div>
 
@@ -304,7 +334,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
             <p className="text-2xl font-bold text-red-700 dark:text-red-400">
               {salasDelPiso.filter(s => s.estado === 'ocupado').length}
             </p>
-            <p className="text-xs font-medium text-red-600 dark:text-red-500 truncate">Ocupadas</p>
+            <p className="text-[10px] sm:text-xs font-medium text-red-600 dark:text-red-500">Ocupadas</p>
           </div>
         </div>
       </div>
@@ -356,56 +386,74 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                 }}
                 onMouseEnter={() => setSalaHover(sala.id)}
                 onMouseLeave={() => setSalaHover(null)}
+                onTouchStart={() => setSalaHover(sala.id)}
+                onTouchEnd={() => setTimeout(() => setSalaHover(null), 3000)}
                 onClick={() => onSalaClick && onSalaClick(sala)}
               >
-                {/* Badge de la Sala */}
+                {/* Punto de Color (Solo móvil) */}
                 <div
+                  className="block sm:hidden"
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    backgroundColor: getColorEstado(sala.estado),
+                    border: '2px solid white',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+                    transform: salaHover === sala.id ? 'scale(1.3)' : 'scale(1)',
+                    transition: 'transform 0.2s ease'
+                  }}
+                />
+
+                {/* Badge de la Sala (Desktop) */}
+                <div
+                  className="hidden sm:flex"
                   style={{
                     backgroundColor: getColorEstado(sala.estado),
                     color: getColorTextoEstado(sala.estado),
                     transform: salaHover === sala.id ? 'scale(1.15)' : 'scale(1)',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.7)',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                     position: 'relative',
                     zIndex: 100,
-                    fontSize: '16px',
-                    fontWeight: '900',
+                    fontSize: '10px',
+                    fontWeight: '700',
                     fontFamily: '"Courier New", monospace',
-                    lineHeight: '1.4',
-                    padding: '6px 10px',
-                    borderRadius: '4px',
-                    boxShadow: '0 3px 8px rgba(0,0,0,0.5)',
-                    display: 'flex',
+                    lineHeight: '1.2',
+                    padding: '2px 6px',
+                    borderRadius: '3px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '3px',
                     WebkitTextFillColor: getColorTextoEstado(sala.estado),
-                    filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.6))',
+                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
                     cursor: 'default',
                     userSelect: 'none',
-                    border: `2px solid ${getColorEstado(sala.estado)}`,
+                    border: `1px solid ${getColorEstado(sala.estado)}`,
                     opacity: 1,
-                    visibility: 'visible'
+                    visibility: 'visible',
+                    whiteSpace: 'nowrap'
                   }}
                 >
                   <span style={{ 
-                    fontSize: '16px', 
+                    fontSize: '10px', 
                     color: getColorTextoEstado(sala.estado),
                     display: 'flex',
                     alignItems: 'center',
                     lineHeight: '1',
-                    fontWeight: '900'
+                    fontWeight: '700'
                   }}>
                     {getColorTextoEstado(sala.estado) === '#1a1a1a' ? '◆' : '■'}
                   </span>
                   <span style={{ 
-                    fontSize: '16px',
+                    fontSize: '10px',
                     color: getColorTextoEstado(sala.estado),
-                    fontWeight: '900'
+                    fontWeight: '700'
                   }}>
                     {sala.nombre}
                   </span>
                 </div>
 
-                {/* Tooltip Mejorado y Compacto */}
+                {/* Tooltip Mejorado (aparece al tocar en móvil o hover en desktop) */}
                 {salaHover === sala.id && (
                   <div
                     className="absolute bg-white rounded-lg shadow-2xl p-3 animate-fadeIn"
