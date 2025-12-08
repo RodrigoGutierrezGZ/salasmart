@@ -7,7 +7,6 @@ const VoiceControls = ({
   error,
   onStartListening,
   onStopListening,
-  onPauseSpeech,
   onCancelSpeech,
   isSupported,
   isDark,
@@ -79,16 +78,6 @@ const VoiceControls = ({
       {isSpeaking && (
         <div className="flex gap-2">
           <button
-            onClick={onPauseSpeech}
-            className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${
-              isDark
-                ? 'bg-yellow-700 hover:bg-yellow-800 text-white'
-                : 'bg-yellow-500 hover:bg-yellow-600 text-white'
-            }`}
-          >
-            Pausar
-          </button>
-          <button
             onClick={onCancelSpeech}
             className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${
               isDark
@@ -96,7 +85,7 @@ const VoiceControls = ({
                 : 'bg-red-500 hover:bg-red-600 text-white'
             }`}
           >
-            Detener
+            Detener Voz
           </button>
         </div>
       )}

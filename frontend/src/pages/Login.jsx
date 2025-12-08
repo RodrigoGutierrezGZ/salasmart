@@ -51,14 +51,14 @@ const Login = () => {
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4" style={{ backgroundImage: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(168, 85, 247, 0.1))' }}>
       <div className="flex w-full max-w-md flex-col items-center rounded-xl bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm p-6 sm:p-8 shadow-2xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-200/80 dark:border-slate-800/80">
         
-        <div className="flex flex-col items-center w-full mb-6">
+        <div className="flex flex-col items-center w-full mb-6 space-y-3">
           <svg className="h-10 w-auto text-primary" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path>
           </svg>
-          <h1 className="text-slate-800 dark:text-slate-200 tracking-tight text-2xl font-bold leading-tight text-center pb-2 pt-4">
+          <h1 className="text-slate-800 dark:text-slate-200 tracking-tight text-xl sm:text-2xl font-bold leading-relaxed sm:leading-tight text-center">
             Bienvenido de vuelta a SalaSmart
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-base font-normal leading-normal text-center">
+          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base font-normal leading-relaxed text-center">
             Inicia sesión en tu cuenta para gestionar las salas.
           </p>
         </div>

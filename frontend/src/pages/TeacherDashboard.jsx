@@ -501,8 +501,7 @@ function TeacherDashboard() {
                   </div>
                 );
               })}
-              </div>
-            )
+            </div>
 
             {/* Empty state */}
             {salasMostrar.length === 0 && (
@@ -625,7 +624,7 @@ function TeacherDashboard() {
       )}
 
       {/* Modal Fullscreen del Plano */}
-      {planoModalOpen && (
+      {planoModalOpen && !showFormulario && (
         <div className="fixed inset-0 z-[9999] bg-black/95 flex flex-col">
           {/* Header del modal */}
           <div className="flex items-center justify-between p-3 sm:p-4 bg-neutral-dark/80 backdrop-blur-sm border-b border-border-dark">
@@ -658,40 +657,40 @@ function TeacherDashboard() {
 
       {/* Modal Formulario Reserva - MEJORADO */}
       {showFormulario && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
           <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-white dark:bg-neutral-dark shadow-2xl animate-slideUp">
             {/* Header con gradiente */}
-            <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 px-8 py-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="flex items-center gap-3 text-2xl font-bold text-white">
-                    <span className="material-symbols-outlined text-4xl">event_available</span>
-                    Nueva Reserva
+            <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 px-4 sm:px-8 py-4 sm:py-6">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-2xl font-bold text-white">
+                    <span className="material-symbols-outlined text-2xl sm:text-4xl flex-shrink-0">event_available</span>
+                    <span className="truncate">Nueva Reserva</span>
                   </h2>
                   {salaSeleccionada && (
-                    <p className="mt-2 flex items-center gap-2 text-white/90">
-                      <span className="material-symbols-outlined text-lg">meeting_room</span>
-                      {salaSeleccionada.nombre}
-                      <span className="mx-2">•</span>
-                      <span className="material-symbols-outlined text-lg">chair</span>
-                      {salaSeleccionada.capacidad} personas
-                      <span className="mx-2">•</span>
-                      <span className="material-symbols-outlined text-lg">layers</span>
-                      Piso {salaSeleccionada.piso}
+                    <p className="mt-2 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-white/90 flex-wrap">
+                      <span className="material-symbols-outlined text-base sm:text-lg">meeting_room</span>
+                      <span className="font-medium">{salaSeleccionada.nombre}</span>
+                      <span className="hidden sm:inline mx-1">•</span>
+                      <span className="material-symbols-outlined text-base sm:text-lg">chair</span>
+                      <span>{salaSeleccionada.capacidad} personas</span>
+                      <span className="hidden sm:inline mx-1">•</span>
+                      <span className="material-symbols-outlined text-base sm:text-lg">layers</span>
+                      <span>Piso {salaSeleccionada.piso}</span>
                     </p>
                   )}
                 </div>
                 <button
                   onClick={handleCloseFormulario}
-                  className="rounded-full p-2 text-white/80 transition-all hover:bg-white/20 hover:text-white"
+                  className="rounded-full p-1.5 sm:p-2 text-white/80 transition-all hover:bg-white/20 hover:text-white flex-shrink-0"
                 >
-                  <span className="material-symbols-outlined text-3xl">close</span>
+                  <span className="material-symbols-outlined text-2xl sm:text-3xl">close</span>
                 </button>
               </div>
             </div>
 
             {/* Contenido del formulario */}
-            <div className="overflow-y-auto p-8" style={{ maxHeight: 'calc(90vh - 140px)' }}>
+            <div className="overflow-y-auto p-4 sm:p-8" style={{ maxHeight: 'calc(90vh - 140px)' }}>
               <FormularioReserva
                 sala={salaSeleccionada}
                 onReservaCreada={handleReservaCreada}

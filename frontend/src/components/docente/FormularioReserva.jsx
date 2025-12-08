@@ -234,12 +234,12 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
   return (
     <div className="space-y-6">
       {/* Información de la sala */}
-      <div className="rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/20 dark:to-primary/30 border border-primary/20 dark:border-primary/40 p-6">
+      <div className="rounded-lg bg-blue-50 dark:bg-blue-900/40 border-2 border-blue-200 dark:border-blue-500 p-6">
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-4xl text-primary">meeting_room</span>
+          <span className="material-symbols-outlined text-4xl text-blue-600 dark:text-blue-300">meeting_room</span>
           <div>
-            <h3 className="text-xl font-bold text-neutral-dark dark:text-white">{sala.nombre}</h3>
-            <div className="flex items-center gap-4 mt-1 text-sm text-gray-600 dark:text-gray-300">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{sala.nombre}</h3>
+            <div className="flex items-center gap-4 mt-1 text-sm font-medium text-gray-700 dark:text-white">
               <span className="flex items-center gap-1">
                 <span className="material-symbols-outlined text-base">chair</span>
                 {sala.capacidad} personas
@@ -257,7 +257,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Asignatura */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-white">
+          <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-gray-100">
             Asignatura *
           </label>
           <input
@@ -266,13 +266,13 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
             value={asignatura}
             onChange={(e) => setAsignatura(e.target.value.toUpperCase())}
             required
-            className="w-full rounded-lg border border-neutral-light dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            className="w-full rounded-lg border border-neutral-light dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
           />
         </div>
 
         {/* Fecha */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-white">
+          <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-gray-100">
             Fecha *
           </label>
           <input
@@ -284,7 +284,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
               setDisponibilidad(null);
             }}
             required
-            className="w-full rounded-lg border border-neutral-light dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            className="w-full rounded-lg border border-neutral-light dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none [color-scheme:light] dark:[color-scheme:dark]"
           />
         </div>
 
@@ -292,7 +292,7 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Hora de Inicio */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-white">
+            <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-gray-100">
               Hora de Inicio *
             </label>
             <input
@@ -305,14 +305,14 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
                 setDisponibilidad(null);
               }}
               required
-              className="w-full rounded-lg border border-neutral-light dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="w-full rounded-lg border border-neutral-light dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none [color-scheme:light] dark:[color-scheme:dark]"
             />
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Horario: 8:00 - 22:00</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-300">Horario: 8:00 - 22:00</p>
           </div>
 
           {/* Hora de Fin */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-white">
+            <label className="mb-2 block text-sm font-semibold text-neutral-dark dark:text-gray-100">
               Hora de Fin *
             </label>
             <input
@@ -325,9 +325,9 @@ function FormularioReserva({ sala, onReservaCreada, onCancelar }) {
                 setDisponibilidad(null);
               }}
               required
-              className="w-full rounded-lg border border-neutral-light dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="w-full rounded-lg border border-neutral-light dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none [color-scheme:light] dark:[color-scheme:dark]"
             />
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Duración: 45 min - 4 horas</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-300">Duración: 45 min - 4 horas</p>
           </div>
         </div>
 

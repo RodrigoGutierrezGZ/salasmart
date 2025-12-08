@@ -23,6 +23,7 @@ function ChatBot() {
     isListening,
     transcript,
     isSpeaking,
+    isPaused,
     isSupported: isVoiceSupported,
     error: voiceError,
     startListening,
@@ -453,7 +454,6 @@ function ChatBot() {
                 error={voiceError}
                 onStartListening={startListening}
                 onStopListening={stopListening}
-                onPauseSpeech={pauseSpeech}
                 onCancelSpeech={cancelSpeech}
                 isSupported={isVoiceSupported}
                 isDark={document.documentElement.classList.contains('dark')}

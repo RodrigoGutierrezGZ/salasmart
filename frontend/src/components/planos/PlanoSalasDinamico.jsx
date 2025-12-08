@@ -17,6 +17,20 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
   const [salaHover, setSalaHover] = useState(null);
   const [imagenPlanoURL, setImagenPlanoURL] = useState(null);
 
+  // Cerrar tooltip al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (salaHover && !e.target.closest('.tooltip-content') && !e.target.closest('.absolute.group')) {
+        setSalaHover(null);
+      }
+    };
+
+    if (salaHover) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [salaHover]);
+
   // Calcular cuántas sedes únicas están disponibles para el usuario
   const sedesDisponibles = React.useMemo(() => {
     let salasDisponibles = salas;
@@ -181,6 +195,40 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
       setSalasDelPiso(salasConCoordenadas);
     }
   }, [salas, pisoSeleccionado, userData, filtroSede, filtroEdificio]);
+
+  // Función para ajustar coordenadas y evitar superposición de badges
+  const calcularCoordenadasAjustadas = React.useMemo(() => {
+    if (!salasDelPiso || salasDelPiso.length === 0) return {};
+
+    const coordenadasAjustadas = {};
+    const UMBRAL_DISTANCIA = 4; // Distancia mínima en % para considerar colisión
+    const OFFSET_SEPARACION = 2.5; // Offset para separar badges que colisionan
+
+    salasDelPiso.forEach((sala, index) => {
+      let { x, y } = sala.coordenadas;
+      let ajustado = false;
+
+      // Verificar colisión con salas ya procesadas
+      for (let i = 0; i < index; i++) {
+        const otraSala = salasDelPiso[i];
+        const { x: otroX, y: otroY } = coordenadasAjustadas[otraSala.id] || otraSala.coordenadas;
+
+        const distancia = Math.sqrt(Math.pow(x - otroX, 2) + Math.pow(y - otroY, 2));
+
+        if (distancia < UMBRAL_DISTANCIA) {
+          // Hay colisión, aplicar offset en espiral
+          const angulo = (index * 60) * (Math.PI / 180); // Distribuir en círculo
+          x = otroX + Math.cos(angulo) * OFFSET_SEPARACION;
+          y = otroY + Math.sin(angulo) * OFFSET_SEPARACION;
+          ajustado = true;
+        }
+      }
+
+      coordenadasAjustadas[sala.id] = { x, y, ajustado };
+    });
+
+    return coordenadasAjustadas;
+  }, [salasDelPiso]);
 
   const getColorEstado = (estado) => {
     switch (estado) {
@@ -373,34 +421,27 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
             />
 
             {/* Renderizar Salas usando coordenadas en porcentaje */}
-            {salasDelPiso.map(sala => (
+            {salasDelPiso.map(sala => {
+              const coordsAjustadas = calcularCoordenadasAjustadas[sala.id] || sala.coordenadas;
+              
+              return (
               <div
                 key={sala.id}
                 className="absolute group"
                 style={{
-                  left: `${sala.coordenadas.x}%`,
-                  top: `${sala.coordenadas.y}%`,
+                  left: `${coordsAjustadas.x}%`,
+                  top: `${coordsAjustadas.y}%`,
                   transform: 'translate(-50%, -50%)',
-                  cursor: onSalaClick ? 'pointer' : 'default',
-                  zIndex: salaHover === sala.id ? 1000 : 100
-                }}
-                onMouseEnter={() => setSalaHover(sala.id)}
-                onMouseLeave={() => setSalaHover(null)}
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  setSalaHover(sala.id);
+                  cursor: 'pointer',
+                  zIndex: salaHover === sala.id ? 30 : 10
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (window.innerWidth < 640) {
-                    // En móvil, mostrar modal
-                    setSalaHover(salaHover === sala.id ? null : sala.id);
-                  } else {
-                    // En desktop, ejecutar onSalaClick si existe
-                    if (onSalaClick) {
-                      onSalaClick(sala);
-                    }
-                  }
+                  // Toggle detalle: abrir/cerrar con clic
+                  setSalaHover(salaHover === sala.id ? null : sala.id);
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
                 }}
               >
                 {/* Punto de Color (Solo móvil) */}
@@ -420,35 +461,36 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
 
                 {/* Badge de la Sala (Desktop) */}
                 <div
-                  className="hidden sm:flex"
+                  className="hidden sm:flex pointer-events-auto"
                   style={{
                     backgroundColor: getColorEstado(sala.estado),
                     color: getColorTextoEstado(sala.estado),
                     transform: salaHover === sala.id ? 'scale(1.15)' : 'scale(1)',
                     textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                     position: 'relative',
-                    zIndex: 100,
+                    zIndex: salaHover === sala.id ? 32 : 12,
                     fontSize: '10px',
                     fontWeight: '700',
                     fontFamily: '"Courier New", monospace',
                     lineHeight: '1.2',
-                    padding: '2px 6px',
-                    borderRadius: '3px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    boxShadow: salaHover === sala.id ? '0 4px 12px rgba(0,0,0,0.5)' : '0 2px 6px rgba(0,0,0,0.4)',
                     alignItems: 'center',
-                    gap: '3px',
+                    gap: '4px',
                     WebkitTextFillColor: getColorTextoEstado(sala.estado),
-                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
-                    cursor: 'default',
+                    filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.5))',
+                    cursor: 'pointer',
                     userSelect: 'none',
-                    border: `1px solid ${getColorEstado(sala.estado)}`,
+                    border: `2px solid rgba(255,255,255,0.8)`,
                     opacity: 1,
                     visibility: 'visible',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s ease'
                   }}
                 >
                   <span style={{ 
-                    fontSize: '10px', 
+                    fontSize: '11px', 
                     color: getColorTextoEstado(sala.estado),
                     display: 'flex',
                     alignItems: 'center',
@@ -458,18 +500,19 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                     {getColorTextoEstado(sala.estado) === '#1a1a1a' ? '◆' : '■'}
                   </span>
                   <span style={{ 
-                    fontSize: '10px',
+                    fontSize: '11px',
                     color: getColorTextoEstado(sala.estado),
-                    fontWeight: '700'
+                    fontWeight: '700',
+                    letterSpacing: '0.3px'
                   }}>
                     {sala.nombre}
                   </span>
                 </div>
 
-                {/* Tooltip Mejorado (aparece al tocar en móvil o hover en desktop) */}
+                {/* Tooltip Mejorado (aparece al hacer clic) */}
                 {salaHover === sala.id && (
                   <div
-                    className="absolute bg-white dark:bg-card-bg-dark rounded-lg shadow-2xl p-3 animate-fadeIn border border-neutral-light dark:border-border-dark"
+                    className="tooltip-content absolute bg-white dark:bg-card-bg-dark rounded-lg shadow-2xl p-3 animate-fadeIn border border-neutral-light dark:border-border-dark"
                     onClick={(e) => e.stopPropagation()}
                     style={{
                       // Ajustar posición horizontal para evitar que se corte
@@ -482,7 +525,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                       minWidth: '180px',
                       maxWidth: '90vw',
                       width: 'max-content',
-                      zIndex: 1001,
+                      zIndex: 35,
                       border: `2px solid ${getColorEstado(sala.estado)}`,
                       pointerEvents: 'auto'
                     }}
@@ -555,20 +598,28 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                         </div>
                       )}
 
-                      {/* Call to Action */}
+                      {/* Botón de Reservar */}
                       {onSalaClick && (
-                        <div className="pt-2 mt-2 border-t border-gray-200 text-center">
-                          <small className="text-primary flex items-center justify-center gap-1">
-                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>touch_app</span>
-                            Clic para más opciones
-                          </small>
+                        <div className="pt-2 mt-2 border-t border-gray-200 dark:border-border-dark">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSalaHover(null);
+                              onSalaClick(sala);
+                            }}
+                            className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-3 rounded transition-colors"
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>event_available</span>
+                            <span className="text-sm">Reservar Sala</span>
+                          </button>
                         </div>
                       )}
                     </div>
                   </div>
                 )}
               </div>
-            ))}
+            );
+          })}
           </div>
         </div>
       </div>
@@ -576,7 +627,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
       {/* Modal Flotante para Detalles de Sala (Móvil) */}
       {salaHover && (
         <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] sm:hidden p-4"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[35] sm:hidden p-4"
           onClick={() => setSalaHover(null)}
         >
           <div 
@@ -682,7 +733,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
                     )}
 
                     {/* Botón de acción */}
-                    {onSalaClick && sala.estado === 'disponible' && (
+                    {onSalaClick && (
                       <button
                         onClick={() => {
                           setSalaHover(null);

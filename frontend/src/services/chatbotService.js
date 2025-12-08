@@ -248,7 +248,36 @@ function parsearFecha(fechaStr) {
     return manana;
   }
 
-  // Opción 3: Formato YYYY-MM-DD (ISO)
+  // Opción 3: Días de la semana (próximo)
+  const diasSemana = {
+    'lunes': 1, 'monday': 1,
+    'martes': 2, 'tuesday': 2,
+    'miércoles': 3, 'miercoles': 3, 'wednesday': 3,
+    'jueves': 4, 'thursday': 4,
+    'viernes': 5, 'friday': 5,
+    'sábado': 6, 'sabado': 6, 'saturday': 6,
+    'domingo': 0, 'sunday': 0
+  };
+
+  if (diasSemana.hasOwnProperty(str)) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const diaObjetivo = diasSemana[str];
+    const diaActual = hoy.getDay();
+    
+    // Calcular días hasta el próximo día objetivo
+    let diasHasta = diaObjetivo - diaActual;
+    if (diasHasta <= 0) {
+      diasHasta += 7; // Si ya pasó esta semana, ir a la próxima
+    }
+    
+    const fechaObjetivo = new Date(hoy);
+    fechaObjetivo.setDate(fechaObjetivo.getDate() + diasHasta);
+    console.log(`   → Detectado "${str}" (próximo):`, fechaObjetivo);
+    return fechaObjetivo;
+  }
+
+  // Opción 4: Formato YYYY-MM-DD (ISO)
   const matchISO = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (matchISO) {
     const year = parseInt(matchISO[1]);
@@ -259,7 +288,7 @@ function parsearFecha(fechaStr) {
     return fecha;
   }
 
-  // Opción 4: Formato DD-MM-YYYY o DD/MM/YYYY
+  // Opción 5: Formato DD-MM-YYYY o DD/MM/YYYY
   const matchDMY = str.match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
   if (matchDMY) {
     const day = parseInt(matchDMY[1]);

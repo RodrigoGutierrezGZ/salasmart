@@ -1,4 +1,5 @@
 {
+  "version": "1.0.0",
   "name": "SalaSmart - Sistema de Reservas INACAP",
   "short_name": "SalaSmart",
   "description": "Sistema inteligente de gestión y reserva de salas académicas para INACAP",

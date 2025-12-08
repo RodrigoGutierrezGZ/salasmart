@@ -205,7 +205,7 @@ function StudentDashboard() {
         />
         
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto px-2 sm:px-3 py-2 lg:p-8 pb-8">
+        <main className="flex-1 overflow-y-auto pt-16 lg:pt-0 px-2 sm:px-3 py-2 lg:p-8 pb-8">
           <div className="mx-auto max-w-7xl space-y-2 sm:space-y-3 lg:space-y-8">
           
           {/* Page Heading */}
