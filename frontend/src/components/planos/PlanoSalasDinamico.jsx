@@ -355,7 +355,7 @@ function PlanoSalasDinamico({ onSalaClick, pisoInicial = 1, filtroSede = 'todos'
 
         <div className="p-2">
           {/* Contenedor con aspect ratio fijo 16:9 para consistencia con Editor */}
-          <div className="relative bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center" style={{ aspectRatio: '16 / 9' }}>
+          <div className="relative bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center" style={{ aspectRatio: '16 / 9' }}>
             <img
               src={imagenPlanoURL || `/planos/piso${pisoSeleccionado}.jpg`}
               alt={`Plano Piso ${pisoSeleccionado}`}
