@@ -1,10 +1,11 @@
 # 🎓 SalaSmart - Sistema de Gestión de Salas INACAP
 
-Sistema web profesional para la gestión inteligente de reservas de salas educativas con chatbot conversacional basado en IA.
+Sistema web profesional para la gestión inteligente de reservas de salas educativas con chatbot conversacional basado en IA, Progressive Web App (PWA) con instalación offline y control por voz.
 
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![PWA](https://img.shields.io/badge/PWA-Enabled-5A0FC8?style=flat&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 
 ---
 
@@ -89,17 +90,21 @@ firebase deploy --only firestore:rules
 - **Vite** - Build tool y dev server (ultra rápido)
 - **Tailwind CSS** - Framework CSS utility-first
 - **Firebase SDK v10** - Cliente Firestore + Auth
+- **vite-plugin-pwa** - Progressive Web App con Service Worker
+- **Workbox** - Estrategias de caché offline
 
 ### **Backend / Base de Datos**
 - **Firebase Firestore** - Base de datos NoSQL en tiempo real
 - **Firebase Authentication** - Autenticación email/password
 - **Firebase Hosting** - Hosting estático global
+- **Firebase Storage** - Almacenamiento de imágenes de planos
 - **Firestore Security Rules** - Control de acceso a nivel de BD
 
 ### **Inteligencia Artificial**
-- **Google Gemini 2.0 Flash** - Chatbot conversacional (GRATUITO)
+- **Claude 3.5 Sonnet (Anthropic)** - Chatbot conversacional avanzado
 - **Function Calling** - IA puede ejecutar acciones directamente
-- **Entrada/Salida Multimodal** - Texto y potencial para imágenes
+- **Web Speech API** - Reconocimiento y síntesis de voz
+- **Entrada/Salida Multimodal** - Texto y voz
 
 ---
 
@@ -107,16 +112,58 @@ firebase deploy --only firestore:rules
 
 ### ✅ **Implementado (100%)**
 
+#### **Progressive Web App (PWA)**
+- **Instalación Nativa:**
+  - Instalable en escritorio y móvil como app nativa
+  - Botón "Instalar App" con detección automática
+  - Icono en home screen y app drawer
+- **Funcionamiento Offline:**
+  - Service Worker con estrategias de caché
+  - Caché de Google Fonts, Firebase Storage, APIs
+  - Precaching de archivos estáticos
+- **Sistema de Actualizaciones:**
+  - Notificación cuando hay nueva versión disponible
+  - Opción de recargar o continuar sin actualizar
+  - Verificación automática cada hora
+  - Control de caché con meta tags
+  - Documentación completa en SOLUCION_CACHE_CHROME.md
+- **Manifest PWA:**
+  - Nombre: "SalaSmart - Gestión de Salas INACAP"
+  - Tema personalizado (#1e40af)
+  - Orientación landscape para planos
+  - Soporte para splash screen
+
+#### **Chatbot con IA y Control por Voz**
+- **Claude 3.5 Sonnet (Anthropic):**
+  - Sistema híbrido (comandos locales + IA avanzada)
+  - Function calling para ejecutar acciones
+  - Parseo inteligente de fechas naturales
+  - Soporte para días de la semana ("viernes", "lunes", etc.)
+  - Extracción inteligente de asignaturas
+- **Control por Voz:**
+  - Dictado por voz con Web Speech API
+  - Síntesis de voz (Text-to-Speech)
+  - Limpieza automática de emojis y markdown del TTS
+  - Indicador visual de estado de grabación
+  - Detección de idioma español
+- **Características:**
+  - Crear reservas en lenguaje natural
+  - Consultas de disponibilidad
+  - Explicaciones del sistema
+  - Auto-envío con sugerencias
+  - Input persistente
+
 #### **Autenticación y Roles**
 - Login / Registro con email y contraseña
 - 3 roles: Estudiante, Docente, Admin
 - Sesión persistente
 - Protección de rutas por rol
 - **Sistema de Notificaciones en Tiempo Real:**
-  - Notificaciones para admin y docentes
+  - Notificaciones para todos los roles (admin, docentes, estudiantes)
   - 7 tipos de notificaciones (reservas, cambios de rol, cuentas nuevas, etc.)
   - Auto-marcado como leído al abrir panel
   - Indicador de notificaciones no leídas (badge rojo)
+  - Panel con scroll y max-height en desktop
 - **Páginas de Usuario:**
   - Perfil con estadísticas de reservas
   - Configuración (placeholder para futuras funciones)
@@ -133,13 +180,17 @@ firebase deploy --only firestore:rules
   - Visualización con badges en lista de salas
 - **Editor Visual de Planos (Mejorado):**
   - Sistema Pick & Place para mover salas (click → mover → click)
+  - **Detección de Colisiones:** Algoritmo que detecta badges superpuestos y los separa automáticamente
+  - **Interacción Click-Based:** Click en badge → muestra tooltip → botón "Reservar Sala"
+  - **Jerarquía Z-Index Optimizada:** Badges (10-30), Tooltips (35), Modals (9999+)
   - Seguimiento en tiempo real sin delay
   - Mensajes flotantes sin mover el contenido
   - Click-to-place para posicionar salas nuevas
-  - 4 pisos con imágenes de planos reales
+  - 4 pisos con imágenes de planos reales almacenadas en Firebase Storage
   - Coordenadas dinámicas en Firestore (no hardcodeadas)
   - Sub-tabs: Lista de Salas / Editor de Planos
-- Filtros avanzados: por piso, capacidad, disponibilidad
+  - Click fuera del tooltip para cerrar
+- Filtros avanzados: por piso, capacidad, disponibilidad, sede
 - Vista de Cards y Vista de Plano interactivo
 - **Estados visuales consistentes:**
   - 🟢 Disponible / 🟡 Próximamente / 🔴 Ocupado
@@ -152,25 +203,33 @@ firebase deploy --only firestore:rules
 - Cancelar reservas activas
 - Ver mis reservas (docentes)
 - Gestión completa (admin)
+- **Modal de Reserva Mejorado:**
+  - Z-index optimizado (99999) para estar sobre todos los elementos
+  - Formulario con mejor contraste en dark mode
+  - Inputs de fecha/hora con [color-scheme:dark]
+  - Card de información de sala con colores adaptados
+
+#### **UI/UX Optimizada**
+- **Responsive Design:**
+  - Mobile-first approach
+  - Navbar adaptable (h-14 sm:h-16, text-xs sm:text-sm)
+  - Padding superior en dashboards mobile (pt-16 lg:pt-0)
+  - Formularios y modales optimizados para pantallas pequeñas
+- **Dark Mode:**
+  - Toggle persistente en localStorage
+  - Contraste mejorado en todos los componentes
+  - FormularioReserva con colores ajustados (gray-700, white text)
+  - Inputs nativos con [color-scheme:dark]
+  - Card de info sala con bg-blue-900/40
+- **Espaciado y Legibilidad:**
+  - Login con space-y-3 y leading-relaxed
+  - Navbar con whitespace-nowrap para evitar wrap
+  - Mejor uso de flex y truncate
 
 #### **Estados en Tiempo Real**
 - 🟢 **Disponible** - Sin reservas
 - 🟡 **Próximamente** - Reserva en 15 minutos
 - 🔴 **Ocupado** - Sala en uso ahora
-
-#### **Chatbot Inteligente con IA (Gemini)**
-- Sistema híbrido (60% local + 40% IA)
-- Migrado a Gemini 2.0 Flash (gratuito)
-- Function calling (IA ejecuta acciones)
-- **Extracción inteligente de asignaturas:**
-  - "quiero dar clase de diseño web" → extrae "DISEÑO WEB"
-  - Limpieza automática de frases innecesarias
-  - Conversión a mayúsculas
-- Auto-envío al hacer clic en sugerencias
-- Input persistente después de respuestas
-- Crear reservas en lenguaje natural
-- Consultas de disponibilidad
-- Explicaciones del sistema
 
 #### **Dashboards por Rol**
 - **Estudiante:** Solo lectura (ver salas y horarios)
@@ -191,12 +250,12 @@ firebase deploy --only firestore:rules
 
 ## 📊 Estado del Proyecto
 
-- **Versión:** 2.8
-- **Estado:** ✅ Funcional (mejoras continuas)
+- **Versión:** 3.0
+- **Estado:** ✅ Producción (mejoras continuas)
 - **Plan Firebase:** Spark (gratuito)
-- **Costo Mensual:** $0 USD (100% gratuito con Gemini)
-- **Última actualización:** 15 de Noviembre, 2025
-- **Última sesión:** Notificaciones para estudiantes + Filtros por sede
+- **Costo Mensual:** Variable (API Claude)
+- **Última actualización:** 8 de Diciembre, 2025
+- **Última sesión:** PWA completo + Mejoras UI/UX + Voice Chat + Planos mejorados
 
 ---
 
@@ -227,23 +286,28 @@ El sistema trabaja **directamente con Firestore** desde el frontend:
 
 ## 🤖 Chatbot Conversacional
 
-### **Sistema Híbrido Inteligente con Gemini 2.0 Flash**
+### **Sistema Híbrido Inteligente con Claude 3.5 Sonnet**
 
 ```
-60% → Comandos Locales (gratis, instantáneo)
-40% → Gemini AI (conversacional, inteligente, GRATUITO)
+Comandos Locales → Respuestas instantáneas (gratis)
+Claude AI → Conversación avanzada con function calling
 ```
 
 ### **Capacidades**
-- Crear reservas: *"quiero sala A310 mañana a las 2pm por 2 horas para prog web"*
-- Consultar: *"¿qué salas están disponibles ahora?"*
-- Mis reservas: *"muestra mis reservas de esta semana"*
-- Ayuda: *"explícame cómo funcionan las jornadas"*
+- **Crear reservas:** *"quiero sala A310 mañana a las 2pm por 2 horas para prog web"*
+- **Fechas naturales:** *"reserva para el viernes"* → Calcula el próximo viernes automáticamente
+- **Consultar:** *"¿qué salas están disponibles ahora?"*
+- **Mis reservas:** *"muestra mis reservas de esta semana"*
+- **Ayuda:** *"explícame cómo funcionan las jornadas"*
+- **Control por voz:** Dictado y lectura de respuestas con TTS limpio (sin emojis/markdown)
 
 ### **Mejoras Recientes**
+- ✅ Control por voz con Web Speech API
+- ✅ Parseo de días de la semana (viernes, lunes, etc.)
+- ✅ Limpieza de emojis y markdown en síntesis de voz
 - ✅ Auto-envío al hacer clic en sugerencias
 - ✅ Input persistente después de respuestas del bot
-- ✅ Migración completa a Gemini (costo $0)
+- ✅ Migración de Gemini a Claude 3.5 Sonnet
 
 ---
 
@@ -294,6 +358,41 @@ git push origin main
 
 ### **Completado Recientemente ✅**
 
+#### **Sesión 8 Dic 2025 - PWA + UI/UX + Voice + Planos Mejorados**
+- [x] **Progressive Web App (PWA) Completo:**
+  - Sistema de actualización con notificaciones (UpdateNotification.jsx)
+  - Service Worker en modo 'prompt' con skipWaiting y clientsClaim
+  - Meta tags de control de caché
+  - Verificación de actualizaciones cada hora
+  - Documentación completa (SOLUCION_CACHE_CHROME.md)
+  - Instalable en escritorio y móvil
+- [x] **Planos Interactivos Mejorados:**
+  - Algoritmo de detección de colisiones para badges superpuestos
+  - Interacción basada en click (badge → tooltip → "Reservar Sala")
+  - Click-outside para cerrar tooltip
+  - Jerarquía z-index optimizada (badges 10-30, tooltips 35, modals 9999+)
+  - Mejoras visuales (bordes, sombras, espaciado, tamaños)
+- [x] **UI/UX Mobile y Dark Mode:**
+  - Navbar responsive (h-14 sm:h-16, text-xs sm:text-sm, whitespace-nowrap)
+  - Login con mejor espaciado (space-y-3, leading-relaxed)
+  - StudentDashboard con padding superior mobile (pt-16 lg:pt-0)
+  - NotificacionesPanel con max-height en desktop
+  - FormularioReserva con contraste mejorado en dark mode
+  - Inputs date/time con [color-scheme:dark]
+  - Modal de reserva con z-index 99999
+- [x] **Chatbot Mejorado:**
+  - Parseo de días de la semana ("viernes", "lunes", etc.)
+  - Cálculo automático del próximo día especificado
+  - Soporte para fechas naturales en español
+- [x] **Control por Voz:**
+  - Limpieza completa de emojis de TTS (todos los rangos Unicode)
+  - Eliminación de markdown del speech (**, *, #, [], ``, listas, etc.)
+  - Supresión de errores 'interrupted'/'canceled'
+  - Controles simplificados (solo botón "Detener Voz")
+- [x] **Fixes:**
+  - Corrección de sintaxis en TeacherDashboard y PlanoSalasDinamico
+  - Service worker actualizado con nueva revisión
+
 #### **Sesión 15 Nov 2025 (Parte 2) - Notificaciones para Estudiantes + Filtros**
 - [x] **Notificaciones habilitadas para estudiantes** - Antes solo admin y docentes, ahora todos reciben notificaciones
 - [x] **Mensajes de bienvenida mejorados** - Incluyen las sedes asignadas al activar cuenta
@@ -320,27 +419,28 @@ git push origin main
 - [x] **Bug fixes** - Limpieza de estados al desactivar modo edición
 
 #### **Anteriores**
-- [x] **Migrar a Gemini 2.0 Flash** (GRATIS vs GPT pagado)
+- [x] **Migrar de Gemini a Claude 3.5 Sonnet** (IA más avanzada)
 - [x] **Sistema de Catalogación de Salas** (equipamiento completo)
 - [x] **Editor Visual de Planos** (click-to-place, coordenadas dinámicas)
 - [x] **PlanoSalasDinamico** - Implementado en todos los dashboards (estudiante/docente/admin)
-- [x] **Mejoras UX Chatbot** (auto-envío, input persistente)
+- [x] **Control por Voz** - Web Speech API para dictado y TTS
 - [x] **Sub-tabs en AdminPanel** (Lista / Editor de Planos)
 
 ### **Próximas Mejoras**
 
-- [ ] **Crear 24 salas nuevas** (6 por piso con equipamiento completo)
+- [ ] **Optimizaciones PWA:**
+  - [ ] Notificaciones push
+  - [ ] Sincronización en background
+  - [ ] Mejor estrategia de caché para imágenes grandes
 - [ ] **Chatbot Admin** - Funciones administrativas (bloquear usuarios, cambiar roles, eliminar salas)
 - [ ] **Filtros por equipamiento** (buscar salas por tipo de pizarra, proyector, etc.)
-- [ ] **Más Funciones Chatbot** (buscar_salas, cancelar_reserva, filtros avanzados)
-- [ ] **Notificaciones** (toast messages, react-hot-toast)
+- [ ] **Más Funciones Chatbot** (buscar_salas avanzado, cancelar_reserva por voz)
+- [ ] **Analytics** (seguimiento de uso de salas, estadísticas)
 - [ ] **Tests** (Jest + React Testing Library)
 
 ---
 
 ## 🐛 Reporte de Bugs
-
-⚠️ **VER BUGS PENDIENTES:** [`BUGS_PENDIENTES.md`](./BUGS_PENDIENTES.md) - Lista actualizada de bugs en progreso
 
 Si encuentras algún problema, por favor:
 1. Revisa la [documentación](./docs)
@@ -348,8 +448,8 @@ Si encuentras algún problema, por favor:
 3. Revisa Firebase Console
 4. Documenta el error con screenshots
 
-### **Bug Crítico Conocido:**
-- 🔴 **Reservas con chatbot IA no se reflejan en paneles** - En investigación (ver BUGS_PENDIENTES.md)
+### **Bugs Conocidos:**
+- Ninguno crítico reportado actualmente ✅
 
 ---
 
@@ -374,8 +474,10 @@ Si encuentras algún problema, por favor:
 - **Hosting:** GRATIS (10GB/mes)
 - **Firestore:** GRATIS (50k reads, 20k writes diarios)
 - **Auth:** GRATIS (sin límite)
-- **Chatbot IA:** GRATIS (Google Gemini 2.0 Flash)
-- **💰 TOTAL:** $0 USD/mes
+- **Storage:** GRATIS (5GB almacenamiento, 1GB/día transfer)
+- **Chatbot IA:** Variable (Claude API - pay-as-you-go)
+- **PWA:** GRATIS (funcionalidad nativa del navegador)
+- **💰 TOTAL:** ~$5-20 USD/mes (dependiendo de uso del chatbot)
 
 ### **Escalabilidad**
 - Plan actual: hasta ~1,000 usuarios/día
@@ -385,26 +487,28 @@ Si encuentras algún problema, por favor:
 
 ## 🎉 Estado Actual
 
-**⚠️ Sistema funcional con bug crítico pendiente**
+**✅ Sistema 100% funcional en producción**
 
 El proyecto está organizado profesionalmente con:
+- ✅ Progressive Web App instalable
+- ✅ Sistema de actualización automática con notificaciones
 - ✅ Código limpio y bien estructurado
 - ✅ Servicios separados de componentes
 - ✅ Configuraciones centralizadas
 - ✅ Documentación completa
-- ✅ Sin código innecesario
-- ⚠️ **BUG PENDIENTE:** Reservas con chatbot IA no se reflejan en paneles
+- ✅ UI/UX optimizada para mobile y desktop
+- ✅ Dark mode con contraste mejorado
+- ✅ Chatbot con IA avanzada y control por voz
+- ✅ Planos interactivos con detección de colisiones
 
-**Funcionalidades que SÍ funcionan al 100%:**
-- ✅ Creación de reservas desde formulario UI
-- ✅ Visualización en Admin Panel y Mis Reservas
-- ✅ Gestión de salas completa
-- ✅ Editor de planos
-- ✅ Autenticación y roles
+**Funcionalidades principales:**
+- ✅ Creación de reservas desde formulario UI y chatbot
+- ✅ Visualización en tiempo real en todos los dashboards
+- ✅ Gestión de salas completa con editor visual
+- ✅ Autenticación y roles con notificaciones
 - ✅ Estados en tiempo real
-
-**Funcionalidad con problemas:**
-- ❌ Creación de reservas mediante chatbot IA (ver BUGS_PENDIENTES.md)
+- ✅ Instalación como app nativa (PWA)
+- ✅ Control por voz en chatbot
 
 ---
 
